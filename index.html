@@ -103,6 +103,7 @@
 
           <div class="resume-main col-12 col-lg-8 col-xl-9   pe-0   pe-lg-5">
 
+            <!-- sections of news -->
             <section class="work-section py-3">
 
               <h3 class="text-uppercase resume-section-heading mb-4">News</h3>
@@ -124,6 +125,7 @@
 
             </section>
 
+            <!-- self-introduction -->
             <section class="work-section py-3">
 
               <h3 class="text-uppercase resume-section-heading mb-4">Publication</h3>
@@ -140,65 +142,92 @@
 
             </section>
 
+            <!-- work experiences -->
             <section class="work-section py-3">
 
-              <h3 class="text-uppercase resume-section-heading mb-4">Research Experiences</h3>
+              <h3 class="text-uppercase resume-section-heading mb-4">Work Experiences</h3>
 
-              <!-- spatiotemporal & context -->
+              <!-- PPML with signal loss -->
               <div class="item mb-3">
 
                 <div class="item-heading row align-items-center mb-2">
                   <h4 class="item-title col-12 col-md-6 col-lg-8 mb-2 mb-md-0">
-                    Extracting Spatiotemporal Information from Twitter Timeline
+                    Privacy-Preserving Machine Learning with Signal Loss
                   </h4>
                   <div class="item-meta col-12 col-md-6 col-lg-4 text-muted text-start text-md-end">
-                    UNT | Feb 2021 - Present
+                    Meta | May 2022 - Aug 2022
+                  </div>
+                </div>
+
+                <div class="item-content">
+                  <ul class="resume-list">
+                    <li>Built privacy-preserving logistic regression model to predict user's action with signal loss.</li>
+                    <li>Collaborated with the research team and product team to develop the first version of the prototype.</li>
+                    <li>Conducted extensive experiments to search for the best parameter setting.</li>
+                  </ul>
+                </div>
+
+              </div>
+
+            </section>
+
+            <!-- research experiences -->
+            <section class="work-section py-3">
+
+              <h3 class="text-uppercase resume-section-heading mb-4">Research Experiences</h3>
+
+              <!-- temporal -->
+              <div class="item mb-3">
+
+                <div class="item-heading row align-items-center mb-2">
+                  <h4 class="item-title col-12 col-md-6 col-lg-8 mb-2 mb-md-0">
+                    Temporal Information Extraction
+                  </h4>
+                  <div class="item-meta col-12 col-md-6 col-lg-4 text-muted text-start text-md-end">
+                    UNT | Aug 2021 - Present
                   </div>
                 </div>
 
                 <div class="item-content">
                   <ul class="resume-list">
                     <li>
-                      Enhance the corpus of spatiotemporal information extraction. Analyze the annotation changes
-                      brought by providing annotators the access to the Twitter timeline.
+                      Propose a new task of determining how long Twitter users will stay at the geotagged location.
+                      Create a corpus that the quality is guaranteed by filtering out bad annotators and unreliable annotations.
                     </li>
-                    <li>Experimental results show that the context-aware network yields the best results.</li>
+                    <li>Corpus analysis shows that users will spend less than one month in the tagged places in most tweets.</li>
                     <li>
-                      Error analyses show that besides contextual information, more works need to be done to detect
-                      bot and spammer.
+                      Build a location-aware multimodal neural network to tackle this problem.
+                      Experimental results show that both text and image are essential to make the right prediction.
                     </li>
                   </ul>
                 </div>
 
               </div>
 
-              <!-- spatiotemporal no context -->
+              <!-- spatial -->
               <div class="item mb-3">
 
                 <div class="item-heading row align-items-center mb-2">
                   <h4 class="item-title col-12 col-md-6 col-lg-8 mb-2 mb-md-0">
-                    Spatiotemporal Knowledge Mining
+                    Spatial Information Extraction
                   </h4>
                   <div class="item-meta col-12 col-md-6 col-lg-4 text-muted text-start text-md-end">
-                    UNT | Aug 2019 - Feb 2021
+                    UNT | Aug 2019 - Aug 2021
                   </div>
                 </div>
 
                 <div class="item-content">
                   <ul class="resume-list">
-                    <li>Download tweets using Tweepy and GetOldTweets3.</li>
                     <li>
-                      Design interface to collect annotations on Amazon Mechanical Turk, identify unreliable annotators,
-                      and filter out annotations using "Multi-Annotator Competence Estimation"
+                      Propose a new task of determining if Twitter users are located in the mentioned location when the tweet was posted.
+                      Create a corpus and build multi-modal models to tackle this problem.
                     </li>
                     <li>
-                      Single-modal models and multi-modal models are built.
-                      Experimental results show that both text and image are useful to
-                      determine the location of the authors of the tweets.
+                      Create another corpus to include the context tweets. Build a context-aware model to leverage the contextual information.
+                      Error analyses show that incorporating temporal commonsense is beneficial.
                     </li>
                     <li>
-                      Error analyses show that advertisement tweets significantly affect the model performance,
-                      and contextual information is also essential.
+                      Design interfaces to collect annotations of two corpora on Amazon Mechanical Turk.
                     </li>
                   </ul>
                 </div>
@@ -231,6 +260,20 @@
               </div>
 
             </section>
+
+            <!-- academic services -->
+            <section class="work-section py-3">
+
+              <h3 class="text-uppercase resume-section-heading mb-4">News</h3>
+
+              <!-- news in chronological order -->
+              <div class="item mb-3">
+
+                <ul class="resume-list">
+                  <li>Reviewer: LREC 2022</li>
+                </ul>
+
+              </div>
 
           </div>
 
@@ -268,7 +311,7 @@
                 <ul class="list-unstyled resume-skills-list">
                   <li class="mb-2">Python / Java / C</li>
                   <li class="mb-2">HTML / CSS / JavaScript</li>
-                  <li class="mb-2">MySQL</li>
+                  <li class="mb-2">MySQL / Presto</li>
                 </ul>
               </div>
 
@@ -282,6 +325,17 @@
                   <li class="mb-2"></li>
                 </ul>
               </div>
+
+              <div class="item">
+                <h4 class="item-title">Pre-trained models</h4>
+                <ul class="list-unstyled resume-skills-list">
+                  <li class="mb-2">VGG / Inceptionv3</li>
+                  <li class="mb-2">ResNet / EfficientNet</li>
+                  <li class="mb-2">BERT / RoBERTa</li>
+                  <li class="mb-2">ELMo / XLNet</li>
+                </ul>
+              </div>
+
             </section>
 
             <!-- languages -->
