@@ -16,13 +16,16 @@
   <link href="img/UNT.png" rel="shortcut icon">
 
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- FontAwesome JS-->
   <script defer src="assets/fontawesome/js/all.min.js"></script>
 
   <!-- Theme CSS -->
   <link id="theme-style" rel="stylesheet" href="assets/css/devresume.css">
+
+  <!-- Custom overrides -->
+  <link rel="stylesheet" href="assets/css/custom.css">
 
 </head>
 
@@ -44,15 +47,10 @@
 
           <!-- email, cv, and location -->
           <div class="resume-contact col-12 col-md-6 col-lg-4 col-xl-3">
-            <ul class="list-unstyled mb-0">
-              <li class="mb-2"><i class="fas fa-envelope-square fa-fw fa-lg me-2"></i><a
-                  class="resume-link" href="mailto:zhaominxiao@my.unt.edu">zhaominxiao@my.unt.edu</a></li>
-              <li class="mb-2"><i class="fas fa-globe fa-fw fa-lg me-2"></i><a class="resume-link"
-                                                                               href="zhaomin_cv.pdf">CV</a>
-              </li>
-              <li class="mb-0"><i class="fas fa-map-marker-alt fa-fw fa-lg me-2"></i><a class="resume-link"
-                                                                                        href="https://goo.gl/maps/QaJMNac7GE9wt45s6">Denton,
-                TX</a></li>
+            <ul class="list-unstyled mb-0 contact-icons">
+              <li><a class="resume-link" href="mailto:zhaominxiao@my.unt.edu" title="Email"><i class="fas fa-envelope-square"></i></a></li>
+              <li><a class="resume-link" href="zhaomin_cv.pdf" title="CV"><i class="fas fa-file-alt"></i></a></li>
+              <li><a class="resume-link" href="https://goo.gl/maps/QaJMNac7GE9wt45s6" title="Denton, TX"><i class="fas fa-map-marker-alt"></i></a></li>
             </ul>
           </div>
 
@@ -140,12 +138,6 @@
 
                 <ul class="resume-list">
                   <li>
-                    <b>Zhaomin Xiao</b>, Zhelu Mai, Yachen Cui, Zhuoer Xu, and Jiancheng Li. Short Interest Trend Prediction with Large Language Models .
-                    In <i>Proceedings of the 2024 International Conference on Innovation in Artificial Intelligence (<b>ICIAI 2024</b>)</i>.
-                    [<a href="https://dl.acm.org/doi/abs/10.1145/3655497.3655500">paper</a>]
-                    [<a href="">bib</a>]
-                  </li>
-                  <li>
                     <b>Zhaomin Xiao</b>, Yan Huang, and Eduardo Blanco. Context Helps Determine Spatial Knowledge from Tweets.
                     In <i>Proceedings of the 2024 Joint International Conference on Computational Linguistics, Language Resources and Evaluation (<b>LREC-COLING 2024</b>)</i>.
                     [<a href="https://aclanthology.org/2024.lrec-main.85.pdf">paper</a>]
@@ -160,18 +152,6 @@
                     [<a href="https://aclanthology.org/2023.findings-ijcnlp.13.bib">bib</a>]
                     [<a href="https://github.com/zhaomin1995/aacl2023_repo">code & corpus</a>]
                     [<a href="files/posters/aacl_2023_poster.pdf">poster</a>]
-                  </li>
-                  <li>
-                    <b>Zhaomin Xiao</b>, Zhelu Mai, Zhuoer Xu, Yachen Cui, and Jiancheng Li. Corporate Event Predictions Using Large Language Models.
-                    In <i>Proceedings of the 10th International Conference on Soft Computing & Machine Intelligence (<b>ISCMI 2023</b>)</i>.
-                    [<a href="https://ieeexplore.ieee.org/abstract/document/10458651">paper</a>]
-                    [<a href="">bib</a>]
-                  </li>
-                  <li>
-                    <b>Zhaomin Xiao</b>, Yachen Cui, Zhelu Mai, Zhuoer Xu, and Jiancheng Li. Corporate Event Prediction Using Earning Call Transcripts.
-                    In <i>Proceedings of the 10th International Conference on Information Management and Big Data (<b>SIMBig 2023</b>)</i>.
-                    [<a href="https://link.springer.com/chapter/10.1007/978-3-031-63616-5_20">paper</a>]
-                    [<a href="">bib</a>]
                   </li>
                   <li><b>Zhaomin Xiao</b> and Eduardo Blanco. Are People Located in the Places They Mention in Their
                     Tweets? A Multimodal Approach. In <i>Proceedings of the 29th International Conference on Computational Linguistics (<b>COLING</b>)</i>.
@@ -190,27 +170,6 @@
             <section class="work-section py-3">
 
               <h3 class="text-uppercase resume-section-heading mb-4">Work Experiences</h3>
-
-              <!-- Semantic Attribution -->
-              <div class="item mb-3">
-
-                <div class="item-heading row align-items-center mb-2">
-                  <h4 class="item-title col-12 col-md-6 col-lg-8 mb-2 mb-md-0">
-                    Semantic Attribution
-                  </h4>
-                  <div class="item-meta col-12 col-md-6 col-lg-4 text-muted text-start text-md-end">
-                    Meta | Feb 2024 - Present
-                  </div>
-                </div>
-
-                <div class="item-content">
-                  <ul class="resume-list">
-                    <li>Develop semantic methods to identify the attributions in Meta Ads system.</li>
-                    <li>Identify 10% more attributions compared to the existing production attribution system.</li>
-                  </ul>
-                </div>
-
-              </div>
 
               <!-- PPML with signal loss -->
               <div class="item mb-3">
@@ -241,84 +200,29 @@
 
               <h3 class="text-uppercase resume-section-heading mb-4">Research Experiences</h3>
 
-              <!-- temporal -->
+              <!-- spatio-temporal -->
               <div class="item mb-3">
 
                 <div class="item-heading row align-items-center mb-2">
                   <h4 class="item-title col-12 col-md-6 col-lg-8 mb-2 mb-md-0">
-                    Temporal Information Extraction
+                    Spatio-Temporal Information Extraction
                   </h4>
                   <div class="item-meta col-12 col-md-6 col-lg-4 text-muted text-start text-md-end">
-                    UNT | Aug 2021 - Feb 2023
+                    UNT | Aug 2019 - Feb 2023
                   </div>
                 </div>
 
                 <div class="item-content">
                   <ul class="resume-list">
                     <li>
-                      Propose a new task of determining how long Twitter users will stay at the geotagged location.
-                      Create a corpus that the quality is guaranteed by filtering out bad annotators and unreliable annotations.
-                    </li>
-                    <li>Corpus analysis shows that users will spend less than one month in the tagged places in most tweets.</li>
-                    <li>
-                      Build a location-aware multimodal neural network to tackle this problem.
-                      Experimental results show that both text and image are essential to make the right prediction.
-                    </li>
-                  </ul>
-                </div>
-
-              </div>
-
-              <!-- spatial -->
-              <div class="item mb-3">
-
-                <div class="item-heading row align-items-center mb-2">
-                  <h4 class="item-title col-12 col-md-6 col-lg-8 mb-2 mb-md-0">
-                    Spatial Information Extraction
-                  </h4>
-                  <div class="item-meta col-12 col-md-6 col-lg-4 text-muted text-start text-md-end">
-                    UNT | Aug 2019 - Aug 2021
-                  </div>
-                </div>
-
-                <div class="item-content">
-                  <ul class="resume-list">
-                    <li>
-                      Propose a new task of determining if Twitter users are located in the mentioned location when the tweet was posted.
-                      Create a corpus and build multi-modal models to tackle this problem.
+                      Propose new tasks of determining if Twitter users are located in the mentioned location and how long they will stay at the geotagged location.
                     </li>
                     <li>
-                      Create another corpus to include the context tweets. Build a context-aware model to leverage the contextual information.
-                      Error analyses show that incorporating temporal commonsense is beneficial.
+                      Create multiple corpora with quality guaranteed by filtering out bad annotators and unreliable annotations. Design interfaces to collect annotations on Amazon Mechanical Turk.
                     </li>
                     <li>
-                      Design interfaces to collect annotations of two corpora on Amazon Mechanical Turk.
+                      Build multimodal and context-aware neural networks to tackle these problems. Experimental results show that both text and image are essential, and incorporating temporal commonsense is beneficial.
                     </li>
-                  </ul>
-                </div>
-
-              </div>
-
-              <!-- NLI project -->
-              <div class="item mb-3">
-
-                <div class="item-heading row align-items-center mb-2">
-                  <h4 class="item-title col-12 col-md-6 col-lg-8 mb-2 mb-md-0">
-                    Natural Language Identification
-                  </h4>
-                  <div class="item-meta col-12 col-md-6 col-lg-4 text-muted text-start text-md-end">
-                    Pitt | Aug 2018 - Dec 2018
-                  </div>
-                </div>
-
-                <div class="item-content">
-                  <ul class="resume-list">
-                    <li>Extract lots of linguistic features, such as part-of-speech tags, stop words, and
-                      punctuation marks, from the TOEFL essays written by English Learners
-                      whose native language is one of eleven languages.
-                    </li>
-                    <li>Tune the parameters using GridSearch with 5-fold cross-validation.</li>
-                    <li>Visualize the confusion matrix of 11 categories using seaborn.</li>
                   </ul>
                 </div>
 

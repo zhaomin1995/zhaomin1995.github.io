@@ -1,0 +1,341 @@
+/* ===== Custom Visual Redesign — Warm Minimal ===== */
+
+:root {
+  --color-primary: #2d3436;
+  --color-accent: #e17055;
+  --color-accent-light: #fab1a0;
+  --color-text: #2d3436;
+  --color-text-muted: #636e72;
+  --color-bg: #fafaf8;
+  --color-card: #ffffff;
+  --color-border: #e8e4e0;
+  --color-section-bg: #f5f2ee;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.1);
+  --radius: 12px;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---- Base ---- */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---- Main wrapper ---- */
+.main-wrapper {
+  background: var(--color-bg);
+}
+
+/* ---- Resume card ---- */
+.resume-wrapper {
+  background: var(--color-card) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-lg) !important;
+  border: 1px solid var(--color-border);
+  padding: 3rem !important;
+  max-width: 1000px;
+}
+
+@media (min-width: 992px) {
+  .resume-wrapper {
+    padding: 3.5rem !important;
+  }
+}
+
+/* ---- Typography ---- */
+h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.resume-name {
+  font-size: 2rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.03em;
+  color: var(--color-primary);
+  position: relative;
+}
+
+.resume-tagline {
+  color: var(--color-accent) !important;
+  font-weight: 500;
+  font-size: 1.05rem;
+  letter-spacing: 0;
+}
+
+/* ---- Section headings ---- */
+.resume-section-heading {
+  font-size: 0.85rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.12em !important;
+  color: var(--color-accent) !important;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid var(--color-accent);
+  display: inline-block;
+}
+
+/* ---- Links ---- */
+a,
+a.resume-link,
+a.theme-link {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color var(--transition), opacity var(--transition);
+}
+
+a:hover,
+a.resume-link:hover,
+a.theme-link:hover {
+  color: #d35400;
+  text-decoration: none;
+  opacity: 0.85;
+}
+
+/* ---- Contact icons ---- */
+.contact-icons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.contact-icons li {
+  list-style: none;
+}
+
+.contact-icons a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--color-section-bg);
+  color: var(--color-primary) !important;
+  font-size: 1.1rem;
+  transition: background var(--transition), color var(--transition), transform var(--transition);
+}
+
+.contact-icons a:hover {
+  background: var(--color-accent);
+  color: #fff !important;
+  transform: translateY(-2px);
+  opacity: 1;
+}
+
+@media (max-width: 767px) {
+  .contact-icons {
+    justify-content: flex-start;
+  }
+}
+
+/* ---- Profile image ---- */
+.resume-profile-image {
+  width: 130px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 50% !important;
+  border: 4px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.resume-profile-image:hover {
+  transform: scale(1.04);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ---- Intro paragraph ---- */
+.resume-intro p {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--color-text-muted);
+}
+
+/* ---- Horizontal rules ---- */
+hr {
+  border: none !important;
+  height: 1px !important;
+  background: var(--color-border) !important;
+  opacity: 1 !important;
+  margin: 1.5rem 0 !important;
+}
+
+/* ---- Item titles (job/project titles) ---- */
+.item-title {
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  color: var(--color-primary);
+}
+
+.item-meta {
+  font-size: 0.85rem;
+  color: var(--color-text-muted) !important;
+  font-weight: 500;
+}
+
+/* ---- Lists ---- */
+.resume-list li,
+.resume-education-list li,
+.resume-skills-list li,
+.resume-lang-list li {
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: var(--color-text);
+}
+
+.resume-list li {
+  margin-bottom: 0.5rem;
+  padding-left: 0.25rem;
+}
+
+.resume-list li::marker {
+  color: var(--color-accent);
+}
+
+/* ---- Sidebar ---- */
+.resume-aside {
+  background: var(--color-section-bg);
+  border-radius: var(--radius);
+  padding: 1.5rem !important;
+  margin-top: 1rem;
+}
+
+@media (min-width: 992px) {
+  .resume-aside {
+    margin-top: 0;
+  }
+}
+
+.resume-aside .item-title,
+.resume-aside h4 {
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+  color: var(--color-primary);
+  margin-bottom: 0.4rem;
+}
+
+.resume-aside .resume-degree {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.resume-aside .text-muted {
+  color: var(--color-text-muted) !important;
+  font-size: 0.88rem;
+}
+
+/* ---- Work/research sections ---- */
+.work-section .item {
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.work-section .item:hover {
+  background: var(--color-section-bg);
+  border-color: var(--color-border);
+}
+
+/* ---- Footer social links ---- */
+.resume-social-list a {
+  color: var(--color-text-muted) !important;
+  transition: color var(--transition), transform var(--transition);
+  display: inline-flex;
+  align-items: center;
+}
+
+.resume-social-list a:hover {
+  color: var(--color-accent) !important;
+  transform: translateY(-2px);
+}
+
+.resume-social-list i {
+  font-size: 1.4rem;
+}
+
+/* ---- Page footer ---- */
+.footer {
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+}
+
+.footer .fa-heart {
+  color: var(--color-accent);
+}
+
+/* ---- Fade-in animation ---- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.resume-wrapper {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.resume-header,
+.resume-intro,
+.work-section,
+.education-section,
+.skills-section {
+  animation: fadeInUp 0.5s ease-out both;
+}
+
+.resume-intro { animation-delay: 0.1s; }
+.work-section:nth-child(1) { animation-delay: 0.15s; }
+.work-section:nth-child(2) { animation-delay: 0.2s; }
+.work-section:nth-child(3) { animation-delay: 0.25s; }
+.education-section { animation-delay: 0.15s; }
+.skills-section { animation-delay: 0.2s; }
+
+/* ---- Selection color ---- */
+::selection {
+  background: var(--color-accent-light);
+  color: var(--color-primary);
+}
+
+/* ---- Publication links ---- */
+.resume-list a {
+  font-weight: 500;
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  transition: background var(--transition), color var(--transition);
+}
+
+.resume-list a:hover {
+  background: var(--color-accent);
+  color: #fff;
+  opacity: 1;
+}
+
+/* ---- Responsive tweaks ---- */
+@media (max-width: 767px) {
+  .resume-wrapper {
+    padding: 1.5rem !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border: none;
+  }
+
+  .resume-name {
+    font-size: 1.6rem !important;
+  }
+
+  .resume-aside {
+    border-radius: 8px;
+  }
+}
