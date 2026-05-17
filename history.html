@@ -128,26 +128,31 @@
   <div class="event-tooltip" id="tooltip"></div>
 
   <script>
+    /* ── Initialization: restore persisted dark-mode and language preferences ── */
     if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
     if (localStorage.getItem('lang') === 'zh') { document.body.classList.add('zh'); document.documentElement.lang = 'zh'; }
     const isZh = document.body.classList.contains('zh');
     const isDark = document.body.classList.contains('dark-mode');
 
-    // Importance ranks (auto-assign if not set)
+    /* ── Importance ranking system ──
+       rank 1 = landmark events (always visible, largest dots)
+       rank 2 = notable events  (visible at zoom >= 0.6, medium dots)
+       rank 3 = minor events    (visible at zoom >= 1.2, smallest dots)
+       Auto-assigned by index pattern if not set in the data source. */
     EVENTS.forEach((e, i) => {
       if (!e.rank) {
-        if (i % 6 === 0) e.rank = 1;
-        else if (i % 3 === 0) e.rank = 2;
-        else e.rank = 3;
+        if (i % 6 === 0) e.rank = 1;       // every 6th -> landmark
+        else if (i % 3 === 0) e.rank = 2;   // every 3rd -> notable
+        else e.rank = 3;                     // rest -> minor
       }
-      if (!e.cont) e.cont = 'global';
+      if (!e.cont) e.cont = 'global'; // default continent to 'global' if unset
     });
-    EVENTS.sort((a, b) => a.year - b.year);
+    EVENTS.sort((a, b) => a.year - b.year); // chronological order
 
-    let activeContinent = 'all';
-    let activeEra = 'all';
+    let activeContinent = 'all'; // current continent filter selection
+    let activeEra = 'all';       // current era filter selection
 
-    // Era color palette
+    /* ── Era color palette: maps each era id to a hex color for path gradients and dots ── */
     const eraColors = {
       'early-civ': '#f4a261', 'classical': '#e76f51', 'early-medieval': '#e17055',
       'high-medieval': '#d63384', 'late-medieval': '#9b59b6', 'renaissance': '#6f42c1',
@@ -155,7 +160,7 @@
       'cold-war': '#2ecc71', 'info-age': '#06d6a0'
     };
 
-    // Build continent filter buttons
+    /* ── Continent filter buttons: one per continent, toggles activeContinent ── */
     const contFilters = document.getElementById('continentFilters');
     (typeof CONTINENTS !== 'undefined' ? CONTINENTS : [{ id:'all', en:'All', zh:'全部' }]).forEach(c => {
       const btn = document.createElement('button');
@@ -165,12 +170,12 @@
         activeContinent = c.id;
         contFilters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        particles = [];
+        particles = []; // reset particles so they re-seed to the new filtered path
       });
       contFilters.appendChild(btn);
     });
 
-    // Build era filter buttons
+    /* ── Era filter buttons: one per era from ERAS data, toggles activeEra ── */
     const eraFiltersEl = document.getElementById('eraFilters');
     ERAS.forEach(e => {
       const btn = document.createElement('button');
@@ -180,12 +185,12 @@
         activeEra = e.id;
         eraFiltersEl.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        particles = [];
+        particles = []; // reset particles for new path
       });
       eraFiltersEl.appendChild(btn);
     });
 
-    // Canvas
+    /* ── Canvas setup: size to viewport, scale for device pixel ratio (retina) ── */
     const canvas = document.getElementById('c');
     const ctx = canvas.getContext('2d');
     const tooltip = document.getElementById('tooltip');
@@ -195,32 +200,34 @@
       W = window.innerWidth; H = window.innerHeight;
       canvas.width = W * DPR; canvas.height = H * DPR;
       canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
-      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0); // scale context so drawing uses CSS pixels
     }
     resizeCanvas();
 
+    /* ── Pan/zoom state and interaction tracking ── */
     let zoom = 1, panX = 0, panY = 0;
     let dragging = false, dragStartX, dragStartY, dragPanX, dragPanY;
-    let dotPositions = [], hoveredIdx = -1;
-    let particles = [];
+    let dotPositions = [], hoveredIdx = -1; // screen-space dot positions for hit-testing
+    let particles = [];  // animated particles flowing along the timeline path
     let animFrame;
 
+    /* Filter events by continent/era, then by zoom-based rank threshold */
     function getVisibleEvents() {
       let evts = EVENTS;
       if (activeContinent !== 'all') evts = evts.filter(e => e.cont === activeContinent);
       if (activeEra !== 'all') evts = evts.filter(e => e.era === activeEra);
-      if (zoom < 0.6) return evts.filter(e => e.rank === 1);
-      if (zoom < 1.2) return evts.filter(e => e.rank <= 2);
-      return evts;
+      if (zoom < 0.6) return evts.filter(e => e.rank === 1);   // zoomed out: landmarks only
+      if (zoom < 1.2) return evts.filter(e => e.rank <= 2);     // mid zoom: rank 1+2
+      return evts;                                               // zoomed in: show all
     }
 
-    // Compute smooth snaking path points with organic curves
+    /* ── computePath: lay out events in a snaking left-right grid with sinusoidal wave offsets ── */
     function computePath(evts) {
       if (!evts.length) return [];
       const n = evts.length;
       const MARGIN_X = 100, MARGIN_TOP = 120;
       const usableW = W - MARGIN_X * 2;
-      const perRow = Math.max(4, Math.ceil(Math.sqrt(n * 1.5)));
+      const perRow = Math.max(4, Math.ceil(Math.sqrt(n * 1.5))); // items per row scales with count
       const rows = Math.ceil(n / perRow);
       const rowH = Math.max(80, (H - MARGIN_TOP - 60) / Math.max(rows, 1));
       const pts = [];
@@ -230,12 +237,12 @@
         const idxInRow = i % perRow;
         const itemsThisRow = Math.min(perRow, n - rowIdx * perRow);
         const t = itemsThisRow > 1 ? idxInRow / (itemsThisRow - 1) : 0.5;
-        const goRight = rowIdx % 2 === 0;
+        const goRight = rowIdx % 2 === 0; // alternate direction each row (snake pattern)
 
-        // Sinusoidal bends along each row
+        // Sinusoidal bends along each row for organic feel
         const wave1 = Math.sin(t * Math.PI * 2.5 + rowIdx * 1.3) * rowH * 0.12;
         const wave2 = Math.sin(t * Math.PI * 1.2) * rowH * 0.18;
-        const xJitter = Math.sin(i * 0.7) * 15;
+        const xJitter = Math.sin(i * 0.7) * 15; // subtle horizontal jitter per event
 
         const x = MARGIN_X + (goRight ? t : 1 - t) * usableW + xJitter;
         const y = MARGIN_TOP + rowIdx * rowH + wave1 + wave2;
@@ -244,20 +251,20 @@
       return pts;
     }
 
-    // Generate smooth bezier path between points
+    /* ── buildCurvePath: convert point array into quadratic bezier segments (2 per pair) ── */
     function buildCurvePath(pts) {
       if (pts.length < 2) return [];
       const segments = [];
       for (let i = 0; i < pts.length - 1; i++) {
         const p0 = pts[i], p1 = pts[i + 1];
-        const mx = (p0.x + p1.x) / 2, my = (p0.y + p1.y) / 2;
-        segments.push({ x0: p0.x, y0: p0.y, cx: p0.x, cy: my, x1: mx, y1: my });
-        segments.push({ x0: mx, y0: my, cx: p1.x, cy: my, x1: p1.x, y1: p1.y });
+        const mx = (p0.x + p1.x) / 2, my = (p0.y + p1.y) / 2; // midpoint for smooth join
+        segments.push({ x0: p0.x, y0: p0.y, cx: p0.x, cy: my, x1: mx, y1: my }); // first half
+        segments.push({ x0: mx, y0: my, cx: p1.x, cy: my, x1: p1.x, y1: p1.y }); // second half
       }
       return segments;
     }
 
-    // Get point along bezier at t
+    /* ── bezierPoint: evaluate a quadratic bezier segment at parameter t (0..1) ── */
     function bezierPoint(seg, t) {
       const u = 1 - t;
       return {
@@ -266,38 +273,40 @@
       };
     }
 
-    // Seed particles along path
+    /* ── seedParticles: create animated dots that flow along the timeline path ── */
     function seedParticles(segs) {
       particles = [];
-      const count = Math.min(60, segs.length * 2);
+      const count = Math.min(60, segs.length * 2); // cap at 60 for performance
       for (let i = 0; i < count; i++) {
         particles.push({
-          seg: Math.floor(Math.random() * segs.length),
-          t: Math.random(),
-          speed: 0.002 + Math.random() * 0.004,
+          seg: Math.floor(Math.random() * segs.length), // random starting segment
+          t: Math.random(),                              // random position within segment
+          speed: 0.002 + Math.random() * 0.004,          // vary travel speed
           size: 1 + Math.random() * 2,
           alpha: 0.3 + Math.random() * 0.5
         });
       }
     }
 
+    /* ── drawScene: main render function called every animation frame ── */
     function drawScene() {
       ctx.save();
       ctx.clearRect(0, 0, W, H);
-      ctx.translate(panX, panY);
-      ctx.scale(zoom, zoom);
+      ctx.translate(panX, panY); // apply pan offset
+      ctx.scale(zoom, zoom);     // apply zoom level
 
-      const evts = getVisibleEvents();
-      const pts = computePath(evts);
-      const segs = buildCurvePath(pts);
+      const evts = getVisibleEvents();    // filter events by continent/era/zoom
+      const pts = computePath(evts);       // compute layout positions
+      const segs = buildCurvePath(pts);    // generate bezier curve segments
 
+      // Cache screen-space positions for mouse/touch hit-testing
       dotPositions = pts.map((p, i) => ({
         screenX: p.x * zoom + panX, screenY: p.y * zoom + panY,
         idx: i, evt: p.evt, x: p.x, y: p.y
       }));
 
       if (segs.length > 0) {
-        // Glow layer
+        /* Drawing layer 1: soft glow underneath the entire path */
         ctx.save();
         ctx.shadowColor = 'rgba(225,112,85,0.15)';
         ctx.shadowBlur = 20 / zoom;
@@ -309,17 +318,17 @@
         ctx.stroke();
         ctx.restore();
 
-        // Draw gradient path segments
+        /* Drawing layer 2: era-colored gradient segments along the path */
         for (let i = 0; i < segs.length; i++) {
           const s = segs[i];
-          const evtIdx = Math.floor(i / 2);
+          const evtIdx = Math.floor(i / 2); // 2 segments per event pair
           const evt0 = pts[Math.min(evtIdx, pts.length - 1)].evt;
           const evt1 = pts[Math.min(evtIdx + 1, pts.length - 1)].evt;
-          const c0 = eraColors[evt0.era] || '#e17055';
-          const c1 = eraColors[evt1.era] || '#e17055';
+          const c0 = eraColors[evt0.era] || '#e17055'; // start color from era palette
+          const c1 = eraColors[evt1.era] || '#e17055'; // end color (smooth transition between eras)
 
           const grad = ctx.createLinearGradient(s.x0, s.y0, s.x1, s.y1);
-          grad.addColorStop(0, c0 + (isDark ? '30' : '25'));
+          grad.addColorStop(0, c0 + (isDark ? '30' : '25')); // semi-transparent for subtlety
           grad.addColorStop(1, c1 + (isDark ? '30' : '25'));
 
           ctx.beginPath();
@@ -330,10 +339,10 @@
           ctx.stroke();
         }
 
-        // Arrow at end
+        /* Drawing layer 3: directional arrow at the end of the timeline */
         const lastSeg = segs[segs.length - 1];
-        const endP = bezierPoint(lastSeg, 1);
-        const preP = bezierPoint(lastSeg, 0.8);
+        const endP = bezierPoint(lastSeg, 1);    // arrow tip position
+        const preP = bezierPoint(lastSeg, 0.8);  // slightly before tip, for angle calculation
         const angle = Math.atan2(endP.y - preP.y, endP.x - preP.x);
         const aSize = 10 / zoom;
         ctx.save();
@@ -351,16 +360,16 @@
         ctx.fill();
         ctx.restore();
 
-        // Particles
+        /* Drawing layer 4: animated particles flowing along the path */
         if (particles.length === 0 || !particles[0]._segCount || Math.abs(particles[0]._segCount - segs.length) > 2) {
-          seedParticles(segs);
+          seedParticles(segs); // re-seed when path changes (filter/zoom)
           particles.forEach(p => p._segCount = segs.length);
         }
         particles.forEach(p => {
-          if (p.seg >= segs.length) p.seg = 0;
+          if (p.seg >= segs.length) p.seg = 0; // wrap around if segment count changed
           const pt = bezierPoint(segs[p.seg], p.t);
           const evtI = Math.min(Math.floor(p.seg / 2), pts.length - 1);
-          const col = eraColors[pts[evtI].evt.era] || '#e17055';
+          const col = eraColors[pts[evtI].evt.era] || '#e17055'; // color matches local era
 
           ctx.beginPath();
           ctx.arc(pt.x, pt.y, p.size / zoom, 0, Math.PI * 2);
@@ -372,19 +381,19 @@
           ctx.globalAlpha = 1;
           ctx.shadowBlur = 0;
 
-          p.t += p.speed;
-          if (p.t >= 1) { p.t = 0; p.seg++; if (p.seg >= segs.length) p.seg = 0; }
+          p.t += p.speed; // advance particle along its segment
+          if (p.t >= 1) { p.t = 0; p.seg++; if (p.seg >= segs.length) p.seg = 0; } // advance to next segment or wrap
         });
       }
 
-      // Draw dots
+      /* Drawing layer 5: event dots with glow, highlight, and labels */
       pts.forEach((p, i) => {
-        const baseR = p.evt.rank === 1 ? 7 : p.evt.rank === 2 ? 5 : 3.5;
+        const baseR = p.evt.rank === 1 ? 7 : p.evt.rank === 2 ? 5 : 3.5; // dot size by rank
         const isHov = hoveredIdx === i;
-        const r = (isHov ? baseR * 1.5 : baseR) / zoom;
+        const r = (isHov ? baseR * 1.5 : baseR) / zoom; // enlarge on hover
         const col = eraColors[p.evt.era] || '#e17055';
 
-        // Pulse ring for hovered
+        // Pulse ring: visible only on hover for emphasis
         if (isHov) {
           ctx.beginPath();
           ctx.arc(p.x, p.y, r + 8 / zoom, 0, Math.PI * 2);
@@ -392,13 +401,13 @@
           ctx.fill();
         }
 
-        // Outer glow
+        // Outer glow ring around the dot
         ctx.beginPath();
         ctx.arc(p.x, p.y, r + 3 / zoom, 0, Math.PI * 2);
         ctx.fillStyle = col + (isHov ? '40' : '20');
         ctx.fill();
 
-        // Main dot
+        // Main filled dot with shadow bloom
         ctx.beginPath();
         ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
         ctx.fillStyle = col;
@@ -407,13 +416,13 @@
         ctx.fill();
         ctx.shadowBlur = 0;
 
-        // Inner highlight
+        // Inner white highlight for 3D-like appearance
         ctx.beginPath();
         ctx.arc(p.x, p.y, r * 0.4, 0, Math.PI * 2);
         ctx.fillStyle = isDark ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.9)';
         ctx.fill();
 
-        // Year label
+        // Year label above the dot
         const fontSize = Math.max(7, (p.evt.rank === 1 ? 10 : 8) / Math.max(zoom, 0.5));
         ctx.font = `700 ${fontSize}px Inter, sans-serif`;
         ctx.textAlign = 'center';
@@ -422,14 +431,14 @@
         const yearStr = p.evt.year < 0 ? Math.abs(p.evt.year) + ' BC' : p.evt.year + '';
         ctx.fillText(yearStr, p.x, p.y - r - 5 / zoom);
 
-        // Title
+        // Event title below the dot (hidden for low-rank events when zoomed out)
         if (zoom >= 0.7 || p.evt.rank === 1) {
           const tSize = Math.max(6.5, (p.evt.rank === 1 ? 9 : 7) / Math.max(zoom, 0.5));
           ctx.font = `500 ${tSize}px Inter, sans-serif`;
           ctx.textBaseline = 'top';
           ctx.fillStyle = isHov ? (isDark ? '#fff' : '#1d1d1f') : (isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.2)');
           const d = isZh ? p.evt.zh : p.evt.en;
-          const maxLen = Math.floor(24 / Math.max(zoom * 0.7, 0.35));
+          const maxLen = Math.floor(24 / Math.max(zoom * 0.7, 0.35)); // truncate long titles at zoom
           const title = d.title.length > maxLen ? d.title.slice(0, maxLen - 1) + '…' : d.title;
           ctx.fillText(title, p.x, p.y + r + 5 / zoom);
         }
@@ -439,22 +448,25 @@
       document.getElementById('eventCount').textContent = evts.length + (isZh ? ' 个事件' : ' events');
     }
 
+    /* ── Animation loop: updateZoom lerps toward target, then redraws at ~60fps ── */
     function animate() {
+      updateZoom();
       drawScene();
       animFrame = requestAnimationFrame(animate);
     }
 
-    // Mouse events
+    /* ── Mouse interaction: drag to pan, hover dots for tooltip ── */
     canvas.addEventListener('mousedown', e => {
       dragging = true; dragStartX = e.clientX; dragStartY = e.clientY; dragPanX = panX; dragPanY = panY;
     });
     canvas.addEventListener('mousemove', e => {
       if (dragging) {
-        panX = dragPanX + (e.clientX - dragStartX);
+        panX = dragPanX + (e.clientX - dragStartX); // drag-to-pan: offset by mouse delta
         panY = dragPanY + (e.clientY - dragStartY);
         tooltip.classList.remove('show');
         return;
       }
+      // Hit-test: find the nearest dot within 20px radius
       let found = -1;
       for (const dp of dotPositions) {
         if (Math.sqrt((e.clientX - dp.screenX) ** 2 + (e.clientY - dp.screenY) ** 2) < 20) { found = dp.idx; break; }
@@ -462,12 +474,13 @@
       if (found !== hoveredIdx) {
         hoveredIdx = found;
         if (found >= 0) {
+          // Build tooltip HTML with year, title, description, era, and Wikipedia link
           const ev = dotPositions[found].evt;
           const d = isZh ? ev.zh : ev.en;
           const yearStr = ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year + '';
           const eraObj = ERAS.find(er => er.id === ev.era);
           const eraName = eraObj ? (isZh ? eraObj.zh : eraObj.en) : '';
-          const wikiBase = isZh ? 'https://zh.wikipedia.org/wiki/' : 'https://en.wikipedia.org/wiki/';
+          const wikiBase = isZh ? 'https://zh.wikipedia.org/wiki/' : 'https://en.wikipedia.org/wiki/'; // localized Wikipedia
           const wikiLink = ev.wiki ? `<a class="tt-wiki" href="${wikiBase}${ev.wiki}" target="_blank" rel="noopener">${isZh ? '在维基百科了解更多 →' : 'Learn more on Wikipedia →'}</a>` : '';
           tooltip.innerHTML = `<div class="tt-year">${yearStr}</div><div class="tt-title">${d.title}</div><p class="tt-desc">${d.desc}</p><div class="tt-era">${eraName}</div>${wikiLink}`;
           tooltip.classList.add('show');
@@ -477,35 +490,48 @@
           canvas.style.cursor = 'grab';
         }
       }
+      // Position tooltip near cursor, clamped to viewport edges
       if (found >= 0) {
         let tx = e.clientX + 16, ty = e.clientY - 80;
-        if (tx + 330 > W) tx = e.clientX - 340;
-        if (ty < 60) ty = e.clientY + 20;
-        if (ty + 200 > H) ty = H - 210;
+        if (tx + 330 > W) tx = e.clientX - 340;  // flip left if near right edge
+        if (ty < 60) ty = e.clientY + 20;         // push down if near top
+        if (ty + 200 > H) ty = H - 210;           // push up if near bottom
         tooltip.style.left = tx + 'px'; tooltip.style.top = ty + 'px';
       }
     });
     canvas.addEventListener('mouseup', () => dragging = false);
     canvas.addEventListener('mouseleave', () => { dragging = false; hoveredIdx = -1; tooltip.classList.remove('show'); });
 
-    // Zoom
-    function applyZoom(delta, cx, cy) {
-      const old = zoom;
-      zoom = Math.max(0.25, Math.min(5, zoom * (1 + delta)));
-      const s = zoom / old;
-      panX = cx - (cx - panX) * s; panY = cy - (cy - panY) * s;
-      particles = [];
-    }
-    canvas.addEventListener('wheel', e => { e.preventDefault(); applyZoom(e.deltaY > 0 ? -0.08 : 0.08, e.clientX, e.clientY); }, { passive: false });
-    document.getElementById('zoomIn').addEventListener('click', () => applyZoom(0.25, W/2, H/2));
-    document.getElementById('zoomOut').addEventListener('click', () => applyZoom(-0.25, W/2, H/2));
-    document.getElementById('zoomReset').addEventListener('click', () => { zoom = 1; panX = 0; panY = 0; particles = []; });
+    /* ── Smooth zoom via lerp ──
+       Scroll/button sets a targetZoom; each frame interpolates toward it. */
+    let targetZoom = zoom;
+    let zoomCX = W / 2, zoomCY = H / 2;
 
-    // Touch
-    let lastTouchDist = 0;
+    function applyZoom(delta, cx, cy) {
+      targetZoom = Math.max(0.25, Math.min(5, targetZoom * (1 + delta)));
+      zoomCX = cx; zoomCY = cy;
+    }
+    function updateZoom() {
+      if (Math.abs(zoom - targetZoom) < 0.0005) return;
+      const prevZoom = zoom;
+      zoom += (targetZoom - zoom) * 0.08;
+      const s = zoom / prevZoom;
+      panX = zoomCX - (zoomCX - panX) * s;
+      panY = zoomCY - (zoomCY - panY) * s;
+      if ((prevZoom < 0.6) !== (zoom < 0.6) || (prevZoom < 1.2) !== (zoom < 1.2)) particles = [];
+    }
+
+    canvas.addEventListener('wheel', e => { e.preventDefault(); applyZoom(e.deltaY > 0 ? -0.04 : 0.04, e.clientX, e.clientY); }, { passive: false });
+    document.getElementById('zoomIn').addEventListener('click', () => applyZoom(0.3, W/2, H/2));   // zoom in toward center
+    document.getElementById('zoomOut').addEventListener('click', () => applyZoom(-0.3, W/2, H/2));  // zoom out from center
+    document.getElementById('zoomReset').addEventListener('click', () => { targetZoom = 1; zoomCX = W/2; zoomCY = H/2; }); // reset to default view
+
+    /* ── Touch interaction: single-finger drag to pan, tap dot for tooltip, two-finger pinch to zoom ── */
+    let lastTouchDist = 0; // tracks previous pinch distance for delta calculation
     canvas.addEventListener('touchstart', e => {
       if (e.touches.length === 1) {
         dragging = true; dragStartX = e.touches[0].clientX; dragStartY = e.touches[0].clientY; dragPanX = panX; dragPanY = panY;
+        // Hit-test for tap on a dot (24px touch radius, slightly larger than mouse)
         for (const dp of dotPositions) {
           if (Math.sqrt((e.touches[0].clientX - dp.screenX)**2 + (e.touches[0].clientY - dp.screenY)**2) < 24) {
             const ev = dp.evt, d = isZh ? ev.zh : ev.en;
@@ -523,16 +549,18 @@
         tooltip.classList.remove('show'); hoveredIdx = -1;
       }
       if (e.touches.length === 2) {
+        // Record initial pinch distance for pinch-to-zoom
         const dx = e.touches[0].clientX-e.touches[1].clientX, dy = e.touches[0].clientY-e.touches[1].clientY;
         lastTouchDist = Math.sqrt(dx*dx+dy*dy);
       }
     }, { passive: false });
     canvas.addEventListener('touchmove', e => {
       if (e.touches.length === 1 && dragging) {
-        panX = dragPanX+(e.touches[0].clientX-dragStartX); panY = dragPanY+(e.touches[0].clientY-dragStartY);
+        panX = dragPanX+(e.touches[0].clientX-dragStartX); panY = dragPanY+(e.touches[0].clientY-dragStartY); // single-finger pan
         tooltip.classList.remove('show'); e.preventDefault();
       }
       if (e.touches.length === 2) {
+        // Pinch-to-zoom: compute distance delta and zoom toward midpoint
         const dx = e.touches[0].clientX-e.touches[1].clientX, dy = e.touches[0].clientY-e.touches[1].clientY;
         const dist = Math.sqrt(dx*dx+dy*dy);
         if (lastTouchDist > 0) {
@@ -544,7 +572,7 @@
     }, { passive: false });
     canvas.addEventListener('touchend', () => { dragging = false; lastTouchDist = 0; });
 
-    window.addEventListener('resize', () => { resizeCanvas(); particles = []; });
+    window.addEventListener('resize', () => { resizeCanvas(); particles = []; }); // re-layout on window resize
 
     // Wrap animate in try-catch so errors are visible
     try {
