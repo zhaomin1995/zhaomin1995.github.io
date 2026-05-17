@@ -87,32 +87,60 @@ def reverse_geocode(lat, lng):
 # ── Firebase Realtime Database: read/write cache ──
 
 def fb_load_cache():
-    """GET cache from Firebase Realtime Database."""
+    """GET cache from Firebase, fall back to local file."""
+    # Try Firebase first
     try:
         result = subprocess.run(
             ['curl', '-s', f'{FB_DB_URL}/travel-cache.json'],
             capture_output=True, text=True, timeout=10)
         data = json.loads(result.stdout)
-        if data and isinstance(data, dict):
+        if data and isinstance(data, dict) and 'photos' in data:
             print(f"  ☁ Loaded cache from Firebase ({len(data.get('photos', {}))} photos)")
             return data
     except Exception as e:
         print(f"  ☁ Firebase cache load failed: {e}")
+
+    # Fall back to local cache
+    if os.path.exists('.travel-cache.json'):
+        try:
+            with open('.travel-cache.json') as f:
+                data = json.load(f)
+            if data and isinstance(data, dict):
+                print(f"  📁 Loaded local cache ({len(data.get('photos', {}))} photos)")
+                return data
+        except:
+            pass
+
+    print(f"  ☁ No cache found, starting fresh")
     return {'photos': {}, 'geocode': {}}
 
 def fb_save_cache(cache):
-    """PUT cache to Firebase Realtime Database."""
+    """PUT cache to Firebase Realtime Database via temp file."""
     try:
-        payload = json.dumps(cache)
+        tmp = '/tmp/travel-cache-upload.json'
+        with open(tmp, 'w') as f:
+            json.dump(cache, f)
         result = subprocess.run(
             ['curl', '-s', '-X', 'PUT',
              '-H', 'Content-Type: application/json',
-             '-d', payload,
+             '--data-binary', f'@{tmp}',
              f'{FB_DB_URL}/travel-cache.json'],
-            capture_output=True, text=True, timeout=15)
-        print(f"  ☁ Saved cache to Firebase")
+            capture_output=True, text=True, timeout=30)
+        os.remove(tmp)
+        # Verify the write succeeded
+        resp = result.stdout.strip()
+        if resp and not resp.startswith('{\"error\"'):
+            print(f"  ☁ Saved cache to Firebase ({len(resp)} bytes)")
+        else:
+            print(f"  ☁ Firebase save may have failed: {resp[:100]}")
+            # Fall back to local cache
+            with open('.travel-cache.json', 'w') as f:
+                json.dump(cache, f)
+            print(f"  ☁ Saved local fallback cache")
     except Exception as e:
         print(f"  ☁ Firebase cache save failed: {e}")
+        with open('.travel-cache.json', 'w') as f:
+            json.dump(cache, f)
 
 # ── Firebase Storage: upload photos ──
 
