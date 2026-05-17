@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script defer src="assets/fontawesome/js/all.min.js"></script>
   <link rel="stylesheet" href="assets/css/apple.css">
-  <link href="img/UNT.png" rel="shortcut icon">
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
 </head>
 
 <body>
@@ -19,11 +19,17 @@
     <div class="nav-inner">
       <a href="#hero" class="nav-name">ZX</a>
       <div class="nav-links">
-        <a href="#about">About</a>
-        <a href="#news">News</a>
-        <a href="#publications">Publications</a>
-        <a href="#experience">Experience</a>
-        <a href="#research">Research</a>
+        <a href="#about"><span class="lang-en">About</span><span class="lang-zh">关于</span></a>
+        <a href="#news"><span class="lang-en">News</span><span class="lang-zh">动态</span></a>
+        <a href="#experience"><span class="lang-en">Experience</span><span class="lang-zh">经历</span></a>
+        <a href="#misc"><span class="lang-en">Misc</span><span class="lang-zh">其他</span></a>
+        <button class="lang-toggle" id="langToggle" title="Switch language">
+          <span class="lang-en">中</span><span class="lang-zh">EN</span>
+        </button>
+        <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">
+          <i class="fas fa-moon"></i>
+          <i class="fas fa-sun"></i>
+        </button>
       </div>
     </div>
   </nav>
@@ -32,8 +38,8 @@
   <section id="hero" class="section section-hero">
     <div class="hero-content">
       <img src="img/zhaomin_photo.jpeg" alt="Zhaomin Xiao" class="hero-photo">
-      <h1 class="hero-name">Zhaomin Xiao</h1>
-      <p class="hero-tagline">Learn new things and build cool stuff</p>
+      <h1 class="hero-name"><span class="lang-en">Zhaomin Xiao</span><span class="lang-zh">肖昭民</span></h1>
+      <p class="hero-tagline"><span class="lang-en">Learn new things and build cool stuff</span><span class="lang-zh">学习新事物，创造酷东西</span></p>
       <div class="hero-icons">
         <a href="mailto:zhaominxiao@my.unt.edu" title="Email"><i class="fas fa-envelope"></i></a>
         <a href="zhaomin_cv.pdf" title="CV"><i class="fas fa-file-alt"></i></a>
@@ -48,24 +54,38 @@
   <!-- About -->
   <section id="about" class="section section-light">
     <div class="container">
-      <h2 class="section-title">About</h2>
+      <h2 class="section-title"><span class="lang-en">About</span><span class="lang-zh">关于我</span></h2>
       <div class="about-text">
-        <p>
-          I am an eighth-year Ph.D. student of <a href="http://hilt.cse.unt.edu/">HiLT lab</a>,
-          <a href="https://engineering.unt.edu/">College of Engineering</a>,
-          <a href="https://www.unt.edu/">University of North Texas</a>, supervised by
-          <a href="https://eduardoblanco.github.io/">Dr. Eduardo Blanco</a>
-          and <a href="http://www.cse.unt.edu/~huangyan/">Dr. Yan Huang</a>.
-          Before entering UNT, I obtained my master degree in Information Science
-          and bachelor degree in Mathematics and Applied Mathematics,
-          from the <a href="https://www.pitt.edu/">University of Pittsburgh</a> and
-          <a href="https://en.szu.edu.cn/">Shenzhen University</a>, respectively.
-        </p>
-        <p>
-          My research interests include natural language processing and deep learning.
-          Specifically, I am currently working on the project of mining spatio-temporal knowledge from social
-          media. Besides the research, I am also interested in working out in gym and travelling.
-        </p>
+        <div class="lang-en">
+          <p>
+            I am an eighth-year Ph.D. student of
+            <a href="https://www.unt.edu/">University of North Texas</a>, supervised by
+            <a href="https://eduardoblanco.github.io/">Dr. Eduardo Blanco</a>
+            and <a href="http://www.cse.unt.edu/~huangyan/">Dr. Yan Huang</a>.
+            Before entering UNT, I obtained my master degree in Information Science
+            and bachelor degree in Mathematics and Applied Mathematics,
+            from the <a href="https://www.pitt.edu/">University of Pittsburgh</a> and
+            <a href="https://en.szu.edu.cn/">Shenzhen University</a>, respectively.
+          </p>
+          <p>
+            My research interests include natural language processing and deep learning.
+            Specifically, I am currently working on the project of mining spatio-temporal knowledge from social
+            media. Besides the research, I am also interested in working out in gym and travelling.
+          </p>
+        </div>
+        <div class="lang-zh">
+          <p>
+            我是<a href="https://www.unt.edu/">北德克萨斯大学</a>计算机科学专业的博士生，
+            导师为 <a href="https://eduardoblanco.github.io/">Dr. Eduardo Blanco</a>
+            和 <a href="http://www.cse.unt.edu/~huangyan/">Dr. Yan Huang</a>。
+            在此之前，我分别在<a href="https://www.pitt.edu/">匹兹堡大学</a>获得信息科学硕士学位，
+            在<a href="https://en.szu.edu.cn/">深圳大学</a>获得数学与应用数学学士学位。
+          </p>
+          <p>
+            我的研究方向包括自然语言处理和深度学习。目前主要从事从社交媒体中挖掘时空知识的研究。
+            除了科研之外，我还喜欢健身和旅行。
+          </p>
+        </div>
       </div>
     </div>
   </section>
@@ -73,102 +93,100 @@
   <!-- News -->
   <section id="news" class="section section-dark">
     <div class="container">
-      <h2 class="section-title">News</h2>
+      <h2 class="section-title"><span class="lang-en">News</span><span class="lang-zh">动态</span></h2>
       <div class="timeline">
         <div class="timeline-item fade-in">
           <span class="timeline-date">May 2024</span>
-          <span class="timeline-text">One paper was accepted by LREC-COLING 2024!</span>
+          <span class="timeline-text">
+            <span class="lang-en">One paper was accepted by</span>
+            <span class="lang-zh">一篇论文被</span>
+            <span class="pub-hover-wrap">
+              <span class="pub-hover-trigger">LREC-COLING 2024</span>
+              <span class="pub-hover-card">
+                <strong class="pub-hover-title">Context Helps Determine Spatial Knowledge from Tweets</strong>
+                <span class="pub-hover-authors">Zhaomin Xiao, Yan Huang, and Eduardo Blanco</span>
+                <span class="pub-hover-links">
+                  <a href="https://aclanthology.org/2024.lrec-main.85.pdf">Paper</a>
+                  <a href="https://aclanthology.org/2024.lrec-main.85.bib">BibTeX</a>
+                </span>
+              </span>
+            </span><span class="lang-en">!</span><span class="lang-zh">录用！</span>
+          </span>
         </div>
         <div class="timeline-item fade-in">
           <span class="timeline-date">Jan 2024</span>
-          <span class="timeline-text">I joined Meta as a Research Scientist!</span>
+          <span class="timeline-text"><span class="lang-en">I joined Meta as a Research Scientist!</span><span class="lang-zh">我加入 Meta 担任研究科学家！</span></span>
         </div>
         <div class="timeline-item fade-in">
           <span class="timeline-date">Sep 2023</span>
-          <span class="timeline-text">One paper was accepted by Findings of AACL 2023!</span>
+          <span class="timeline-text">
+            <span class="lang-en">One paper was accepted by</span>
+            <span class="lang-zh">一篇论文被</span>
+            <span class="pub-hover-wrap">
+              <span class="pub-hover-trigger">Findings of AACL 2023</span>
+              <span class="pub-hover-card">
+                <strong class="pub-hover-title">Context Helps Determine Spatial Knowledge from Tweets</strong>
+                <span class="pub-hover-authors">Zhaomin Xiao, Yan Huang, and Eduardo Blanco</span>
+                <span class="pub-hover-links">
+                  <a href="https://aclanthology.org/2023.findings-ijcnlp.13.pdf">Paper</a>
+                  <a href="https://aclanthology.org/2023.findings-ijcnlp.13.bib">BibTeX</a>
+                  <a href="https://github.com/zhaomin1995/aacl2023_repo">Code & Corpus</a>
+                  <a href="files/posters/aacl_2023_poster.pdf">Poster</a>
+                </span>
+              </span>
+            </span><span class="lang-en">!</span><span class="lang-zh">录用！</span>
+          </span>
         </div>
         <div class="timeline-item fade-in">
           <span class="timeline-date">Aug 2022</span>
-          <span class="timeline-text">One paper was accepted by COLING 2022! My first conference paper!</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Publications -->
-  <section id="publications" class="section section-light">
-    <div class="container">
-      <h2 class="section-title">Publications</h2>
-
-      <div class="pub-card fade-in">
-        <div class="pub-venue-tag">LREC-COLING 2024</div>
-        <h3 class="pub-title">Context Helps Determine Spatial Knowledge from Tweets</h3>
-        <p class="pub-authors"><strong>Zhaomin Xiao</strong>, Yan Huang, and Eduardo Blanco</p>
-        <div class="pub-links">
-          <a href="https://aclanthology.org/2024.lrec-main.85.pdf">Paper</a>
-          <a href="https://aclanthology.org/2024.lrec-main.85.bib">BibTeX</a>
-        </div>
-      </div>
-
-      <div class="pub-card fade-in">
-        <div class="pub-venue-tag">Findings of AACL 2023</div>
-        <h3 class="pub-title">Context Helps Determine Spatial Knowledge from Tweets</h3>
-        <p class="pub-authors"><strong>Zhaomin Xiao</strong>, Yan Huang, and Eduardo Blanco</p>
-        <div class="pub-links">
-          <a href="https://aclanthology.org/2023.findings-ijcnlp.13.pdf">Paper</a>
-          <a href="https://aclanthology.org/2023.findings-ijcnlp.13.bib">BibTeX</a>
-          <a href="https://github.com/zhaomin1995/aacl2023_repo">Code & Corpus</a>
-          <a href="files/posters/aacl_2023_poster.pdf">Poster</a>
-        </div>
-      </div>
-
-      <div class="pub-card fade-in">
-        <div class="pub-venue-tag">COLING 2022</div>
-        <h3 class="pub-title">Are People Located in the Places They Mention in Their Tweets? A Multimodal Approach</h3>
-        <p class="pub-authors"><strong>Zhaomin Xiao</strong> and Eduardo Blanco</p>
-        <div class="pub-links">
-          <a href="https://aclanthology.org/2022.coling-1.226.pdf">Paper</a>
-          <a href="https://aclanthology.org/2022.coling-1.226.bib">BibTeX</a>
-          <a href="https://github.com/zhaomin1995/coling2022_repo">Code & Corpus</a>
-          <a href="files/posters/coling_2022_poster.pdf">Poster</a>
+          <span class="timeline-text">
+            <span class="lang-en">One paper was accepted by</span>
+            <span class="lang-zh">一篇论文被</span>
+            <span class="pub-hover-wrap">
+              <span class="pub-hover-trigger">COLING 2022</span>
+              <span class="pub-hover-card">
+                <strong class="pub-hover-title">Are People Located in the Places They Mention in Their Tweets? A Multimodal Approach</strong>
+                <span class="pub-hover-authors">Zhaomin Xiao and Eduardo Blanco</span>
+                <span class="pub-hover-links">
+                  <a href="https://aclanthology.org/2022.coling-1.226.pdf">Paper</a>
+                  <a href="https://aclanthology.org/2022.coling-1.226.bib">BibTeX</a>
+                  <a href="https://github.com/zhaomin1995/coling2022_repo">Code & Corpus</a>
+                  <a href="files/posters/coling_2022_poster.pdf">Poster</a>
+                </span>
+              </span>
+            </span><span class="lang-en">! My first conference paper!</span><span class="lang-zh">录用！我的第一篇会议论文！</span>
+          </span>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Experience -->
-  <section id="experience" class="section section-dark">
+  <section id="experience" class="section section-light">
     <div class="container">
-      <h2 class="section-title">Experience</h2>
+      <h2 class="section-title"><span class="lang-en">Experience</span><span class="lang-zh">经历</span></h2>
 
       <div class="exp-card fade-in">
         <div class="exp-header">
-          <h3 class="exp-title">Privacy-Preserving Machine Learning with Signal Loss</h3>
+          <h3 class="exp-title"><span class="lang-en">Privacy-Preserving Machine Learning with Signal Loss</span><span class="lang-zh">信号缺失下的隐私保护机器学习</span></h3>
           <span class="exp-meta">Meta &middot; May 2022 – Aug 2022</span>
         </div>
         <ul class="exp-list">
-          <li>Built privacy-preserving logistic regression model to predict user's action with signal loss.</li>
-          <li>Collaborated with the research team and product team to develop the first version of the prototype.</li>
-          <li>Conducted extensive experiments to search for the best parameter setting.</li>
+          <li><span class="lang-en">Built privacy-preserving logistic regression model to predict user's action with signal loss.</span><span class="lang-zh">构建了隐私保护的逻辑回归模型，在信号缺失的情况下预测用户行为。</span></li>
+          <li><span class="lang-en">Collaborated with the research team and product team to develop the first version of the prototype.</span><span class="lang-zh">与研究团队和产品团队合作开发了原型的第一个版本。</span></li>
+          <li><span class="lang-en">Conducted extensive experiments to search for the best parameter setting.</span><span class="lang-zh">进行了大量实验以寻找最佳参数设置。</span></li>
         </ul>
       </div>
-    </div>
-  </section>
-
-  <!-- Research -->
-  <section id="research" class="section section-light">
-    <div class="container">
-      <h2 class="section-title">Research</h2>
 
       <div class="exp-card fade-in">
         <div class="exp-header">
-          <h3 class="exp-title">Spatio-Temporal Information Extraction</h3>
+          <h3 class="exp-title"><span class="lang-en">Spatio-Temporal Information Extraction</span><span class="lang-zh">时空信息抽取</span></h3>
           <span class="exp-meta">UNT &middot; Aug 2019 – Feb 2023</span>
         </div>
         <ul class="exp-list">
-          <li>Propose new tasks of determining if Twitter users are located in the mentioned location and how long they will stay at the geotagged location.</li>
-          <li>Create multiple corpora with quality guaranteed by filtering out bad annotators and unreliable annotations. Design interfaces to collect annotations on Amazon Mechanical Turk.</li>
-          <li>Build multimodal and context-aware neural networks to tackle these problems. Experimental results show that both text and image are essential, and incorporating temporal commonsense is beneficial.</li>
+          <li><span class="lang-en">Propose new tasks of determining if Twitter users are located in the mentioned location and how long they will stay at the geotagged location.</span><span class="lang-zh">提出了判断 Twitter 用户是否位于所提及地点以及将在地理标记位置停留多长时间的新任务。</span></li>
+          <li><span class="lang-en">Create multiple corpora with quality guaranteed by filtering out bad annotators and unreliable annotations. Design interfaces to collect annotations on Amazon Mechanical Turk.</span><span class="lang-zh">通过过滤不合格的标注者和不可靠的标注来创建高质量语料库，并设计 Amazon Mechanical Turk 上的标注界面。</span></li>
+          <li><span class="lang-en">Build multimodal and context-aware neural networks to tackle these problems. Experimental results show that both text and image are essential, and incorporating temporal commonsense is beneficial.</span><span class="lang-zh">构建多模态和上下文感知的神经网络来解决这些问题。实验结果表明文本和图像都不可或缺，且融入时间常识知识是有益的。</span></li>
         </ul>
       </div>
     </div>
@@ -180,28 +198,28 @@
       <div class="two-col">
 
         <div class="col-block">
-          <h2 class="section-title-sm">Education</h2>
+          <h2 class="section-title-sm"><span class="lang-en">Education</span><span class="lang-zh">教育</span></h2>
           <div class="edu-item fade-in">
-            <div class="edu-degree">PhD in Computer Science</div>
-            <div class="edu-school">University of North Texas</div>
-            <div class="edu-year">2019 – 2027 (expected)</div>
+            <div class="edu-degree"><span class="lang-en">PhD in Computer Science</span><span class="lang-zh">计算机科学博士</span></div>
+            <div class="edu-school"><span class="lang-en">University of North Texas</span><span class="lang-zh">北德克萨斯大学</span></div>
+            <div class="edu-year"><span class="lang-en">2019 – 2027 (expected)</span><span class="lang-zh">2019 – 2027（预计）</span></div>
           </div>
           <div class="edu-item fade-in">
-            <div class="edu-degree">MS in Information Science</div>
-            <div class="edu-school">University of Pittsburgh</div>
+            <div class="edu-degree"><span class="lang-en">MS in Information Science</span><span class="lang-zh">信息科学硕士</span></div>
+            <div class="edu-school"><span class="lang-en">University of Pittsburgh</span><span class="lang-zh">匹兹堡大学</span></div>
             <div class="edu-year">2019</div>
           </div>
           <div class="edu-item fade-in">
-            <div class="edu-degree">BS in Maths and Applied Maths</div>
-            <div class="edu-school">Shenzhen University</div>
+            <div class="edu-degree"><span class="lang-en">BS in Maths and Applied Maths</span><span class="lang-zh">数学与应用数学学士</span></div>
+            <div class="edu-school"><span class="lang-en">Shenzhen University</span><span class="lang-zh">深圳大学</span></div>
             <div class="edu-year">2017</div>
           </div>
         </div>
 
         <div class="col-block">
-          <h2 class="section-title-sm">Skills</h2>
+          <h2 class="section-title-sm"><span class="lang-en">Skills</span><span class="lang-zh">技能</span></h2>
           <div class="skills-group fade-in">
-            <h4 class="skills-label">Languages</h4>
+            <h4 class="skills-label"><span class="lang-en">Languages</span><span class="lang-zh">编程语言</span></h4>
             <div class="skill-pills">
               <span class="skill-pill">Python</span>
               <span class="skill-pill">Java</span>
@@ -214,7 +232,7 @@
             </div>
           </div>
           <div class="skills-group fade-in">
-            <h4 class="skills-label">Tools</h4>
+            <h4 class="skills-label"><span class="lang-en">Tools</span><span class="lang-zh">工具</span></h4>
             <div class="skill-pills">
               <span class="skill-pill">PyTorch</span>
               <span class="skill-pill">TensorFlow</span>
@@ -226,7 +244,7 @@
             </div>
           </div>
           <div class="skills-group fade-in">
-            <h4 class="skills-label">Models</h4>
+            <h4 class="skills-label"><span class="lang-en">Models</span><span class="lang-zh">模型</span></h4>
             <div class="skill-pills">
               <span class="skill-pill">GPT-3.5</span>
               <span class="skill-pill">LLaMA 3</span>
@@ -246,26 +264,41 @@
     </div>
   </section>
 
-  <!-- Services -->
-  <section class="section section-light">
+  <!-- Miscellaneous -->
+  <section id="misc" class="section section-light">
     <div class="container">
-      <h2 class="section-title">Services</h2>
-      <div class="services-list fade-in">
-        <span class="service-item">Reviewer: LREC 2022</span>
-        <span class="service-item">Reviewer: EMNLP 2023</span>
+      <h2 class="section-title"><span class="lang-en">Miscellaneous</span><span class="lang-zh">其他</span></h2>
+      <div class="misc-grid fade-in">
+        <div class="misc-card">
+          <i class="fas fa-plane-departure misc-icon"></i>
+          <h3 class="misc-label"><span class="lang-en">Travel</span><span class="lang-zh">旅行</span></h3>
+          <p class="misc-desc"><span class="lang-en">Love exploring new cities and cultures. Always planning the next trip.</span><span class="lang-zh">热爱探索新的城市和文化，总在计划下一次旅行。</span></p>
+        </div>
+        <div class="misc-card">
+          <i class="fas fa-paw misc-icon"></i>
+          <h3 class="misc-label"><span class="lang-en">Pets</span><span class="lang-zh">宠物</span></h3>
+          <p class="misc-desc"><span class="lang-en">A proud pet parent. Animals make everything better.</span><span class="lang-zh">一个自豪的宠物主人。动物让一切变得更美好。</span></p>
+        </div>
+        <div class="misc-card">
+          <i class="fas fa-book-open misc-icon"></i>
+          <h3 class="misc-label"><span class="lang-en">Reading</span><span class="lang-zh">阅读</span></h3>
+          <p class="misc-desc"><span class="lang-en">Enjoy diving into books across genres, from fiction to science.</span><span class="lang-zh">喜欢阅读各类书籍，从小说到科学，涉猎广泛。</span></p>
+        </div>
+        <div class="misc-card">
+          <i class="fas fa-landmark misc-icon"></i>
+          <h3 class="misc-label"><span class="lang-en">History</span><span class="lang-zh">历史</span></h3>
+          <p class="misc-desc"><span class="lang-en">Fascinated by how the past shapes the present. A history enthusiast.</span><span class="lang-zh">着迷于历史如何塑造当下，一个历史爱好者。</span></p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Languages -->
-  <section class="section section-dark section-compact">
-    <div class="container">
-      <div class="lang-row fade-in">
-        <span class="lang-item">English <span class="lang-level">Professional</span></span>
-        <span class="lang-item">Mandarin <span class="lang-level">Native</span></span>
-      </div>
-    </div>
-  </section>
+  <!-- Back to Top -->
+  <button class="scroll-top" id="goTopBtn" aria-label="Scroll to top" style="opacity:1;pointer-events:auto;transform:none;">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+      <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
 
   <script>
     const observer = new IntersectionObserver((entries) => {
@@ -282,6 +315,56 @@
     const nav = document.querySelector('.nav');
     window.addEventListener('scroll', () => {
       nav.classList.toggle('nav-scrolled', window.scrollY > 40);
+    });
+
+    // Scroll to top button
+    const scrollTopBtn = document.getElementById('goTopBtn');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        scrollTopBtn.classList.add('visible');
+      } else {
+        scrollTopBtn.classList.remove('visible');
+      }
+    });
+    scrollTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Publication hover/tap toggle
+    document.querySelectorAll('.pub-hover-trigger').forEach(trigger => {
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const wrap = trigger.closest('.pub-hover-wrap');
+        const wasActive = wrap.classList.contains('active');
+        document.querySelectorAll('.pub-hover-wrap.active').forEach(w => w.classList.remove('active'));
+        if (!wasActive) wrap.classList.add('active');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.pub-hover-wrap.active').forEach(w => w.classList.remove('active'));
+    });
+
+    // Dark mode toggle
+    const themeToggle = document.getElementById('themeToggle');
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark-mode');
+    }
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    });
+
+    // Language toggle
+    const langToggle = document.getElementById('langToggle');
+    if (localStorage.getItem('lang') === 'zh') {
+      document.body.classList.add('zh');
+      document.documentElement.lang = 'zh';
+    }
+    langToggle.addEventListener('click', () => {
+      document.body.classList.toggle('zh');
+      const isZh = document.body.classList.contains('zh');
+      document.documentElement.lang = isZh ? 'zh' : 'en';
+      localStorage.setItem('lang', isZh ? 'zh' : 'en');
     });
   </script>
 
