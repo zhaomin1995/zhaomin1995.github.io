@@ -240,13 +240,81 @@
     let fontSize = 0.92;
     let isTwoPage = window.innerWidth > 800;
 
-    /* ── Convert Gutenberg URL to plain text URL ── */
+    /* ── Convert book source URL to a fetchable text URL ── */
     function getTextUrl(pdfUrl) {
       const match = pdfUrl.match(/gutenberg\.org\/ebooks\/(\d+)/);
       if (match) {
         return `https://www.gutenberg.org/cache/epub/${match[1]}/pg${match[1]}.txt`;
       }
+      // MIT Classics HTML pages
+      if (pdfUrl.includes('classics.mit.edu')) return pdfUrl;
       return null;
+    }
+
+    /* ── CORS proxy list (try in order, fall back if one fails) ── */
+    const CORS_PROXIES = [
+      url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+      url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    ];
+
+    /* ── IndexedDB cache for downloaded book texts ──
+       Stores full text keyed by book URL so re-visits are instant. */
+    function openCache() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open('BookCache', 1);
+        req.onupgradeneeded = () => req.result.createObjectStore('texts');
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function getCachedText(key) {
+      try {
+        const db = await openCache();
+        return new Promise((resolve) => {
+          const tx = db.transaction('texts', 'readonly');
+          const req = tx.objectStore('texts').get(key);
+          req.onsuccess = () => resolve(req.result || null);
+          req.onerror = () => resolve(null);
+        });
+      } catch { return null; }
+    }
+
+    async function setCachedText(key, text) {
+      try {
+        const db = await openCache();
+        const tx = db.transaction('texts', 'readwrite');
+        tx.objectStore('texts').put(text, key);
+      } catch { /* ignore cache write failures */ }
+    }
+
+    /* ── Fetch text with CORS proxy fallback chain ── */
+    async function fetchWithProxy(url) {
+      // Try direct fetch first
+      try {
+        const r = await fetch(url);
+        if (r.ok) return await r.text();
+      } catch { /* CORS blocked, try proxies */ }
+
+      // Try each CORS proxy
+      for (const proxy of CORS_PROXIES) {
+        try {
+          const r = await fetch(proxy(url));
+          if (r.ok) return await r.text();
+        } catch { continue; }
+      }
+      throw new Error('All fetch attempts failed');
+    }
+
+    /* ── Strip HTML tags (for MIT Classics pages) ── */
+    function stripHtml(html) {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      // Try to find main content
+      const body = doc.querySelector('body');
+      if (!body) return html;
+      // Remove scripts, styles, nav
+      body.querySelectorAll('script, style, nav, header, footer').forEach(el => el.remove());
+      return body.textContent || body.innerText || '';
     }
 
     /* ── Paginate text into pages that fit the container ── */
@@ -399,7 +467,7 @@
     let fullText = '';
 
     function showLoading() {
-      document.getElementById('contentRight').innerHTML = '<div class="loading-msg"><i class="fas fa-spinner"></i><p>Loading book...</p></div>';
+      document.getElementById('contentRight').innerHTML = '<div class="loading-msg"><i class="fas fa-spinner"></i><p>Downloading book text...</p><p style="font-size:0.72rem;color:var(--page-sec);margin-top:0.5rem;">First load may take a moment. Text is cached for future visits.</p></div>';
       document.getElementById('contentLeft').innerHTML = '';
     }
 
@@ -421,32 +489,53 @@
       document.getElementById('pageIndicator').textContent = '—';
     }
 
-    // Try to load text
+    /* ── Load book text: cache → proxy → fallback ── */
     showLoading();
     const textUrl = getTextUrl(book.pdf);
 
-    if (textUrl) {
-      fetch(textUrl)
-        .then(r => {
-          if (!r.ok) throw new Error('HTTP ' + r.status);
-          return r.text();
-        })
-        .then(text => {
-          fullText = text;
-          pages = paginateText(text);
-          if (pages.length === 0) {
-            showFallback('Could not parse book text.');
-            return;
-          }
-          currentPage = 0;
-          renderPages();
-        })
-        .catch(() => {
-          showFallback('This book is available on the source website.');
-        });
-    } else {
-      // Non-Gutenberg books: show info + link
-      showFallback('This book is available on the source website.');
+    async function loadBook() {
+      if (!textUrl) {
+        showFallback('This book is available on the source website.');
+        return;
+      }
+
+      // 1. Check local IndexedDB cache
+      const cached = await getCachedText(textUrl);
+      if (cached) {
+        fullText = cached;
+        pages = paginateText(fullText);
+        currentPage = 0;
+        renderPages();
+        return;
+      }
+
+      // 2. Fetch via CORS proxy chain
+      try {
+        let raw = await fetchWithProxy(textUrl);
+
+        // If source is HTML (MIT Classics), extract text content
+        if (textUrl.includes('classics.mit.edu') || raw.trimStart().startsWith('<')) {
+          raw = stripHtml(raw);
+        }
+
+        fullText = raw;
+
+        // Cache for next time
+        await setCachedText(textUrl, fullText);
+
+        pages = paginateText(fullText);
+        if (pages.length === 0) {
+          showFallback('Could not parse book text.');
+          return;
+        }
+        currentPage = 0;
+        renderPages();
+      } catch {
+        showFallback('Could not load book. Try the source website.');
+      }
+    }
+
+    loadBook();
     }
   </script>
 </body>
