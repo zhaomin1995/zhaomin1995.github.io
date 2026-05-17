@@ -472,18 +472,56 @@
       animFrame = requestAnimationFrame(animate);
     }
 
+    /* ── Tooltip: fixed near mark, persists 1.5s so users can click links ── */
+    let tooltipHideTimer = null;
+    let tooltipOnMark = false;
+
+    // Keep tooltip visible when mouse is over it (for clicking wiki link)
+    tooltip.addEventListener('mouseenter', () => { clearTimeout(tooltipHideTimer); });
+    tooltip.addEventListener('mouseleave', () => {
+      tooltipHideTimer = setTimeout(() => { tooltip.classList.remove('show'); hoveredIdx = -1; }, 500);
+    });
+
+    function showTooltipForEvent(dp) {
+      clearTimeout(tooltipHideTimer);
+      const ev = dp.evt;
+      const d = isZh ? ev.zh : ev.en;
+      const yearStr = ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year + '';
+      const eraObj = ERAS.find(er => er.id === ev.era);
+      const eraName = eraObj ? (isZh ? eraObj.zh : eraObj.en) : '';
+      const wikiBase = isZh ? 'https://zh.wikipedia.org/wiki/' : 'https://en.wikipedia.org/wiki/';
+      const wikiLink = ev.wiki ? `<a class="tt-wiki" href="${wikiBase}${ev.wiki}" target="_blank" rel="noopener">${isZh ? '在维基百科了解更多 →' : 'Learn more on Wikipedia →'}</a>` : '';
+      tooltip.innerHTML = `<div class="tt-year">${yearStr}</div><div class="tt-title">${d.title}</div><p class="tt-desc">${d.desc}</p><div class="tt-era">${eraName}</div>${wikiLink}`;
+      // Position fixed near the dot mark, not the cursor
+      let tx = dp.screenX + 20, ty = dp.screenY - 100;
+      if (tx + 330 > W) tx = dp.screenX - 340;
+      if (ty < 60) ty = dp.screenY + 20;
+      if (ty + 200 > H) ty = H - 210;
+      tooltip.style.left = tx + 'px';
+      tooltip.style.top = ty + 'px';
+      tooltip.classList.add('show');
+    }
+
+    function scheduleHideTooltip() {
+      clearTimeout(tooltipHideTimer);
+      tooltipHideTimer = setTimeout(() => {
+        tooltip.classList.remove('show');
+        hoveredIdx = -1;
+      }, 1500);
+    }
+
     /* ── Mouse interaction: drag to pan, hover dots for tooltip ── */
     canvas.addEventListener('mousedown', e => {
       dragging = true; dragStartX = e.clientX; dragStartY = e.clientY; dragPanX = panX; dragPanY = panY;
     });
     canvas.addEventListener('mousemove', e => {
       if (dragging) {
-        panX = dragPanX + (e.clientX - dragStartX); // drag-to-pan: offset by mouse delta
+        panX = dragPanX + (e.clientX - dragStartX);
         panY = dragPanY + (e.clientY - dragStartY);
         tooltip.classList.remove('show');
+        clearTimeout(tooltipHideTimer);
         return;
       }
-      // Hit-test: find the nearest dot within 20px radius
       let found = -1;
       for (const dp of dotPositions) {
         if (Math.sqrt((e.clientX - dp.screenX) ** 2 + (e.clientY - dp.screenY) ** 2) < 20) { found = dp.idx; break; }
@@ -491,33 +529,16 @@
       if (found !== hoveredIdx) {
         hoveredIdx = found;
         if (found >= 0) {
-          // Build tooltip HTML with year, title, description, era, and Wikipedia link
-          const ev = dotPositions[found].evt;
-          const d = isZh ? ev.zh : ev.en;
-          const yearStr = ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year + '';
-          const eraObj = ERAS.find(er => er.id === ev.era);
-          const eraName = eraObj ? (isZh ? eraObj.zh : eraObj.en) : '';
-          const wikiBase = isZh ? 'https://zh.wikipedia.org/wiki/' : 'https://en.wikipedia.org/wiki/'; // localized Wikipedia
-          const wikiLink = ev.wiki ? `<a class="tt-wiki" href="${wikiBase}${ev.wiki}" target="_blank" rel="noopener">${isZh ? '在维基百科了解更多 →' : 'Learn more on Wikipedia →'}</a>` : '';
-          tooltip.innerHTML = `<div class="tt-year">${yearStr}</div><div class="tt-title">${d.title}</div><p class="tt-desc">${d.desc}</p><div class="tt-era">${eraName}</div>${wikiLink}`;
-          tooltip.classList.add('show');
+          showTooltipForEvent(dotPositions[found]);
           canvas.style.cursor = 'pointer';
         } else {
-          tooltip.classList.remove('show');
+          scheduleHideTooltip();
           canvas.style.cursor = 'grab';
         }
       }
-      // Position tooltip near cursor, clamped to viewport edges
-      if (found >= 0) {
-        let tx = e.clientX + 16, ty = e.clientY - 80;
-        if (tx + 330 > W) tx = e.clientX - 340;  // flip left if near right edge
-        if (ty < 60) ty = e.clientY + 20;         // push down if near top
-        if (ty + 200 > H) ty = H - 210;           // push up if near bottom
-        tooltip.style.left = tx + 'px'; tooltip.style.top = ty + 'px';
-      }
     });
     canvas.addEventListener('mouseup', () => dragging = false);
-    canvas.addEventListener('mouseleave', () => { dragging = false; hoveredIdx = -1; tooltip.classList.remove('show'); });
+    canvas.addEventListener('mouseleave', () => { dragging = false; scheduleHideTooltip(); });
 
     /* ── Smooth zoom via lerp ──
        Scroll/button sets a targetZoom; each frame interpolates toward it. */

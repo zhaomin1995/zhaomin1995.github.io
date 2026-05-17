@@ -119,13 +119,14 @@
       display: flex; align-items: center; gap: 0.6rem;
       padding: 0.55rem 1.2rem; cursor: pointer; font-size: 0.82rem; font-weight: 500;
       color: var(--text-sec); transition: all 0.2s; border-left: 3px solid transparent;
+      white-space: nowrap;
     }
     .sidebar-item:hover { background: var(--sidebar-active); color: var(--text); }
     .sidebar-item.active {
       background: var(--sidebar-active); color: var(--text);
       border-left-color: #8b5e3c; font-weight: 600;
     }
-    .sidebar-item i { width: 16px; text-align: center; font-size: 0.8rem; }
+    .sidebar-item i { width: 18px; text-align: center; font-size: 0.8rem; flex-shrink: 0; }
     .sidebar-count {
       margin-left: auto; font-size: 0.65rem; font-weight: 600;
       background: rgba(0,0,0,0.06); padding: 0.1em 0.5em; border-radius: 10px;

@@ -13,53 +13,51 @@
 
 const BOOK_CATEGORIES = [
   { id: 'all', en: 'All Books', zh: '全部书籍', icon: 'fas fa-book' },
-  { id: 'ai-ml', en: 'AI & Machine Learning', zh: 'AI与机器学习', icon: 'fas fa-brain' },
-  { id: 'nlp', en: 'NLP & Language', zh: '自然语言处理', icon: 'fas fa-language' },
-  { id: 'algorithms', en: 'Algorithms & Data', zh: '算法与数据', icon: 'fas fa-project-diagram' },
-  { id: 'math', en: 'Mathematics', zh: '数学', icon: 'fas fa-square-root-alt' },
-  { id: 'programming', en: 'Programming', zh: '编程', icon: 'fas fa-code' },
-  { id: 'physics', en: 'Physics & Cosmology', zh: '物理与宇宙', icon: 'fas fa-atom' },
-  { id: 'biology', en: 'Biology & Nature', zh: '生物与自然', icon: 'fas fa-dna' },
-  { id: 'philosophy', en: 'Philosophy', zh: '哲学', icon: 'fas fa-yin-yang' },
-  { id: 'politics', en: 'Politics & Economics', zh: '政治与经济', icon: 'fas fa-balance-scale' },
-  { id: 'history', en: 'History', zh: '历史', icon: 'fas fa-landmark' },
-  { id: 'psychology', en: 'Psychology', zh: '心理学', icon: 'fas fa-head-side-virus' },
-  { id: 'classic-fiction', en: 'Classic Fiction', zh: '经典小说', icon: 'fas fa-feather-alt' },
-  { id: 'sci-fi', en: 'Science Fiction', zh: '科幻小说', icon: 'fas fa-rocket' },
-  { id: 'mystery', en: 'Mystery & Gothic', zh: '悬疑与哥特', icon: 'fas fa-mask' },
   { id: 'adventure', en: 'Adventure', zh: '冒险', icon: 'fas fa-hiking' },
-  { id: 'russian-lit', en: 'Russian Literature', zh: '俄罗斯文学', icon: 'fas fa-snowflake' },
-  { id: 'french-lit', en: 'French Literature', zh: '法国文学', icon: 'fas fa-wine-glass-alt' },
-  { id: 'poetry', en: 'Poetry & Drama', zh: '诗歌与戏剧', icon: 'fas fa-theater-masks' },
-  { id: 'religion', en: 'Religion & Spirituality', zh: '宗教与灵性', icon: 'fas fa-praying-hands' },
+  { id: 'biology', en: 'Biology & Nature', zh: '生物与自然', icon: 'fas fa-dna' },
   { id: 'children', en: 'Children & Fantasy', zh: '童话与幻想', icon: 'fas fa-hat-wizard' },
+  { id: 'classic-fiction', en: 'Classic Fiction', zh: '经典小说', icon: 'fas fa-feather-alt' },
+  { id: 'cs', en: 'Computer Science', zh: '计算机科学', icon: 'fas fa-laptop-code' },
+  { id: 'french-lit', en: 'French Literature', zh: '法国文学', icon: 'fas fa-wine-glass-alt' },
+  { id: 'history', en: 'History', zh: '历史', icon: 'fas fa-landmark' },
+  { id: 'math', en: 'Mathematics', zh: '数学', icon: 'fas fa-square-root-alt' },
+  { id: 'mystery', en: 'Mystery & Gothic', zh: '悬疑与哥特', icon: 'fas fa-mask' },
+  { id: 'philosophy', en: 'Philosophy', zh: '哲学', icon: 'fas fa-yin-yang' },
+  { id: 'physics', en: 'Physics & Cosmology', zh: '物理与宇宙', icon: 'fas fa-atom' },
+  { id: 'poetry', en: 'Poetry & Drama', zh: '诗歌与戏剧', icon: 'fas fa-theater-masks' },
+  { id: 'politics', en: 'Politics & Economics', zh: '政治与经济', icon: 'fas fa-balance-scale' },
+  { id: 'programming', en: 'Programming', zh: '编程', icon: 'fas fa-code' },
+  { id: 'psychology', en: 'Psychology', zh: '心理学', icon: 'fas fa-head-side-virus' },
+  { id: 'religion', en: 'Religion & Spirituality', zh: '宗教与灵性', icon: 'fas fa-praying-hands' },
+  { id: 'russian-lit', en: 'Russian Literature', zh: '俄罗斯文学', icon: 'fas fa-snowflake' },
+  { id: 'sci-fi', en: 'Science Fiction', zh: '科幻小说', icon: 'fas fa-rocket' },
 ];
 
 const BOOKS = [
 // ══════════════════════════════════════
 // AI & MACHINE LEARNING
 // ══════════════════════════════════════
-{ title: 'Deep Learning', author: 'Goodfellow, Bengio, Courville', desc: 'The definitive textbook on deep neural networks — CNNs, RNNs, optimization, regularization, and generative models.', cat: 'ai-ml', color: '#2c3e50', height: 150, pdf: 'https://www.deeplearningbook.org/' },
-{ title: 'Pattern Recognition & ML', author: 'Christopher Bishop', desc: 'Probability distributions, neural networks, kernel methods, and graphical models. Free from Microsoft Research.', cat: 'ai-ml', color: '#e74c3c', height: 140, pdf: 'https://www.microsoft.com/en-us/research/publication/pattern-recognition-machine-learning/' },
-{ title: 'Elements of Statistical Learning', author: 'Hastie, Tibshirani, Friedman', desc: 'Supervised and unsupervised learning, model assessment, ensemble methods. Free from the authors at Stanford.', cat: 'ai-ml', color: '#1a5276', height: 138, pdf: 'https://hastie.su.domains/ElemStatLearn/' },
-{ title: 'Reinforcement Learning', author: 'Sutton & Barto', desc: 'The standard RL textbook — MDPs, temporal-difference learning, policy gradients, and function approximation.', cat: 'ai-ml', color: '#6c3483', height: 148, pdf: 'http://incompleteideas.net/book/the-book-2nd.html' },
-{ title: 'Neural Networks & Deep Learning', author: 'Michael Nielsen', desc: 'An intuitive, visual introduction to neural networks. Beautifully written free online book.', cat: 'ai-ml', color: '#117864', height: 128, pdf: 'http://neuralnetworksanddeeplearning.com/' },
-{ title: 'Information Theory & Learning', author: 'David MacKay', desc: 'Connecting information theory, inference, and machine learning with clarity and rigor.', cat: 'ai-ml', color: '#2e4053', height: 152, pdf: 'https://www.inference.org.uk/itila/book.html' },
-{ title: 'Bayesian Reasoning & ML', author: 'David Barber', desc: 'Probabilistic graphical models, inference, and learning from a Bayesian perspective.', cat: 'ai-ml', color: '#7d3c98', height: 145, pdf: 'http://web4.cs.ucl.ac.uk/staff/D.Barber/pmwiki/pmwiki.php?n=Brml.HomePage' },
-{ title: 'Math for Machine Learning', author: 'Deisenroth, Faisal, Ong', desc: 'Linear algebra, calculus, probability, and optimization — the mathematical foundations of ML.', cat: 'ai-ml', color: '#1f618d', height: 142, pdf: 'https://mml-book.github.io/' },
+{ title: 'Deep Learning', author: 'Goodfellow, Bengio, Courville', desc: 'The definitive textbook on deep neural networks — CNNs, RNNs, optimization, regularization, and generative models.', cat: 'cs', color: '#2c3e50', height: 150, pdf: 'https://www.deeplearningbook.org/' },
+{ title: 'Pattern Recognition & ML', author: 'Christopher Bishop', desc: 'Probability distributions, neural networks, kernel methods, and graphical models. Free from Microsoft Research.', cat: 'cs', color: '#e74c3c', height: 140, pdf: 'https://www.microsoft.com/en-us/research/publication/pattern-recognition-machine-learning/' },
+{ title: 'Elements of Statistical Learning', author: 'Hastie, Tibshirani, Friedman', desc: 'Supervised and unsupervised learning, model assessment, ensemble methods. Free from the authors at Stanford.', cat: 'cs', color: '#1a5276', height: 138, pdf: 'https://hastie.su.domains/ElemStatLearn/' },
+{ title: 'Reinforcement Learning', author: 'Sutton & Barto', desc: 'The standard RL textbook — MDPs, temporal-difference learning, policy gradients, and function approximation.', cat: 'cs', color: '#6c3483', height: 148, pdf: 'http://incompleteideas.net/book/the-book-2nd.html' },
+{ title: 'Neural Networks & Deep Learning', author: 'Michael Nielsen', desc: 'An intuitive, visual introduction to neural networks. Beautifully written free online book.', cat: 'cs', color: '#117864', height: 128, pdf: 'http://neuralnetworksanddeeplearning.com/' },
+{ title: 'Information Theory & Learning', author: 'David MacKay', desc: 'Connecting information theory, inference, and machine learning with clarity and rigor.', cat: 'cs', color: '#2e4053', height: 152, pdf: 'https://www.inference.org.uk/itila/book.html' },
+{ title: 'Bayesian Reasoning & ML', author: 'David Barber', desc: 'Probabilistic graphical models, inference, and learning from a Bayesian perspective.', cat: 'cs', color: '#7d3c98', height: 145, pdf: 'http://web4.cs.ucl.ac.uk/staff/D.Barber/pmwiki/pmwiki.php?n=Brml.HomePage' },
+{ title: 'Math for Machine Learning', author: 'Deisenroth, Faisal, Ong', desc: 'Linear algebra, calculus, probability, and optimization — the mathematical foundations of ML.', cat: 'cs', color: '#1f618d', height: 142, pdf: 'https://mml-book.github.io/' },
 
 // ══════════════════════════════════════
 // NLP & LANGUAGE
 // ══════════════════════════════════════
-{ title: 'Speech & Language Processing', author: 'Jurafsky & Martin', desc: 'The standard NLP textbook — tokenization, transformers, NER, QA, and dialogue systems. Free draft chapters.', cat: 'nlp', color: '#16a085', height: 145, pdf: 'https://web.stanford.edu/~jurafsky/slp3/' },
-{ title: 'NLP with Python (NLTK)', author: 'Bird, Klein, Loper', desc: 'Practical NLP with Python and the NLTK toolkit — text classification, parsing, and semantic analysis.', cat: 'nlp', color: '#1e8449', height: 138, pdf: 'https://www.nltk.org/book/' },
+{ title: 'Speech & Language Processing', author: 'Jurafsky & Martin', desc: 'The standard NLP textbook — tokenization, transformers, NER, QA, and dialogue systems. Free draft chapters.', cat: 'cs', color: '#16a085', height: 145, pdf: 'https://web.stanford.edu/~jurafsky/slp3/' },
+{ title: 'NLP with Python (NLTK)', author: 'Bird, Klein, Loper', desc: 'Practical NLP with Python and the NLTK toolkit — text classification, parsing, and semantic analysis.', cat: 'cs', color: '#1e8449', height: 138, pdf: 'https://www.nltk.org/book/' },
 
 // ══════════════════════════════════════
 // ALGORITHMS & DATA
 // ══════════════════════════════════════
-{ title: 'Mining Massive Datasets', author: 'Leskovec, Rajaraman, Ullman', desc: 'MapReduce, similarity search, link analysis, recommendation systems. Free from the authors at Stanford.', cat: 'algorithms', color: '#d35400', height: 135, pdf: 'http://www.mmds.org/' },
-{ title: 'Algorithms', author: 'Jeff Erickson', desc: 'A comprehensive algorithms textbook covering recursion, dynamic programming, graphs, and NP-hardness. Free.', cat: 'algorithms', color: '#2874a6', height: 148, pdf: 'http://jeffe.cs.illinois.edu/teaching/algorithms/' },
-{ title: 'Open Data Structures', author: 'Pat Morin', desc: 'An open textbook on data structures — arrays, lists, trees, hash tables, and graphs with implementations.', cat: 'algorithms', color: '#6c3483', height: 132, pdf: 'https://opendatastructures.org/' },
+{ title: 'Mining Massive Datasets', author: 'Leskovec, Rajaraman, Ullman', desc: 'MapReduce, similarity search, link analysis, recommendation systems. Free from the authors at Stanford.', cat: 'cs', color: '#d35400', height: 135, pdf: 'http://www.mmds.org/' },
+{ title: 'Algorithms', author: 'Jeff Erickson', desc: 'A comprehensive algorithms textbook covering recursion, dynamic programming, graphs, and NP-hardness. Free.', cat: 'cs', color: '#2874a6', height: 148, pdf: 'http://jeffe.cs.illinois.edu/teaching/algorithms/' },
+{ title: 'Open Data Structures', author: 'Pat Morin', desc: 'An open textbook on data structures — arrays, lists, trees, hash tables, and graphs with implementations.', cat: 'cs', color: '#6c3483', height: 132, pdf: 'https://opendatastructures.org/' },
 
 // ══════════════════════════════════════
 // MATHEMATICS
@@ -1289,4 +1287,108 @@ BOOKS.push(
 { title: 'An Inquiry into the Nature and Causes of the Wealth of Nations', author: 'Adam Smith', desc: 'The invisible hand, division of labor, and free trade explained in the foundational work of economics.', cat: 'politics', color: '#1b5e20', height: 158, pdf: 'https://www.gutenberg.org/ebooks/3300' },
 { title: 'The Spirit of Laws', author: 'Montesquieu', desc: 'The theory of separation of powers that shaped the American Constitution and modern democracy.', cat: 'politics', color: '#0d47a1', height: 152, pdf: 'https://www.gutenberg.org/ebooks/27573' },
 { title: 'Second Treatise of Government', author: 'John Locke', desc: 'Locke\'s theory of natural rights, consent of the governed, and the right of revolution.', cat: 'politics', color: '#283593', height: 128, pdf: 'https://www.gutenberg.org/ebooks/7370' },
+);
+
+// ===== MORE CS AND PHYSICS BOOKS =====
+BOOKS.push(
+
+// ──────────────────────────────────────
+// COMPUTER SCIENCE
+// ──────────────────────────────────────
+
+// Allen Downey books
+{ title: 'Think Python', author: 'Allen B. Downey', desc: 'An introduction to programming using Python that emphasizes clear thinking and problem solving.', cat: 'cs', color: '#1565c0', height: 130, pdf: 'https://greenteapress.com/thinkpython2/thinkpython2.pdf' },
+{ title: 'Think Java', author: 'Allen B. Downey & Chris Mayfield', desc: 'A concise introduction to computer science and programming using Java.', cat: 'cs', color: '#0d47a1', height: 128, pdf: 'https://greenteapress.com/thinkjava7/thinkjava7.pdf' },
+{ title: 'Think OS', author: 'Allen B. Downey', desc: 'A brief introduction to operating systems concepts including processes, virtual memory, and filesystems.', cat: 'cs', color: '#1a237e', height: 118, pdf: 'https://greenteapress.com/thinkos/thinkos.pdf' },
+{ title: 'Think Bayes', author: 'Allen B. Downey', desc: 'Bayesian statistics made simple with computational methods in Python.', cat: 'cs', color: '#283593', height: 125, pdf: 'https://greenteapress.com/wp/think-bayes/' },
+{ title: 'Think DSP', author: 'Allen B. Downey', desc: 'Digital signal processing in Python — signals, spectra, filters, and convolution.', cat: 'cs', color: '#303f9f', height: 122, pdf: 'https://greenteapress.com/thinkdsp/thinkdsp.pdf' },
+{ title: 'Think Complexity', author: 'Allen B. Downey', desc: 'Complexity science and computational modeling covering cellular automata, networks, and evolution.', cat: 'cs', color: '#3949ab', height: 126, pdf: 'https://greenteapress.com/complexity2/thinkcomplexity2.pdf' },
+{ title: 'Think Stats', author: 'Allen B. Downey', desc: 'Probability and statistics for programmers using Python and real data sets.', cat: 'cs', color: '#1e88e5', height: 124, pdf: 'https://greenteapress.com/thinkstats2/thinkstats2.pdf' },
+
+// Operating Systems
+{ title: 'Operating Systems: Three Easy Pieces', author: 'Remzi & Andrea Arpaci-Dusseau', desc: 'A free OS textbook covering virtualization, concurrency, and persistence with clarity and humor.', cat: 'cs', color: '#b71c1c', height: 155, pdf: 'https://pages.cs.wisc.edu/~remzi/OSTEP/' },
+
+// Networking
+{ title: 'Computer Networking: A Top-Down Approach', author: 'Jim Kurose & Keith Ross', desc: 'Supplementary materials and interactive features for the classic networking textbook.', cat: 'cs', color: '#0277bd', height: 150, pdf: 'https://gaia.cs.umass.edu/kurose_ross/online_lectures.htm' },
+{ title: 'An Introduction to Computer Networks', author: 'Peter L. Dordal', desc: 'A free textbook covering Ethernet, IP, TCP, routing, and network applications.', cat: 'cs', color: '#01579b', height: 145, pdf: 'http://intronetworks.cs.luc.edu/current2/ComputerNetworks.pdf' },
+{ title: 'High Performance Browser Networking', author: 'Ilya Grigorik', desc: 'Networking and browser internals for building faster web applications.', cat: 'cs', color: '#006064', height: 140, pdf: 'https://hpbn.co/' },
+
+// Databases
+{ title: 'Architecture of a Database System', author: 'Joseph M. Hellerstein et al.', desc: 'A survey of the internal architecture of modern relational database management systems.', cat: 'cs', color: '#4a148c', height: 130, pdf: 'https://dsf.berkeley.edu/papers/fntdb07-architecture.pdf' },
+{ title: 'Readings in Database Systems (Red Book)', author: 'Peter Bailis et al.', desc: 'Classic and modern papers in database systems curated with expert commentary.', cat: 'cs', color: '#6a1b9a', height: 135, pdf: 'http://www.redbook.io/' },
+
+// Compilers
+{ title: 'Crafting Interpreters', author: 'Robert Nystrom', desc: 'Build two complete interpreters from scratch — a tree-walk interpreter and a bytecode virtual machine.', cat: 'cs', color: '#e65100', height: 155, pdf: 'https://craftinginterpreters.com/' },
+{ title: 'Compiler Construction', author: 'Niklaus Wirth', desc: 'A concise textbook on compiler design by the creator of Pascal.', cat: 'cs', color: '#bf360c', height: 120, pdf: 'https://people.inf.ethz.ch/wirth/CompilerConstruction/CompilerConstruction.pdf' },
+
+// Distributed Systems
+{ title: 'Designing Data-Intensive Applications', author: 'Martin Kleppmann', desc: 'A guide to the ideas behind reliable, scalable, and maintainable data systems.', cat: 'cs', color: '#1b5e20', height: 155, pdf: 'https://dataintensive.net/' },
+{ title: 'Distributed Systems', author: 'Maarten van Steen & Andrew S. Tanenbaum', desc: 'A comprehensive free textbook on principles and paradigms of distributed computing.', cat: 'cs', color: '#2e7d32', height: 150, pdf: 'https://www.distributed-systems.net/index.php/books/ds4/' },
+
+// Cryptography
+{ title: 'A Graduate Course in Applied Cryptography', author: 'Dan Boneh & Victor Shoup', desc: 'A rigorous introduction to modern cryptography covering encryption, authentication, and public-key systems.', cat: 'cs', color: '#263238', height: 160, pdf: 'https://toc.cryptobook.us/book.pdf' },
+{ title: 'Crypto 101', author: 'Laurens Van Houtven', desc: 'An introductory course on cryptography for programmers with no math prerequisites.', cat: 'cs', color: '#37474f', height: 120, pdf: 'https://www.crypto101.io/' },
+
+// Computer Graphics
+{ title: 'Computer Graphics from Scratch', author: 'Gabriel Gambetta', desc: 'Build a raytracer and rasterizer from first principles without any graphics API.', cat: 'cs', color: '#ff6f00', height: 140, pdf: 'https://gabrielgambetta.com/computer-graphics-from-scratch/' },
+{ title: 'Ray Tracing in One Weekend', author: 'Peter Shirley', desc: 'Write a ray tracer in C++ over a weekend and produce stunning photorealistic images.', cat: 'cs', color: '#f57f17', height: 115, pdf: 'https://raytracing.github.io/books/RayTracingInOneWeekend.html' },
+{ title: 'Physically Based Rendering (PBRT)', author: 'Matt Pharr et al.', desc: 'The definitive reference on physically based rendering techniques and their implementation.', cat: 'cs', color: '#e65100', height: 158, pdf: 'https://www.pbr-book.org/' },
+
+// Information Retrieval
+{ title: 'Introduction to Information Retrieval', author: 'Christopher D. Manning et al.', desc: 'A comprehensive textbook on search engines, text classification, and information retrieval algorithms.', cat: 'cs', color: '#004d40', height: 150, pdf: 'https://nlp.stanford.edu/IR-book/pdf/irbookprint.pdf' },
+
+// Machine Learning & AI (Stanford / free)
+{ title: 'Speech and Language Processing', author: 'Dan Jurafsky & James H. Martin', desc: 'A comprehensive introduction to natural language processing, computational linguistics, and speech recognition.', cat: 'cs', color: '#311b92', height: 158, pdf: 'https://web.stanford.edu/~jurafsky/slp3/' },
+{ title: 'Reinforcement Learning: An Introduction', author: 'Richard S. Sutton & Andrew G. Barto', desc: 'The foundational textbook on reinforcement learning covering bandits, MDPs, and policy gradient methods.', cat: 'cs', color: '#4527a0', height: 152, pdf: 'http://incompleteideas.net/book/RLbook2020.pdf' },
+{ title: 'Deep Learning', author: 'Ian Goodfellow, Yoshua Bengio & Aaron Courville', desc: 'The comprehensive textbook on deep learning from fundamentals to advanced research topics.', cat: 'cs', color: '#512da8', height: 155, pdf: 'https://www.deeplearningbook.org/' },
+{ title: 'Neural Networks and Deep Learning', author: 'Michael Nielsen', desc: 'A free online book explaining the core ideas behind neural networks and deep learning.', cat: 'cs', color: '#5e35b1', height: 135, pdf: 'http://neuralnetworksanddeeplearning.com/' },
+{ title: 'Mathematics for Machine Learning', author: 'Marc Peter Deisenroth et al.', desc: 'The essential math — linear algebra, calculus, probability — needed for machine learning.', cat: 'cs', color: '#7b1fa2', height: 145, pdf: 'https://mml-book.github.io/book/mml-book.pdf' },
+
+// Algorithms and Theory
+{ title: 'Algorithms', author: 'Jeff Erickson', desc: 'A comprehensive algorithms textbook developed for the University of Illinois CS 374 course.', cat: 'cs', color: '#880e4f', height: 155, pdf: 'https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf' },
+{ title: 'Open Data Structures', author: 'Pat Morin', desc: 'An open-content textbook covering the implementation and analysis of fundamental data structures.', cat: 'cs', color: '#ad1457', height: 140, pdf: 'https://opendatastructures.org/ods-python.pdf' },
+
+// Programming Languages & Software
+{ title: 'Programming Languages: Application and Interpretation', author: 'Shriram Krishnamurthi', desc: 'A hands-on introduction to programming language design and implementation.', cat: 'cs', color: '#c62828', height: 140, pdf: 'https://cs.brown.edu/courses/cs173/2012/book/book.pdf' },
+{ title: 'The Art of Unix Programming', author: 'Eric S. Raymond', desc: 'The philosophy, design patterns, and culture behind Unix and its enduring influence on software.', cat: 'cs', color: '#d84315', height: 148, pdf: 'http://www.catb.org/esr/writings/taoup/html/' },
+{ title: 'Pro Git', author: 'Scott Chacon & Ben Straub', desc: 'The complete guide to Git — branching, merging, rebasing, and distributed workflows.', cat: 'cs', color: '#f4511e', height: 142, pdf: 'https://git-scm.com/book/en/v2' },
+
+// ──────────────────────────────────────
+// PHYSICS
+// ──────────────────────────────────────
+
+// Feynman and modern physics
+{ title: 'QED: The Strange Theory of Light and Matter', author: 'Richard P. Feynman', desc: 'Feynman explains quantum electrodynamics to a general audience with his trademark clarity and wit.', cat: 'physics', color: '#1565c0', height: 120, pdf: 'https://archive.org/details/qedstrangetheory0000feyn' },
+{ title: 'The Character of Physical Law', author: 'Richard P. Feynman', desc: 'Seven Messenger Lectures exploring the nature of physical laws, symmetry, and the relationship between mathematics and physics.', cat: 'physics', color: '#0d47a1', height: 125, pdf: 'https://archive.org/details/characterofphysi0000feyn' },
+{ title: 'Feynman\'s Tips on Physics', author: 'Richard P. Feynman et al.', desc: 'Problem-solving tips and exercises supplementing the Feynman Lectures on Physics.', cat: 'physics', color: '#1a237e', height: 122, pdf: 'https://www.feynmanlectures.caltech.edu/' },
+
+// Classical Mechanics
+{ title: 'An Introduction to Mechanics', author: 'Daniel Kleppner & Robert Kolenkow', desc: 'A rigorous and engaging introduction to Newtonian mechanics used at MIT.', cat: 'physics', color: '#283593', height: 140, pdf: 'https://archive.org/details/an-introduction-to-mechanics-kleppner-kolenkow' },
+{ title: 'Classical Mechanics', author: 'John R. Taylor', desc: 'A modern and thorough treatment of Lagrangian and Hamiltonian mechanics with excellent problems.', cat: 'physics', color: '#303f9f', height: 145, pdf: 'https://archive.org/details/classical-mechanics-john-r.-taylor' },
+{ title: 'The Principles of Mechanics', author: 'Heinrich Hertz', desc: 'Hertz\'s foundational reformulation of classical mechanics in terms of geometric constraints.', cat: 'physics', color: '#3949ab', height: 135, pdf: 'https://archive.org/details/principlesofmech00hert' },
+
+// Electricity and Magnetism
+{ title: 'A Treatise on Electricity and Magnetism', author: 'James Clerk Maxwell', desc: 'Maxwell\'s masterwork unifying electricity, magnetism, and light into the electromagnetic theory.', cat: 'physics', color: '#0277bd', height: 158, pdf: 'https://www.gutenberg.org/ebooks/14986' },
+{ title: 'Experimental Researches in Electricity', author: 'Michael Faraday', desc: 'Faraday\'s groundbreaking experiments that revealed electromagnetic induction and the foundations of field theory.', cat: 'physics', color: '#01579b', height: 150, pdf: 'https://www.gutenberg.org/ebooks/14986' },
+{ title: 'Electricity and Magnetism', author: 'Edward M. Purcell', desc: 'The Berkeley Physics Course volume that teaches E&M with special relativity from the start.', cat: 'physics', color: '#006064', height: 148, pdf: 'https://archive.org/details/electricityandma0000purc' },
+
+// Quantum Mechanics
+{ title: 'Quantum Mechanics: The Theoretical Minimum', author: 'Leonard Susskind & Art Friedman', desc: 'A clear introduction to quantum mechanics starting from the bare essentials.', cat: 'physics', color: '#4a148c', height: 138, pdf: 'https://archive.org/details/quantum-mechanics-the-theoretical-minimum' },
+{ title: 'The Old Quantum Theory', author: 'D. ter Haar', desc: 'Original papers by Planck, Einstein, Bohr, and others that launched the quantum revolution.', cat: 'physics', color: '#6a1b9a', height: 130, pdf: 'https://archive.org/details/oldquantumtheory0000haar' },
+{ title: 'On the Theory of Quanta', author: 'Louis de Broglie', desc: 'De Broglie\'s Nobel Prize-winning thesis proposing the wave nature of matter.', cat: 'physics', color: '#7b1fa2', height: 112, pdf: 'https://fondationlouisdebroglie.org/LDB-oeuvres/De_Broglie_Kracklauer.pdf' },
+
+// Thermodynamics
+{ title: 'Treatise on Thermodynamics', author: 'Max Planck', desc: 'Planck\'s clear and authoritative exposition of the laws of thermodynamics.', cat: 'physics', color: '#e65100', height: 132, pdf: 'https://www.gutenberg.org/ebooks/50880' },
+{ title: 'On the Sensations of Tone', author: 'Hermann von Helmholtz', desc: 'Helmholtz connects acoustics, physics, and physiology in this landmark study of sound and hearing.', cat: 'physics', color: '#bf360c', height: 148, pdf: 'https://www.gutenberg.org/ebooks/55521' },
+{ title: 'The Theory of Heat Radiation', author: 'Max Planck', desc: 'Planck introduces the quantum hypothesis to explain blackbody radiation and launches modern physics.', cat: 'physics', color: '#d84315', height: 135, pdf: 'https://www.gutenberg.org/ebooks/40030' },
+
+// Public domain classics
+{ title: 'The Atomic Theory', author: 'Niels Bohr', desc: 'Bohr presents his atomic model and the correspondence principle in these Nobel Lecture writings.', cat: 'physics', color: '#1b5e20', height: 118, pdf: 'https://www.nobelprize.org/uploads/2018/06/bohr-lecture.pdf' },
+{ title: 'Physics and Philosophy', author: 'Werner Heisenberg', desc: 'Heisenberg explores the philosophical implications of quantum mechanics and the nature of reality.', cat: 'physics', color: '#2e7d32', height: 128, pdf: 'https://archive.org/details/physicsandphilos0000heis' },
+{ title: 'Relativity: The Special and General Theory', author: 'Albert Einstein', desc: 'Einstein explains his revolutionary theories of relativity in accessible language for the general reader.', cat: 'physics', color: '#004d40', height: 130, pdf: 'https://www.gutenberg.org/ebooks/5001' },
+
+// OpenStax Physics
+{ title: 'University Physics Volume 1', author: 'OpenStax', desc: 'Mechanics, waves, and thermodynamics covered in a peer-reviewed, free university textbook.', cat: 'physics', color: '#00695c', height: 155, pdf: 'https://openstax.org/details/books/university-physics-volume-1' },
+{ title: 'University Physics Volume 2', author: 'OpenStax', desc: 'Electricity, magnetism, and optics in a comprehensive free textbook for university courses.', cat: 'physics', color: '#00796b', height: 155, pdf: 'https://openstax.org/details/books/university-physics-volume-2' },
+{ title: 'University Physics Volume 3', author: 'OpenStax', desc: 'Modern physics — relativity, quantum mechanics, atomic and nuclear physics — in a free textbook.', cat: 'physics', color: '#00897b', height: 155, pdf: 'https://openstax.org/details/books/university-physics-volume-3' },
 );

@@ -965,7 +965,7 @@ body.dark-mode .theme-toggle .fa-sun {
 .footer {
   background: var(--bg-secondary);
   padding: 2.5rem 2rem;
-  display: flex;
+  display: flex; flex-direction: column;
   justify-content: center;
   align-items: center;
 }
@@ -1002,6 +1002,19 @@ body.dark-mode .theme-toggle .fa-sun {
 
 .visitor-link:hover {
   color: var(--accent-hover) !important;
+  border-bottom-color: var(--accent-hover);
+}
+
+.internal-space-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  margin-top: 1rem; padding: 0.45em 1.2em;
+  font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 600;
+  color: var(--text-secondary) !important; text-decoration: none;
+  border: 1px solid var(--divider); border-radius: 20px;
+  transition: all var(--transition); align-self: center;
+}
+.internal-space-btn:hover {
+  color: var(--accent) !important; border-color: var(--accent);
   border-bottom-color: var(--accent-hover);
 }
 

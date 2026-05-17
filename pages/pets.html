@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Pets — Zhaomin Xiao</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <script defer src="../assets/fontawesome/js/all.min.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #fafafa; --text: #1d1d1f; --text-sec: #86868b;
+      --card-bg: #ffffff; --card-shadow: rgba(0,0,0,0.08);
+      --accent: #e17055;
+    }
+    body.dark-mode {
+      --bg: #1d1d1f; --text: #f5f5f7; --text-sec: #a1a1a6;
+      --card-bg: #2a2a2c; --card-shadow: rgba(0,0,0,0.3);
+    }
+    body {
+      font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
+      -webkit-font-smoothing: antialiased; line-height: 1.6;
+    }
+    .lang-zh { display: none; }
+    body.zh .lang-en { display: none; }
+    body.zh .lang-zh { display: inline; }
+    ::selection { background: rgba(225,112,85,0.2); }
+
+    /* Nav */
+    .p-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0 2rem; height: 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(250,250,250,0.85); backdrop-filter: blur(20px);
+    }
+    body.dark-mode .p-nav { background: rgba(29,29,31,0.88); }
+    .p-nav a { color: var(--text-sec); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: color 0.3s; }
+    .p-nav a:hover { color: var(--text); }
+    .p-nav-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+
+    /* Page */
+    .pets-page {
+      max-width: 1000px; margin: 0 auto;
+      padding: 5rem 2rem 3rem;
+    }
+    .page-header {
+      text-align: center; margin-bottom: 2.5rem;
+    }
+    .page-header h1 {
+      font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 800;
+      letter-spacing: -0.03em; margin-bottom: 0.4rem;
+    }
+    .page-header p { font-size: 1rem; color: var(--text-sec); }
+
+    /* Gallery grid */
+    .gallery {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .gallery-item {
+      border-radius: 14px; overflow: hidden;
+      background: var(--card-bg);
+      box-shadow: 0 2px 12px var(--card-shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      opacity: 0; transform: translateY(30px);
+    }
+    .gallery-item.visible {
+      opacity: 1; transform: translateY(0);
+      transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+    }
+    .gallery-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px var(--card-shadow);
+    }
+
+    .gallery-item img {
+      width: 100%; display: block; aspect-ratio: 4/3; object-fit: cover;
+    }
+    .gallery-item-info {
+      padding: 0.8rem 1rem;
+    }
+    .gallery-item-name {
+      font-size: 0.85rem; font-weight: 600; color: var(--text);
+    }
+    .gallery-item-date {
+      font-size: 0.7rem; color: var(--text-sec); margin-top: 0.15rem;
+    }
+
+    /* Load more button */
+    .load-more-wrap {
+      text-align: center; padding: 2rem 0;
+    }
+    .load-more-btn {
+      display: inline-block; padding: 0.7em 2em;
+      background: var(--card-bg); color: var(--text-sec);
+      border: 1px solid rgba(0,0,0,0.08); border-radius: 12px;
+      font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500;
+      cursor: pointer; transition: all 0.25s;
+      box-shadow: 0 2px 8px var(--card-shadow);
+    }
+    body.dark-mode .load-more-btn { border-color: rgba(255,255,255,0.06); }
+    .load-more-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .load-more-btn.hidden { display: none; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center; padding: 4rem 2rem; color: var(--text-sec);
+    }
+    .empty-state i { font-size: 3rem; margin-bottom: 1rem; color: var(--accent); }
+    .empty-state p { font-size: 0.9rem; }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.85); display: none;
+      align-items: center; justify-content: center;
+      cursor: pointer; opacity: 0; transition: opacity 0.3s ease;
+    }
+    .lightbox.show { display: flex; opacity: 1; }
+    .lightbox img {
+      max-width: 90vw; max-height: 85vh; border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      transform: scale(0.9); transition: transform 0.3s ease;
+    }
+    .lightbox.show img { transform: scale(1); }
+
+    @media (max-width: 640px) {
+      .page-header h1 { font-size: 1.8rem; }
+      .gallery { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="p-nav">
+    <a href="../index.html"><i class="fas fa-arrow-left"></i> <span class="lang-en">Back</span><span class="lang-zh">返回</span></a>
+    <span class="p-nav-title"><span class="lang-en">Pets</span><span class="lang-zh">宠物</span></span>
+    <div></div>
+  </nav>
+
+  <div class="pets-page">
+    <div class="page-header">
+      <h1><span class="lang-en">Meet Joey & Friends</span><span class="lang-zh">认识 Joey 和他的朋友们</span></h1>
+      <p><span class="lang-en">Our little family of furry and feathered friends</span><span class="lang-zh">我们毛茸茸的小家庭</span></p>
+    </div>
+
+    <div class="gallery" id="gallery"></div>
+
+    <div class="load-more-wrap">
+      <button class="load-more-btn" id="loadMoreBtn">
+        <i class="fas fa-paw"></i>
+        <span class="lang-en"> Load more cute pictures…</span>
+        <span class="lang-zh"> 加载更多可爱的照片…</span>
+      </button>
+    </div>
+
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <i class="fas fa-camera"></i>
+      <p><span class="lang-en">No pet photos yet — add photos to img/pets/ to see them here!</span><span class="lang-zh">还没有宠物照片 — 将照片添加到 img/pets/ 即可在此显示！</span></p>
+    </div>
+  </div>
+
+  <!-- Lightbox for full-size photo -->
+  <div class="lightbox" id="lightbox">
+    <img id="lightboxImg" src="" alt="">
+  </div>
+
+  <script>
+    /* ── Preferences ── */
+    if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+    if (localStorage.getItem('lang') === 'zh') { document.body.classList.add('zh'); document.documentElement.lang = 'zh'; }
+
+    /*
+     * ── Pet photos config ──
+     * Photos are loaded from img/pets/. Add images there and list them below.
+     * Sort by date (newest first). The gallery shows them gradually.
+     * Supported formats: jpg, png, webp, gif
+     *
+     * To add a photo: drop the file in img/pets/ and add an entry here.
+     */
+    const PET_PHOTOS = [
+      // { file: 'joey_park.jpg', name: 'Joey at the park', date: '2024-06-15' },
+      // { file: 'joey_sleeping.jpg', name: 'Nap time', date: '2024-05-20' },
+      // { file: 'joey_birthday.jpg', name: 'Happy birthday Joey!', date: '2024-03-10' },
+    ];
+
+    // Sort by date (newest first)
+    PET_PHOTOS.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+    const BATCH_SIZE = 6;
+    let shown = 0;
+    const gallery = document.getElementById('gallery');
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    const emptyState = document.getElementById('emptyState');
+
+    function loadBatch() {
+      const batch = PET_PHOTOS.slice(shown, shown + BATCH_SIZE);
+      if (batch.length === 0) return;
+
+      batch.forEach((photo, i) => {
+        const item = document.createElement('div');
+        item.className = 'gallery-item';
+
+        const img = document.createElement('img');
+        img.src = '../img/pets/' + photo.file;
+        img.alt = photo.name || '';
+        img.loading = 'lazy';
+
+        const info = document.createElement('div');
+        info.className = 'gallery-item-info';
+        info.innerHTML = `<div class="gallery-item-name">${photo.name || ''}</div><div class="gallery-item-date">${photo.date || ''}</div>`;
+
+        item.appendChild(img);
+        item.appendChild(info);
+        gallery.appendChild(item);
+
+        // Click to open lightbox
+        item.addEventListener('click', () => {
+          document.getElementById('lightboxImg').src = '../img/pets/' + photo.file;
+          document.getElementById('lightbox').classList.add('show');
+        });
+
+        // Staggered fade-in animation (top-to-bottom, left-to-right)
+        setTimeout(() => { item.classList.add('visible'); }, (shown + i) * 100 + 50);
+      });
+
+      shown += batch.length;
+
+      // Hide load more if all shown
+      if (shown >= PET_PHOTOS.length) {
+        loadMoreBtn.classList.add('hidden');
+      }
+    }
+
+    // Init
+    if (PET_PHOTOS.length === 0) {
+      emptyState.style.display = 'block';
+      loadMoreBtn.classList.add('hidden');
+    } else {
+      loadBatch();
+    }
+
+    loadMoreBtn.addEventListener('click', loadBatch);
+
+    // Lightbox close
+    document.getElementById('lightbox').addEventListener('click', () => {
+      document.getElementById('lightbox').classList.remove('show');
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('show');
+    });
+  </script>
+</body>
+</html>

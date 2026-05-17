@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Internal Space — Zhaomin Xiao</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script defer src="../assets/fontawesome/js/all.min.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
+
+    /* ── Login screen ── */
+    .login-screen {
+      height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transition: opacity 0.5s ease;
+    }
+    .login-screen.hidden { opacity: 0; pointer-events: none; }
+
+    .login-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(255,255,255,0.2); display: flex;
+      align-items: center; justify-content: center;
+      margin-bottom: 1rem; font-size: 2rem; color: #fff;
+      backdrop-filter: blur(10px);
+    }
+    .login-title { color: #fff; font-size: 1.2rem; font-weight: 600; margin-bottom: 1.5rem; }
+
+    .login-form { display: flex; flex-direction: column; gap: 0.7rem; width: 260px; }
+    .login-input {
+      padding: 0.65rem 1rem; border: none; border-radius: 10px;
+      background: rgba(255,255,255,0.2); color: #fff;
+      font-family: 'Inter', sans-serif; font-size: 0.85rem;
+      backdrop-filter: blur(10px); outline: none;
+      transition: background 0.2s;
+    }
+    .login-input::placeholder { color: rgba(255,255,255,0.6); }
+    .login-input:focus { background: rgba(255,255,255,0.3); }
+
+    .login-btn {
+      padding: 0.65rem; border: none; border-radius: 10px;
+      background: rgba(255,255,255,0.9); color: #5b4a9e;
+      font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 700;
+      cursor: pointer; transition: background 0.2s, transform 0.2s;
+    }
+    .login-btn:hover { background: #fff; transform: translateY(-1px); }
+
+    .login-error {
+      color: #ffb3b3; font-size: 0.75rem; text-align: center;
+      min-height: 1.2em; margin-top: 0.3rem;
+    }
+
+    .login-back {
+      position: absolute; top: 1rem; left: 1.5rem;
+      color: rgba(255,255,255,0.7); text-decoration: none;
+      font-size: 0.82rem; font-weight: 500; transition: color 0.2s;
+    }
+    .login-back:hover { color: #fff; }
+
+    /* ── Desktop ── */
+    .desktop {
+      height: 100vh; display: none;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      position: relative; flex-direction: column;
+    }
+    .desktop.show { display: flex; }
+
+    /* Taskbar */
+    .taskbar {
+      height: 44px; background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(20px); display: flex;
+      align-items: center; justify-content: space-between;
+      padding: 0 1.5rem; flex-shrink: 0;
+    }
+    .taskbar-left { display: flex; align-items: center; gap: 1rem; }
+    .taskbar-logo { color: #fff; font-size: 0.85rem; font-weight: 700; }
+    .taskbar-time { color: rgba(255,255,255,0.7); font-size: 0.75rem; font-weight: 500; }
+    .taskbar-right { display: flex; align-items: center; gap: 1rem; }
+    .taskbar-btn {
+      background: none; border: none; color: rgba(255,255,255,0.6);
+      font-size: 0.8rem; cursor: pointer; font-family: 'Inter', sans-serif;
+      transition: color 0.2s;
+    }
+    .taskbar-btn:hover { color: #fff; }
+
+    /* Desktop icons */
+    .desktop-area {
+      flex: 1; padding: 2rem; display: flex; flex-wrap: wrap;
+      gap: 2rem; align-content: flex-start;
+    }
+
+    .desktop-icon {
+      width: 90px; display: flex; flex-direction: column;
+      align-items: center; gap: 0.5rem; cursor: pointer;
+      text-decoration: none; transition: transform 0.2s;
+    }
+    .desktop-icon:hover { transform: scale(1.08); }
+
+    .desktop-icon-img {
+      width: 60px; height: 60px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; color: #fff;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .desktop-icon-label {
+      font-size: 0.68rem; font-weight: 500; color: rgba(255,255,255,0.85);
+      text-align: center; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      max-width: 90px; word-wrap: break-word;
+    }
+
+    /* Dock */
+    .dock {
+      display: flex; justify-content: center; padding: 0.6rem;
+      background: rgba(255,255,255,0.08); backdrop-filter: blur(20px);
+      border-radius: 18px 18px 0 0; gap: 0.5rem;
+      margin: 0 auto; width: fit-content; min-width: 300px;
+    }
+    .dock-item {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; color: #fff; cursor: pointer;
+      transition: transform 0.2s; text-decoration: none;
+    }
+    .dock-item:hover { transform: scale(1.2) translateY(-4px); }
+  </style>
+</head>
+
+<body>
+  <!-- Login Screen -->
+  <div class="login-screen" id="loginScreen">
+    <a href="../index.html" class="login-back"><i class="fas fa-arrow-left"></i> Back</a>
+    <div class="login-avatar"><i class="fas fa-user-astronaut"></i></div>
+    <div class="login-title">Internal Space</div>
+    <div class="login-form">
+      <input type="text" class="login-input" id="username" placeholder="Username" autocomplete="off">
+      <input type="password" class="login-input" id="password" placeholder="Password">
+      <button class="login-btn" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+      <div class="login-error" id="loginError"></div>
+    </div>
+  </div>
+
+  <!-- Desktop -->
+  <div class="desktop" id="desktop">
+    <div class="taskbar">
+      <div class="taskbar-left">
+        <span class="taskbar-logo"><i class="fas fa-cube"></i> ZX Space</span>
+      </div>
+      <div class="taskbar-right">
+        <span class="taskbar-time" id="clock"></span>
+        <button class="taskbar-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </div>
+
+    <div class="desktop-area">
+      <a class="desktop-icon" href="../index.html">
+        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#e17055,#d35400);">
+          <i class="fas fa-home"></i>
+        </div>
+        <span class="desktop-icon-label">Homepage</span>
+      </a>
+      <a class="desktop-icon" href="reading.html">
+        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#6b3f20,#8b5e3c);">
+          <i class="fas fa-book"></i>
+        </div>
+        <span class="desktop-icon-label">Bookshelf</span>
+      </a>
+      <a class="desktop-icon" href="history.html">
+        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);">
+          <i class="fas fa-landmark"></i>
+        </div>
+        <span class="desktop-icon-label">History</span>
+      </a>
+      <a class="desktop-icon" href="travel.html">
+        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#0c2461,#1e3799);">
+          <i class="fas fa-globe-americas"></i>
+        </div>
+        <span class="desktop-icon-label">Travel</span>
+      </a>
+      <a class="desktop-icon" href="pets.html">
+        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#e17055,#fdcb6e);">
+          <i class="fas fa-paw"></i>
+        </div>
+        <span class="desktop-icon-label">Pets</span>
+      </a>
+      <a class="desktop-icon" href="visitors.html">
+        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#00b894,#55efc4);">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <span class="desktop-icon-label">Visitor Stats</span>
+      </a>
+      <a class="desktop-icon" href="https://github.com/zhaomin1995" target="_blank">
+        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#2d3436,#636e72);">
+          <i class="fab fa-github"></i>
+        </div>
+        <span class="desktop-icon-label">GitHub</span>
+      </a>
+      <a class="desktop-icon" href="https://www.linkedin.com/in/zhaomin-xiao-635078221/" target="_blank">
+        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#0077b5,#00a0dc);">
+          <i class="fab fa-linkedin"></i>
+        </div>
+        <span class="desktop-icon-label">LinkedIn</span>
+      </a>
+    </div>
+
+    <div class="dock">
+      <a class="dock-item" href="../index.html" style="background:linear-gradient(135deg,#e17055,#d35400);"><i class="fas fa-home"></i></a>
+      <a class="dock-item" href="reading.html" style="background:linear-gradient(135deg,#6b3f20,#8b5e3c);"><i class="fas fa-book"></i></a>
+      <a class="dock-item" href="history.html" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);"><i class="fas fa-landmark"></i></a>
+      <a class="dock-item" href="travel.html" style="background:linear-gradient(135deg,#0c2461,#1e3799);"><i class="fas fa-globe-americas"></i></a>
+      <a class="dock-item" href="pets.html" style="background:linear-gradient(135deg,#e17055,#fdcb6e);"><i class="fas fa-paw"></i></a>
+    </div>
+  </div>
+
+  <script>
+    /* ── Auth: simple client-side check (test/test) ── */
+    const ALLOWED = [{ u: 'test', p: 'test' }];
+
+    // Check if already logged in this session
+    if (sessionStorage.getItem('spaceAuth') === '1') {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('desktop').classList.add('show');
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', tryLogin);
+    document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+    function tryLogin() {
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value;
+      const match = ALLOWED.find(a => a.u === u && a.p === p);
+
+      if (match) {
+        sessionStorage.setItem('spaceAuth', '1');
+        document.getElementById('loginScreen').classList.add('hidden');
+        setTimeout(() => { document.getElementById('desktop').classList.add('show'); }, 300);
+      } else {
+        document.getElementById('loginError').textContent = 'Invalid username or password';
+        document.getElementById('password').value = '';
+      }
+    }
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('spaceAuth');
+      location.reload();
+    });
+
+    // Clock
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    updateClock();
+    setInterval(updateClock, 30000);
+  </script>
+</body>
+</html>

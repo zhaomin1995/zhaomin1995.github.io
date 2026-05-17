@@ -600,7 +600,8 @@
       await clearCacheIfNewSession();
 
       if (!textUrl) {
-        showFallback('This book is available on the source website.');
+        // Non-fetchable book — redirect to source website directly
+        window.location.href = book.pdf;
         return;
       }
 
