@@ -99,19 +99,27 @@
     }
 
     .travel-marker {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: #e17055;
-      border: 2px solid rgba(255,255,255,0.8);
-      box-shadow: 0 0 12px rgba(225, 112, 85, 0.6);
-      cursor: pointer;
+      cursor: pointer; position: relative;
       transition: transform 0.2s;
     }
+    .travel-marker:hover { transform: scale(1.08); z-index: 10; }
 
-    .travel-marker:hover {
-      transform: scale(1.4);
+    .cluster-thumb {
+      width: 64px; height: 64px; border-radius: 12px;
+      object-fit: cover; border: 2px solid rgba(255,255,255,0.85);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      display: block;
     }
+    .cluster-badge {
+      position: absolute; top: -6px; right: -6px;
+      min-width: 22px; height: 22px; border-radius: 11px;
+      background: #e17055; color: #fff;
+      font-size: 0.65rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      border: 2px solid rgba(255,255,255,0.9);
+    }
+    .cluster-badge.single { display: none; }
 
     .travel-instructions {
       position: fixed;
@@ -204,95 +212,131 @@
         '<span class="lang-zh">还没有带GPS数据的照片 — 将带有GPS数据的照片添加到 img/travel/ 并运行 build-travel.py</span>';
     }
 
-    (function initGlobe() {
+    /* ── Clustering: group nearby photos based on zoom level ──
+       At low zoom (zoomed out), cluster broadly; at high zoom, split into individual photos.
+       Each cluster shows a thumbnail of one photo + a count badge. */
+    function clusterPlaces(places, radius) {
+      const used = new Set();
+      const clusters = [];
+      for (let i = 0; i < places.length; i++) {
+        if (used.has(i)) continue;
+        const cluster = [places[i]];
+        used.add(i);
+        for (let j = i + 1; j < places.length; j++) {
+          if (used.has(j)) continue;
+          const dist = Math.sqrt(
+            Math.pow(places[i].lat - places[j].lat, 2) +
+            Math.pow(places[i].lng - places[j].lng, 2)
+          );
+          if (dist < radius) { cluster.push(places[j]); used.add(j); }
+        }
+        const avgLat = cluster.reduce((s, p) => s + p.lat, 0) / cluster.length;
+        const avgLng = cluster.reduce((s, p) => s + p.lng, 0) / cluster.length;
+        clusters.push({ lat: avgLat, lng: avgLng, photos: cluster, thumb: cluster[0].img, count: cluster.length });
+      }
+      return clusters;
+    }
 
-    /* ── Globe initialization (Globe.gl) ── */
+    let currentClusters = [];
+    let lastZoom = -1;
+
+    function updateClusters() {
+      const pov = globe.pointOfView();
+      const alt = pov.altitude || 2.5;
+      // Cluster radius shrinks as user zooms in
+      const radius = Math.max(0.5, alt * 8);
+      const newZoom = Math.round(alt * 10);
+      if (newZoom === lastZoom) return;
+      lastZoom = newZoom;
+
+      currentClusters = clusterPlaces(places, radius);
+      globe.htmlElementsData(currentClusters);
+    }
+
+    /* ── Globe initialization ── */
     const globe = Globe()
-      // Earth textures: surface, bump map for terrain relief, starry background
       .globeImageUrl('https://unpkg.com/three-globe@2.32.0/example/img/earth-blue-marble.jpg')
       .bumpImageUrl('https://unpkg.com/three-globe@2.32.0/example/img/earth-topology.png')
       .backgroundImageUrl('https://unpkg.com/three-globe@2.32.0/example/img/night-sky.png')
-      // Atmospheric glow ring around the globe
       .showAtmosphere(true)
       .atmosphereColor('#6366f1')
       .atmosphereAltitude(0.2)
-      // 3D point markers rendered on the globe surface
-      .pointsData(places)
-      .pointLat('lat')
-      .pointLng('lng')
-      .pointColor(() => '#e17055')
-      .pointAltitude(0.02)
-      .pointRadius(0.4)
-      .pointsMerge(false) // keep points separate so each is individually hoverable
-      // Floating text labels for each destination
-      .labelsData(places)
-      .labelLat('lat')
-      .labelLng('lng')
-      .labelText('name')
-      .labelSize(1.2)
-      .labelDotRadius(0.4)
-      .labelColor(() => 'rgba(255, 255, 255, 0.85)')
-      .labelResolution(2)
-      .labelAltitude(0.025)
-      // HTML overlay markers (the interactive dots that show tooltips on hover)
-      .htmlElementsData(places)
+      .htmlElementsData([])
       .htmlLat('lat')
       .htmlLng('lng')
       .htmlAltitude(0.03)
       .htmlElement(d => {
-        // Create a circular marker DOM element for each destination
         const el = document.createElement('div');
         el.className = 'travel-marker';
-        el.title = d.name;
 
-        /* ── Tooltip on hover ── */
+        // Thumbnail image
+        const img = document.createElement('img');
+        img.className = 'cluster-thumb';
+        img.src = d.thumb;
+        img.alt = d.count + ' photos';
+        el.appendChild(img);
+
+        // Count badge (hidden if single photo)
+        const badge = document.createElement('div');
+        badge.className = 'cluster-badge' + (d.count <= 1 ? ' single' : '');
+        badge.textContent = d.count;
+        el.appendChild(badge);
+
+        // Tooltip on hover showing all photos in the cluster
         el.addEventListener('mouseenter', () => {
-          // Remove any existing tooltip before creating a new one
-          const existing = document.querySelector('.travel-tooltip');
-          if (existing) existing.remove();
-
-          // Build tooltip content: optional image + name + description
+          document.querySelectorAll('.travel-tooltip').forEach(t => t.remove());
           const tooltip = document.createElement('div');
           tooltip.className = 'travel-tooltip';
-          let html = '';
-          if (d.img) {
-            html += `<img src="${d.img}" alt="${d.name}">`;
-          }
-          html += `<h4>${d.name}</h4>`;
-          html += `<p>${d.desc}</p>`;
+
+          let html = '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;">';
+          d.photos.slice(0, 6).forEach(p => {
+            html += `<img src="${p.img}" style="width:70px;height:52px;object-fit:cover;border-radius:6px;">`;
+          });
+          if (d.photos.length > 6) html += `<div style="display:flex;align-items:center;justify-content:center;width:70px;height:52px;border-radius:6px;background:rgba(0,0,0,0.3);color:#fff;font-size:0.75rem;font-weight:600;">+${d.photos.length - 6}</div>`;
+          html += '</div>';
+          html += `<h4>${d.count} ${isZh ? '张照片' : (d.count === 1 ? 'photo' : 'photos')}</h4>`;
+          if (d.photos[0].desc) html += `<p>${d.photos[0].desc}</p>`;
           tooltip.innerHTML = html;
 
-          // Position tooltip centered above the marker
           tooltip.style.position = 'fixed';
           const rect = el.getBoundingClientRect();
-          tooltip.style.left = (rect.left + rect.width / 2 - 120) + 'px';
-          tooltip.style.top = (rect.top - 180) + 'px';
+          let tx = rect.left + rect.width / 2 - 120;
+          let ty = rect.top - 200;
+          if (tx < 10) tx = 10;
+          if (tx + 250 > window.innerWidth) tx = window.innerWidth - 260;
+          if (ty < 10) ty = rect.bottom + 10;
+          tooltip.style.left = tx + 'px';
+          tooltip.style.top = ty + 'px';
           tooltip.style.zIndex = '200';
           document.body.appendChild(tooltip);
         });
 
-        // Remove tooltip when the mouse leaves the marker
         el.addEventListener('mouseleave', () => {
-          const existing = document.querySelector('.travel-tooltip');
-          if (existing) existing.remove();
+          setTimeout(() => {
+            document.querySelectorAll('.travel-tooltip').forEach(t => t.remove());
+          }, 300);
         });
 
         return el;
       })
-      (document.getElementById('globeContainer')); // mount globe into the container div
+      (document.getElementById('globeContainer'));
 
-    /* ── Auto-rotation: globe spins slowly until the user interacts ── */
+    // Auto-rotation
     globe.controls().autoRotate = true;
     globe.controls().autoRotateSpeed = 0.5;
-    globe.controls().enableDamping = true; // smooth deceleration after drag
+    globe.controls().enableDamping = true;
 
-    /* ── Responsive resize: keep globe filling the viewport ── */
+    // Initial clustering
+    setTimeout(updateClusters, 500);
+
+    // Re-cluster when user zooms or pans
+    globe.controls().addEventListener('change', updateClusters);
+
+    // Responsive resize
     window.addEventListener('resize', () => {
       globe.width(window.innerWidth);
       globe.height(window.innerHeight);
     });
-
-    })(); // end initGlobe
   </script>
 
 </body>
