@@ -6,8 +6,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet">
-  <script defer src="assets/fontawesome/js/all.min.js"></script>
-  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+  <script defer src="../assets/fontawesome/js/all.min.js"></script>
+  <script src="../assets/js/books.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -251,7 +252,7 @@
 <body>
 
   <nav class="r-nav">
-    <a href="index.html"><i class="fas fa-arrow-left"></i> <span class="lang-en">Back</span><span class="lang-zh">返回</span></a>
+    <a href="../index.html"><i class="fas fa-arrow-left"></i> <span class="lang-en">Back</span><span class="lang-zh">返回</span></a>
     <span class="r-nav-title"><span class="lang-en">Bookshelf</span><span class="lang-zh">书架</span></span>
     <div></div>
   </nav>
@@ -299,37 +300,11 @@
     /* ── Book data ──
        To add a book: push to the appropriate category array.
        Fields: title, author, desc (English), color (hex), height (px, 110-160). */
-    /* Only books with legitimate free/open-access PDFs are included.
-       Each book has a `pdf` field linking to the official free source. */
-    const categories = [
-      { id: 'all', en: 'All Books', zh: '全部书籍', icon: 'fas fa-book' },
-      { id: 'ai-ml', en: 'AI & Machine Learning', zh: 'AI与机器学习', icon: 'fas fa-brain' },
-      { id: 'nlp', en: 'NLP & Language', zh: '自然语言处理', icon: 'fas fa-language' },
-      { id: 'algorithms', en: 'Algorithms & Data', zh: '算法与数据', icon: 'fas fa-project-diagram' },
-      { id: 'philosophy', en: 'Philosophy', zh: '哲学', icon: 'fas fa-yin-yang' },
-    ];
+    /* Book data loaded from ../assets/js/books.js (BOOK_CATEGORIES and BOOKS arrays) */
+    const categories = BOOK_CATEGORIES;
+    const books = BOOKS;
 
-    const books = [
-      // AI & Machine Learning
-      { title: 'Deep Learning', author: 'Goodfellow, Bengio, Courville', desc: 'The definitive textbook on deep neural networks, covering mathematical foundations, optimization, regularization, CNNs, RNNs, and generative models. Freely published online by the authors.', cat: 'ai-ml', color: '#2c3e50', height: 150, pdf: 'https://www.deeplearningbook.org/' },
-      { title: 'Pattern Recognition & ML', author: 'Christopher Bishop', desc: 'A comprehensive introduction to pattern recognition and machine learning, with deep coverage of probability distributions, neural networks, kernel methods, and graphical models. Made freely available by Microsoft Research.', cat: 'ai-ml', color: '#e74c3c', height: 140, pdf: 'https://www.microsoft.com/en-us/research/publication/pattern-recognition-machine-learning/' },
-      { title: 'Elements of Statistical Learning', author: 'Hastie, Tibshirani, Friedman', desc: 'A classic from the Stanford statistics department covering supervised and unsupervised learning, model assessment, ensemble methods, and high-dimensional problems. Free PDF from the authors.', cat: 'ai-ml', color: '#2c3e50', height: 138, pdf: 'https://hastie.su.domains/ElemStatLearn/' },
-
-      // NLP & Language
-      { title: 'Speech & Language Processing', author: 'Jurafsky & Martin', desc: 'The standard NLP textbook covering tokenization, n-grams, neural language models, transformers, information extraction, question answering, and dialogue systems. Draft chapters freely available from the authors.', cat: 'nlp', color: '#16a085', height: 145, pdf: 'https://web.stanford.edu/~jurafsky/slp3/' },
-
-      // Algorithms & Data
-      { title: 'Mining Massive Datasets', author: 'Leskovec, Rajaraman, Ullman', desc: 'Algorithms and techniques for big data — MapReduce, similarity search, link analysis, recommendation systems, and mining data streams. Free PDF from the authors at Stanford.', cat: 'algorithms', color: '#d35400', height: 135, pdf: 'http://www.mmds.org/' },
-
-      // Philosophy (public domain classics)
-      { title: 'Meditations', author: 'Marcus Aurelius', desc: 'A Roman emperor\'s private journal on Stoic philosophy. Written as personal notes, never intended for publication, these reflections offer timeless wisdom on resilience, duty, and inner peace. Public domain.', cat: 'philosophy', color: '#795548', height: 118, pdf: 'http://classics.mit.edu/Antoninus/meditations.html' },
-      { title: 'The Republic', author: 'Plato', desc: 'Socratic dialogues on justice, the ideal state, the allegory of the cave, and the nature of the philosopher-king. The foundation of Western political philosophy. Public domain.', cat: 'philosophy', color: '#4a6fa5', height: 135, pdf: 'http://classics.mit.edu/Plato/republic.html' },
-      { title: 'Tao Te Ching', author: 'Laozi', desc: 'Eighty-one short chapters on the Tao — the Way. Ancient Chinese wisdom on simplicity, humility, compassion, and living in harmony with the natural order. Public domain.', cat: 'philosophy', color: '#2d5a27', height: 112, pdf: 'https://www.gutenberg.org/ebooks/216' },
-      { title: 'The Art of War', author: 'Sun Tzu', desc: 'Strategy, tactics, and the philosophy of conflict. Written 2,500 years ago, it remains essential reading for military leaders, business strategists, and anyone facing competition. Public domain.', cat: 'philosophy', color: '#c0392b', height: 115, pdf: 'http://classics.mit.edu/Tzu/artwar.html' },
-      { title: 'Beyond Good and Evil', author: 'Friedrich Nietzsche', desc: 'A critique of past philosophers and traditional morality. Nietzsche challenges the pursuit of truth beyond conventional values and the master-slave morality dichotomy. Public domain.', cat: 'philosophy', color: '#2c2c54', height: 128, pdf: 'https://www.gutenberg.org/ebooks/4363' },
-    ];
-
-    /* ── Sidebar ── */
+    /* ── ── */
     const sidebarEl = document.getElementById('sidebar');
     let activeCat = 'all';
 

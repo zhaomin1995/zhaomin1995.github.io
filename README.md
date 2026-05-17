@@ -7,13 +7,15 @@ A static personal academic website hosted on GitHub Pages at [zhaomin1995.github
 ```
 zhaomin1995.github.io/
 ├── index.html              # Main homepage (About, Education, News, Experience, Misc)
-├── travel.html             # 3D globe page — interactive travel map (Globe.gl)
-├── history.html            # Interactive zoomable world history timeline (Canvas)
-├── visitors.html           # Visitor stats page with IP geolocation and Leaflet map
-├── reading.html            # Interactive bookshelf page — books organized by category
 ├── zhaomin_cv.pdf          # CV / resume PDF
 ├── license.txt             # License file
 ├── README.md               # This file
+│
+├── pages/                  # Sub-pages (linked from index.html)
+│   ├── travel.html         # 3D globe page — interactive travel map (Globe.gl)
+│   ├── history.html        # Interactive zoomable world history timeline (Canvas)
+│   ├── reading.html        # Bookshelf with 201 books across 21 categories
+│   └── visitors.html       # Visitor stats page with IP geolocation and Leaflet map
 │
 ├── assets/
 │   ├── css/
@@ -21,8 +23,10 @@ zhaomin1995.github.io/
 │   │                       #   Light/dark mode via CSS custom properties
 │   │                       #   Language toggle (EN/中文) via .lang-en / .lang-zh classes
 │   ├── js/
-│   │   └── events.js       # World history event data (314 events, bilingual)
-│   │                       #   Used by history.html — ERAS, CONTINENTS, EVENTS arrays
+│   │   ├── events.js       # World history event data (314 events, bilingual)
+│   │   │                   #   Used by history.html — ERAS, CONTINENTS, EVENTS arrays
+│   │   └── books.js        # Book data (201 books, 21 categories)
+│   │                       #   Used by reading.html — BOOK_CATEGORIES, BOOKS arrays
 │   └── fontawesome/
 │       └── js/all.min.js   # FontAwesome icon library
 │
