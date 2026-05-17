@@ -211,14 +211,31 @@
     let particles = [];  // animated particles flowing along the timeline path
     let animFrame;
 
-    /* Filter events by continent/era, then by zoom-based rank threshold */
+    /* Filter events by continent/era, then limit by zoom level.
+       Default zoom shows at most ~20 major events. Zoom in to see more. */
     function getVisibleEvents() {
       let evts = EVENTS;
       if (activeContinent !== 'all') evts = evts.filter(e => e.cont === activeContinent);
       if (activeEra !== 'all') evts = evts.filter(e => e.era === activeEra);
-      if (zoom < 0.6) return evts.filter(e => e.rank === 1);   // zoomed out: landmarks only
-      if (zoom < 1.2) return evts.filter(e => e.rank <= 2);     // mid zoom: rank 1+2
-      return evts;                                               // zoomed in: show all
+
+      // At default zoom (1.0), show only rank-1 events, capped at ~20
+      if (zoom < 0.8) {
+        const rank1 = evts.filter(e => e.rank === 1);
+        return rank1.length > 20 ? evenlyPick(rank1, 20) : rank1;
+      }
+      // Mid zoom: show rank 1+2
+      if (zoom < 1.5) return evts.filter(e => e.rank <= 2);
+      // Deeper zoom: show all
+      return evts;
+    }
+
+    // Pick n items evenly spaced from an array (keeps chronological spread)
+    function evenlyPick(arr, n) {
+      if (arr.length <= n) return arr;
+      const step = arr.length / n;
+      const result = [];
+      for (let i = 0; i < n; i++) result.push(arr[Math.floor(i * step)]);
+      return result;
     }
 
     /* ── computePath: lay out events in a snaking left-right grid with sinusoidal wave offsets ── */

@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="../assets/css/apple.css">
   <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
   <script src="https://unpkg.com/globe.gl@2.32.0/dist/globe.gl.min.js"></script>
+  <script src="../assets/js/places.js"></script>
   <style>
     .travel-page ::selection {
       background: rgba(225, 112, 85, 0.35);
@@ -184,53 +185,45 @@
       document.documentElement.lang = 'zh';
     }
 
-    // Cache language flag so place names/descriptions render in the correct locale
     const isZh = document.body.classList.contains('zh');
 
-    /*
-     * ── Travel destinations array ──
-     * Each entry needs: name, lat, lng, desc, img (path or empty string).
-     * To add a new place: copy an existing object, update the fields,
-     * and drop an optional photo into img/travel/.
-     */
-    const places = [
-      {
-        name: isZh ? '纽约' : 'New York',
-        lat: 40.7128, lng: -74.0060,
-        desc: isZh ? '大苹果城，不夜之城' : 'The Big Apple, the city that never sleeps',
-        img: ''
-      },
-      {
-        name: isZh ? '旧金山' : 'San Francisco',
-        lat: 37.7749, lng: -122.4194,
-        desc: isZh ? '金门大桥与科技之城' : 'Golden Gate Bridge and tech capital',
-        img: ''
-      },
-      {
-        name: isZh ? '丹顿' : 'Denton, TX',
-        lat: 33.2148, lng: -97.1331,
-        desc: isZh ? '大学生活的地方' : 'Where university life happened',
-        img: ''
-      },
-      {
-        name: isZh ? '匹兹堡' : 'Pittsburgh',
-        lat: 40.4406, lng: -79.9959,
-        desc: isZh ? '钢铁之城，硕士求学之地' : 'Steel City, where I got my master\'s',
-        img: ''
-      },
-      {
-        name: isZh ? '深圳' : 'Shenzhen',
-        lat: 22.5431, lng: 114.0579,
-        desc: isZh ? '家乡，本科求学之地' : 'Home, where I did my undergrad',
-        img: ''
-      },
-      {
-        name: isZh ? '洛杉矶' : 'Los Angeles',
-        lat: 34.0522, lng: -118.2437,
-        desc: isZh ? '天使之城' : 'City of Angels',
-        img: ''
+    /* ── Filter places: only show destinations that have a photo in img/travel/ ──
+       We check each image by attempting to load it. If the image loads, the place
+       is added to the globe. If it 404s, the place is hidden. */
+    async function checkImage(src) {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = src;
+      });
+    }
+
+    async function loadPlaces() {
+      const validated = [];
+      for (const p of PLACES) {
+        if (!p.img) continue;
+        const imgPath = '../img/travel/' + p.img;
+        const exists = await checkImage(imgPath);
+        if (exists) {
+          const d = isZh ? p.zh : p.en;
+          validated.push({ name: d.name, desc: d.desc, lat: p.lat, lng: p.lng, img: imgPath });
+        }
       }
-    ];
+      return validated;
+    }
+
+    /* ── Build globe after photos are validated ── */
+    loadPlaces().then(places => {
+      if (places.length === 0) {
+        document.querySelector('.travel-instructions').innerHTML =
+          '<span class="lang-en">No travel photos yet — add photos to img/travel/ to see them here</span>' +
+          '<span class="lang-zh">还没有旅行照片 — 将照片添加到 img/travel/ 即可在此显示</span>';
+      }
+      initGlobe(places);
+    });
+
+    function initGlobe(places) {
 
     /* ── Globe initialization (Globe.gl) ── */
     const globe = Globe()
@@ -317,6 +310,8 @@
       globe.width(window.innerWidth);
       globe.height(window.innerHeight);
     });
+
+    } // end initGlobe
   </script>
 
 </body>
