@@ -356,9 +356,12 @@
     globe.controls().autoRotateSpeed = 0.5;
     globe.controls().enableDamping = true;
 
-    // Load photos from Firebase, then cluster
+    // Load photos from Firebase, then cluster (with retry to ensure globe is ready)
     loadPlaces().then(() => {
+      lastZoom = -1;
       updateClusters();
+      setTimeout(() => { lastZoom = -1; updateClusters(); }, 1000);
+      setTimeout(() => { lastZoom = -1; updateClusters(); }, 3000);
     });
 
     // Re-cluster when user zooms or pans
