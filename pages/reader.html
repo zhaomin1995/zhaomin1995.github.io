@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Reader — Zhaomin Xiao</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script defer src="../assets/fontawesome/js/all.min.js"></script>
+  <script src="../assets/js/books.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --page-bg: #faf6ee; --page-text: #2c2416; --page-sec: #8a7c6a;
+      --spine: #d4c4a8; --cover-bg: #2c1810; --nav-bg: rgba(250,246,238,0.9);
+      --shadow: rgba(80,40,10,0.15);
+    }
+    body.dark-mode {
+      --page-bg: #252018; --page-text: #ddd0bc; --page-sec: #8a7c6a;
+      --spine: #3a3028; --cover-bg: #1a1410; --nav-bg: rgba(37,32,24,0.92);
+      --shadow: rgba(0,0,0,0.4);
+    }
+    body {
+      font-family: 'Inter', sans-serif; background: var(--cover-bg);
+      color: var(--page-text); overflow: hidden; height: 100vh;
+      display: flex; flex-direction: column;
+    }
+    ::selection { background: rgba(139,94,60,0.3); }
+
+    /* Nav */
+    .reader-nav {
+      height: 48px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 1.5rem; background: var(--nav-bg);
+      backdrop-filter: blur(12px); z-index: 10; flex-shrink: 0;
+    }
+    .reader-nav a, .reader-nav button {
+      color: var(--page-sec); text-decoration: none; font-size: 0.82rem;
+      font-weight: 500; background: none; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; transition: color 0.2s;
+    }
+    .reader-nav a:hover, .reader-nav button:hover { color: var(--page-text); }
+    .reader-title {
+      font-family: 'Merriweather', serif; font-size: 0.9rem; font-weight: 700;
+      color: var(--page-text); max-width: 40vw; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis; text-align: center;
+    }
+    .reader-nav-right { display: flex; gap: 1rem; align-items: center; }
+
+    /* Book container */
+    .book-container {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem; position: relative;
+    }
+
+    /* Two-page spread */
+    .book-spread {
+      display: flex; max-width: 1000px; width: 100%; height: 100%;
+      max-height: 700px; box-shadow: 0 20px 60px var(--shadow);
+      border-radius: 4px; overflow: hidden; position: relative;
+    }
+
+    /* Spine divider */
+    .book-spread::after {
+      content: ''; position: absolute; left: 50%; top: 0; bottom: 0;
+      width: 2px; background: linear-gradient(180deg, transparent 0%, var(--spine) 10%, var(--spine) 90%, transparent 100%);
+      box-shadow: -2px 0 8px rgba(0,0,0,0.08), 2px 0 8px rgba(0,0,0,0.08);
+      z-index: 5;
+    }
+
+    .page {
+      flex: 1; background: var(--page-bg); padding: 3rem 2.5rem 2rem;
+      display: flex; flex-direction: column; position: relative;
+      overflow: hidden; cursor: default; user-select: text;
+    }
+
+    /* Left page has shadow on right edge, right page on left */
+    .page-left {
+      border-right: 1px solid rgba(0,0,0,0.04);
+      box-shadow: inset -8px 0 12px -8px rgba(0,0,0,0.06);
+    }
+    .page-right {
+      box-shadow: inset 8px 0 12px -8px rgba(0,0,0,0.06);
+    }
+
+    /* Click zones for page turning */
+    .page-turn-zone {
+      position: absolute; top: 0; bottom: 0; width: 25%; cursor: pointer; z-index: 3;
+    }
+    .page-turn-zone:hover { background: rgba(0,0,0,0.02); }
+    .page-turn-prev { left: 0; }
+    .page-turn-next { right: 0; }
+
+    .page-header {
+      font-size: 0.6rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--page-sec); margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .page-content {
+      flex: 1; font-family: 'Merriweather', serif; font-size: 0.92rem;
+      line-height: 1.85; color: var(--page-text); overflow: hidden;
+      text-align: justify; hyphens: auto;
+    }
+
+    .page-number {
+      text-align: center; font-size: 0.7rem; color: var(--page-sec);
+      margin-top: 1rem; font-variant-numeric: oldstyle-nums;
+    }
+
+    /* Single page on small screens */
+    @media (max-width: 800px) {
+      .book-spread { flex-direction: column; max-height: none; }
+      .book-spread::after { display: none; }
+      .page-left { display: none; }
+      .page-right { border-radius: 4px; }
+      .page { padding: 2rem 1.5rem 1.5rem; }
+    }
+
+    /* Page turn animation */
+    .page-content.turning-out {
+      animation: pageOut 0.3s ease-in forwards;
+    }
+    .page-content.turning-in {
+      animation: pageIn 0.3s ease-out forwards;
+    }
+    @keyframes pageOut {
+      to { opacity: 0; transform: translateX(-20px); }
+    }
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Bottom controls */
+    .reader-controls {
+      height: 52px; display: flex; align-items: center; justify-content: center;
+      gap: 1.5rem; background: var(--nav-bg); backdrop-filter: blur(12px);
+      flex-shrink: 0; padding: 0 1.5rem;
+    }
+    .ctrl-btn {
+      background: none; border: none; cursor: pointer; color: var(--page-sec);
+      font-size: 1.1rem; padding: 0.4rem 0.8rem; border-radius: 8px;
+      transition: all 0.2s; font-family: 'Inter', sans-serif;
+    }
+    .ctrl-btn:hover { color: var(--page-text); background: rgba(0,0,0,0.04); }
+    .ctrl-btn:disabled { opacity: 0.3; cursor: default; }
+    .ctrl-btn:disabled:hover { background: none; }
+    .page-indicator {
+      font-size: 0.75rem; color: var(--page-sec); font-weight: 500; min-width: 80px; text-align: center;
+    }
+
+    /* Progress bar */
+    .progress-bar {
+      width: 200px; height: 3px; background: rgba(0,0,0,0.08);
+      border-radius: 2px; overflow: hidden;
+    }
+    body.dark-mode .progress-bar { background: rgba(255,255,255,0.08); }
+    .progress-fill {
+      height: 100%; background: #8b5e3c; border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    /* Loading state */
+    .loading-msg {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100%; color: var(--page-sec); gap: 1rem;
+    }
+    .loading-msg i { font-size: 2rem; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-msg p { font-size: 0.85rem; }
+
+    /* Fallback link */
+    .fallback-link {
+      display: inline-block; margin-top: 1rem; padding: 0.5em 1.2em;
+      background: #8b5e3c; color: #fff; text-decoration: none;
+      border-radius: 8px; font-size: 0.82rem; font-weight: 600;
+      transition: background 0.2s;
+    }
+    .fallback-link:hover { background: #6b3f20; }
+  </style>
+</head>
+
+<body>
+  <!-- Top nav -->
+  <div class="reader-nav">
+    <a href="reading.html"><i class="fas fa-arrow-left"></i> Bookshelf</a>
+    <div class="reader-title" id="readerTitle">Loading...</div>
+    <div class="reader-nav-right">
+      <button id="fontSmaller" title="Smaller text"><i class="fas fa-minus"></i></button>
+      <button id="fontLarger" title="Larger text"><i class="fas fa-plus"></i></button>
+    </div>
+  </div>
+
+  <!-- Book pages -->
+  <div class="book-container">
+    <div class="book-spread" id="bookSpread">
+      <div class="page page-left" id="pageLeft">
+        <div class="page-header" id="headerLeft"></div>
+        <div class="page-content" id="contentLeft"></div>
+        <div class="page-number" id="numLeft"></div>
+        <div class="page-turn-zone page-turn-prev" id="turnPrevLeft"></div>
+        <div class="page-turn-zone page-turn-next" id="turnNextLeft"></div>
+      </div>
+      <div class="page page-right" id="pageRight">
+        <div class="page-header" id="headerRight"></div>
+        <div class="page-content" id="contentRight"></div>
+        <div class="page-number" id="numRight"></div>
+        <div class="page-turn-zone page-turn-prev" id="turnPrevRight"></div>
+        <div class="page-turn-zone page-turn-next" id="turnNextRight"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom controls -->
+  <div class="reader-controls">
+    <button class="ctrl-btn" id="btnFirst" title="First page"><i class="fas fa-angle-double-left"></i></button>
+    <button class="ctrl-btn" id="btnPrev" title="Previous"><i class="fas fa-chevron-left"></i></button>
+    <span class="page-indicator" id="pageIndicator">—</span>
+    <button class="ctrl-btn" id="btnNext" title="Next"><i class="fas fa-chevron-right"></i></button>
+    <button class="ctrl-btn" id="btnLast" title="Last page"><i class="fas fa-angle-double-right"></i></button>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <script>
+    /* ── Preferences ── */
+    if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+
+    /* ── Parse book index from URL ── */
+    const params = new URLSearchParams(window.location.search);
+    const bookIdx = parseInt(params.get('book') || '0', 10);
+    const book = BOOKS[bookIdx] || BOOKS[0];
+
+    document.getElementById('readerTitle').textContent = book.title;
+    document.title = book.title + ' — Reader';
+
+    /* ── State ── */
+    let pages = [];
+    let currentPage = 0;
+    let fontSize = 0.92;
+    let isTwoPage = window.innerWidth > 800;
+
+    /* ── Convert Gutenberg URL to plain text URL ── */
+    function getTextUrl(pdfUrl) {
+      const match = pdfUrl.match(/gutenberg\.org\/ebooks\/(\d+)/);
+      if (match) {
+        return `https://www.gutenberg.org/cache/epub/${match[1]}/pg${match[1]}.txt`;
+      }
+      return null;
+    }
+
+    /* ── Paginate text into pages that fit the container ── */
+    function paginateText(text) {
+      // Clean up Gutenberg headers/footers
+      const startMarkers = ['*** START OF THE PROJECT GUTENBERG', '*** START OF THIS PROJECT GUTENBERG'];
+      const endMarkers = ['*** END OF THE PROJECT GUTENBERG', '*** END OF THIS PROJECT GUTENBERG', '***END OF THE PROJECT GUTENBERG'];
+
+      for (const m of startMarkers) {
+        const idx = text.indexOf(m);
+        if (idx !== -1) {
+          const lineEnd = text.indexOf('\n', idx);
+          text = text.substring(lineEnd + 1);
+          break;
+        }
+      }
+      for (const m of endMarkers) {
+        const idx = text.indexOf(m);
+        if (idx !== -1) { text = text.substring(0, idx); break; }
+      }
+
+      // Split into paragraphs
+      const paragraphs = text.split(/\n\s*\n/).map(p => p.trim()).filter(p => p.length > 0);
+
+      // Estimate chars per page based on font size and container
+      const charsPerPage = Math.floor(1800 * (0.92 / fontSize));
+      const result = [];
+      let currentPageText = '';
+
+      for (const para of paragraphs) {
+        if (currentPageText.length + para.length + 2 > charsPerPage && currentPageText.length > 0) {
+          result.push(currentPageText.trim());
+          currentPageText = '';
+        }
+        currentPageText += para.replace(/\n/g, ' ').replace(/\s+/g, ' ') + '\n\n';
+      }
+      if (currentPageText.trim()) result.push(currentPageText.trim());
+
+      return result;
+    }
+
+    /* ── Render current page spread ── */
+    function renderPages() {
+      const leftContent = document.getElementById('contentLeft');
+      const rightContent = document.getElementById('contentRight');
+      const leftNum = document.getElementById('numLeft');
+      const rightNum = document.getElementById('numRight');
+      const headerLeft = document.getElementById('headerLeft');
+      const headerRight = document.getElementById('headerRight');
+
+      headerLeft.textContent = book.title;
+      headerRight.textContent = book.author;
+
+      if (pages.length === 0) return;
+
+      // Left page
+      const leftIdx = isTwoPage ? currentPage : -1;
+      const rightIdx = isTwoPage ? currentPage + 1 : currentPage;
+
+      if (isTwoPage && leftIdx < pages.length) {
+        leftContent.textContent = pages[leftIdx];
+        leftNum.textContent = leftIdx + 1;
+      } else if (isTwoPage) {
+        leftContent.textContent = '';
+        leftNum.textContent = '';
+      }
+
+      if (rightIdx < pages.length) {
+        rightContent.textContent = pages[rightIdx];
+        rightNum.textContent = rightIdx + 1;
+      } else {
+        rightContent.textContent = '';
+        rightNum.textContent = '';
+      }
+
+      // Update controls
+      const total = pages.length;
+      const cur = isTwoPage ? currentPage + 1 : currentPage + 1;
+      const end = isTwoPage ? Math.min(currentPage + 2, total) : currentPage + 1;
+      document.getElementById('pageIndicator').textContent = `${cur}–${end} / ${total}`;
+      document.getElementById('progressFill').style.width = (end / total * 100) + '%';
+
+      document.getElementById('btnPrev').disabled = currentPage <= 0;
+      document.getElementById('btnFirst').disabled = currentPage <= 0;
+      document.getElementById('btnNext').disabled = (isTwoPage ? currentPage + 2 : currentPage + 1) >= total;
+      document.getElementById('btnLast').disabled = (isTwoPage ? currentPage + 2 : currentPage + 1) >= total;
+    }
+
+    /* ── Page turn with animation ── */
+    function turnPage(delta) {
+      const step = isTwoPage ? 2 : 1;
+      const newPage = currentPage + delta * step;
+      if (newPage < 0 || newPage >= pages.length) return;
+
+      // Animate out
+      const contents = document.querySelectorAll('.page-content');
+      contents.forEach(c => { c.classList.remove('turning-in'); c.classList.add('turning-out'); });
+
+      setTimeout(() => {
+        currentPage = newPage;
+        renderPages();
+        contents.forEach(c => { c.classList.remove('turning-out'); c.classList.add('turning-in'); });
+      }, 200);
+    }
+
+    /* ── Controls ── */
+    document.getElementById('btnNext').addEventListener('click', () => turnPage(1));
+    document.getElementById('btnPrev').addEventListener('click', () => turnPage(-1));
+    document.getElementById('btnFirst').addEventListener('click', () => { currentPage = 0; renderPages(); });
+    document.getElementById('btnLast').addEventListener('click', () => {
+      const step = isTwoPage ? 2 : 1;
+      currentPage = Math.max(0, pages.length - step);
+      renderPages();
+    });
+
+    // Click zones on pages
+    document.getElementById('turnPrevLeft').addEventListener('click', () => turnPage(-1));
+    document.getElementById('turnNextLeft').addEventListener('click', () => turnPage(1));
+    document.getElementById('turnPrevRight').addEventListener('click', () => turnPage(-1));
+    document.getElementById('turnNextRight').addEventListener('click', () => turnPage(1));
+
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); turnPage(1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); turnPage(-1); }
+      if (e.key === 'Home') { currentPage = 0; renderPages(); }
+      if (e.key === 'End') { const s = isTwoPage ? 2 : 1; currentPage = Math.max(0, pages.length - s); renderPages(); }
+    });
+
+    // Font size
+    document.getElementById('fontLarger').addEventListener('click', () => {
+      fontSize = Math.min(1.3, fontSize + 0.06);
+      document.querySelectorAll('.page-content').forEach(c => c.style.fontSize = fontSize + 'rem');
+      if (fullText) { pages = paginateText(fullText); currentPage = 0; renderPages(); }
+    });
+    document.getElementById('fontSmaller').addEventListener('click', () => {
+      fontSize = Math.max(0.7, fontSize - 0.06);
+      document.querySelectorAll('.page-content').forEach(c => c.style.fontSize = fontSize + 'rem');
+      if (fullText) { pages = paginateText(fullText); currentPage = 0; renderPages(); }
+    });
+
+    // Responsive
+    window.addEventListener('resize', () => {
+      const was = isTwoPage;
+      isTwoPage = window.innerWidth > 800;
+      if (was !== isTwoPage) renderPages();
+    });
+
+    /* ── Load book text ── */
+    let fullText = '';
+
+    function showLoading() {
+      document.getElementById('contentRight').innerHTML = '<div class="loading-msg"><i class="fas fa-spinner"></i><p>Loading book...</p></div>';
+      document.getElementById('contentLeft').innerHTML = '';
+    }
+
+    function showFallback(reason) {
+      document.getElementById('contentLeft').innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;">
+          <div style="font-family:'Merriweather',serif;font-size:1.5rem;font-weight:700;margin-bottom:0.5rem;">${book.title}</div>
+          <div style="color:var(--page-sec);margin-bottom:1rem;">${book.author}</div>
+          <div style="font-family:'Merriweather',serif;font-size:0.85rem;line-height:1.8;max-width:300px;color:var(--page-sec);">${book.desc}</div>
+        </div>`;
+      document.getElementById('contentRight').innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;">
+          <i class="fas fa-book-open" style="font-size:2rem;color:var(--page-sec);margin-bottom:1rem;"></i>
+          <p style="font-size:0.85rem;color:var(--page-sec);margin-bottom:0.5rem;">${reason}</p>
+          <a class="fallback-link" href="${book.pdf}" target="_blank" rel="noopener">
+            <i class="fas fa-external-link-alt"></i> Read on Source Website
+          </a>
+        </div>`;
+      document.getElementById('pageIndicator').textContent = '—';
+    }
+
+    // Try to load text
+    showLoading();
+    const textUrl = getTextUrl(book.pdf);
+
+    if (textUrl) {
+      fetch(textUrl)
+        .then(r => {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.text();
+        })
+        .then(text => {
+          fullText = text;
+          pages = paginateText(text);
+          if (pages.length === 0) {
+            showFallback('Could not parse book text.');
+            return;
+          }
+          currentPage = 0;
+          renderPages();
+        })
+        .catch(() => {
+          showFallback('This book is available on the source website.');
+        });
+    } else {
+      // Non-Gutenberg books: show info + link
+      showFallback('This book is available on the source website.');
+    }
+  </script>
+</body>
+</html>

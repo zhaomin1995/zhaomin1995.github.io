@@ -15,6 +15,7 @@ zhaomin1995.github.io/
 │   ├── travel.html         # 3D globe page — interactive travel map (Globe.gl)
 │   ├── history.html        # Interactive zoomable world history timeline (Canvas)
 │   ├── reading.html        # Bookshelf with 201 books across 21 categories
+│   ├── reader.html         # In-browser book reader (iBooks-style, two-page spread)
 │   └── visitors.html       # Visitor stats page with IP geolocation and Leaflet map
 │
 ├── assets/

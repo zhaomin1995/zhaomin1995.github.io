@@ -284,7 +284,7 @@
         <div class="book-page-desc" id="bvPageDesc"></div>
         <div class="book-page-footer">
           <span class="book-page-tag" id="bvTag"></span>
-          <a class="book-read-btn" id="bvReadBtn" target="_blank" rel="noopener"><i class="fas fa-book-reader"></i> <span class="lang-en">Read Free</span><span class="lang-zh">免费阅读</span></a>
+          <a class="book-read-btn" id="bvReadBtn"><i class="fas fa-book-reader"></i> <span class="lang-en">Read</span><span class="lang-zh">阅读</span></a>
           <button class="book-close" id="bookClose"><i class="fas fa-times"></i> <span class="lang-en">Close</span><span class="lang-zh">关闭</span></button>
         </div>
       </div>
@@ -399,9 +399,10 @@
       tag.style.background = book.color + '18';
       tag.style.color = book.color;
 
-      // Set PDF link
+      // Set reader link — find book's index in BOOKS array
       const readBtn = document.getElementById('bvReadBtn');
-      readBtn.href = book.pdf;
+      const bookIndex = BOOKS.indexOf(book);
+      readBtn.href = 'reader.html?book=' + bookIndex;
 
       // Animate in
       overlay.style.display = 'flex';
