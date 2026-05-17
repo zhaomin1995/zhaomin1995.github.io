@@ -1,7 +1,7 @@
 {
   "name": "travel-photo-processor",
   "description": "Cloud Function to extract EXIF GPS from uploaded travel photos",
-  "engines": { "node": "18" },
+  "engines": { "node": "22" },
   "main": "index.js",
   "dependencies": {
     "firebase-admin": "^12.0.0",
