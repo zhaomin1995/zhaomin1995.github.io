@@ -10,6 +10,7 @@ zhaomin1995.github.io/
 ├── travel.html             # 3D globe page — interactive travel map (Globe.gl)
 ├── history.html            # Interactive zoomable world history timeline (Canvas)
 ├── visitors.html           # Visitor stats page with IP geolocation and Leaflet map
+├── reading.html            # Interactive bookshelf page — books organized by category
 ├── zhaomin_cv.pdf          # CV / resume PDF
 ├── license.txt             # License file
 ├── README.md               # This file
@@ -62,6 +63,13 @@ zhaomin1995.github.io/
 - Hover/tap shows tooltip with event details and a Wikipedia link
 - Animated particles flow along the path
 - Event data lives in `assets/js/events.js`
+
+### `reading.html` — Interactive Bookshelf
+- Warm-toned page with realistic wooden bookshelves
+- Books displayed as colored spines organized by category (CS, Science, Fiction, Philosophy, History, Self-Improvement)
+- Hover a book spine to pull it up and see a popup with title, author, description, and category tag
+- Book data is defined in a JS object — easy to add/remove books
+- To add a book: add an entry to the `books` object in the `<script>` section with title, author, desc, color, and height
 
 ### `visitors.html` — Visitor Statistics
 - Summary cards showing total visits, visitor location, IP, and browser
