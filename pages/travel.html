@@ -203,7 +203,7 @@
       desc: p.date ? (isZh ? '拍摄于 ' + p.date : 'Taken on ' + p.date) : '',
       lat: p.lat,
       lng: p.lng,
-      img: '../img/travel/' + p.file,
+      img: p.url || ('../img/travel/' + p.file),
     }));
 
     if (places.length === 0) {

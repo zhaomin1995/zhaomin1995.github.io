@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
 """
-Scan img/travel/ for photos with GPS EXIF data and generate
-assets/js/places.js for the 3D globe on the travel page.
-
-Uses a local cache (.travel-cache.json) so only new/changed photos
-are processed. Repeat runs are near-instant.
+Scan img/travel/ for photos with GPS EXIF data, upload to Firebase Storage,
+cache metadata in Firebase Realtime Database, and generate assets/js/places.js.
 
 Usage: python3 build-travel.py
 Runs automatically via the pre-commit hook when img/travel/ changes.
@@ -16,7 +13,11 @@ from PIL.ExifTags import TAGS, GPSTAGS
 
 TRAVEL_DIR = 'img/travel'
 OUTPUT = 'assets/js/places.js'
-CACHE_FILE = '.travel-cache.json'
+
+# Firebase config
+FB_DB_URL = 'https://zhaomin-homepage-default-rtdb.firebaseio.com'
+FB_BUCKET = 'zhaomin-homepage.firebasestorage.app'
+FB_STORAGE_API = f'https://firebasestorage.googleapis.com/v0/b/{FB_BUCKET}'
 
 def file_hash(path):
     """Fast hash of file size + first 8KB for change detection."""
@@ -67,7 +68,7 @@ def get_exif_gps(path):
         return None
 
 def reverse_geocode(lat, lng):
-    """Convert lat/lng to 'City, State' using free Nominatim API via curl."""
+    """Convert lat/lng to 'City, State' using free Nominatim API."""
     try:
         url = f'https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lng}&format=json&zoom=10'
         result = subprocess.run(['curl', '-s', url, '-H', 'User-Agent: travel-build/1.0'],
@@ -83,19 +84,68 @@ def reverse_geocode(lat, lng):
         print(f"    Geocode failed: {e}")
         return f'{lat:.2f}, {lng:.2f}'
 
-def load_cache():
-    """Load the persistent cache of previously processed photos."""
-    if os.path.exists(CACHE_FILE):
-        try:
-            with open(CACHE_FILE) as f:
-                return json.load(f)
-        except:
-            pass
+# ── Firebase Realtime Database: read/write cache ──
+
+def fb_load_cache():
+    """GET cache from Firebase Realtime Database."""
+    try:
+        result = subprocess.run(
+            ['curl', '-s', f'{FB_DB_URL}/travel-cache.json'],
+            capture_output=True, text=True, timeout=10)
+        data = json.loads(result.stdout)
+        if data and isinstance(data, dict):
+            print(f"  ☁ Loaded cache from Firebase ({len(data.get('photos', {}))} photos)")
+            return data
+    except Exception as e:
+        print(f"  ☁ Firebase cache load failed: {e}")
     return {'photos': {}, 'geocode': {}}
 
-def save_cache(cache):
-    with open(CACHE_FILE, 'w') as f:
-        json.dump(cache, f, indent=2)
+def fb_save_cache(cache):
+    """PUT cache to Firebase Realtime Database."""
+    try:
+        payload = json.dumps(cache)
+        result = subprocess.run(
+            ['curl', '-s', '-X', 'PUT',
+             '-H', 'Content-Type: application/json',
+             '-d', payload,
+             f'{FB_DB_URL}/travel-cache.json'],
+            capture_output=True, text=True, timeout=15)
+        print(f"  ☁ Saved cache to Firebase")
+    except Exception as e:
+        print(f"  ☁ Firebase cache save failed: {e}")
+
+# ── Firebase Storage: upload photos ──
+
+def fb_upload_photo(local_path, filename):
+    """Upload a photo to Firebase Storage, return the public CDN URL."""
+    try:
+        # Determine content type
+        ext = filename.lower().rsplit('.', 1)[-1]
+        content_types = {'jpg': 'image/jpeg', 'jpeg': 'image/jpeg',
+                         'png': 'image/png', 'webp': 'image/webp'}
+        ct = content_types.get(ext, 'image/jpeg')
+
+        # Upload via REST API
+        encoded_name = f'travel/{filename}'.replace('/', '%2F')
+        upload_url = f'{FB_STORAGE_API}/o?uploadType=media&name=travel/{filename}'
+        result = subprocess.run(
+            ['curl', '-s', '-X', 'POST',
+             '-H', f'Content-Type: {ct}',
+             '--data-binary', f'@{local_path}',
+             upload_url],
+            capture_output=True, text=True, timeout=60)
+        resp = json.loads(result.stdout)
+
+        if 'name' in resp:
+            # Build the public download URL
+            cdn_url = f'{FB_STORAGE_API}/o/{encoded_name}?alt=media'
+            return cdn_url
+        else:
+            print(f"    Upload error: {resp.get('error', {}).get('message', 'unknown')}")
+            return None
+    except Exception as e:
+        print(f"    Upload failed: {e}")
+        return None
 
 def main():
     if not os.path.isdir(TRAVEL_DIR):
@@ -105,7 +155,10 @@ def main():
     files = sorted([f for f in os.listdir(TRAVEL_DIR)
                     if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp', '.heic'))])
 
-    cache = load_cache()
+    print(f"Found {len(files)} images in {TRAVEL_DIR}/")
+
+    # Load cache from Firebase
+    cache = fb_load_cache()
     photo_cache = cache.get('photos', {})
     geo_cache = cache.get('geocode', {})
 
@@ -124,9 +177,10 @@ def main():
             continue
 
         # New or changed file — process it
+        print(f"  Processing: {f}")
         gps = get_exif_gps(path)
         if not gps:
-            print(f"  ✗ {f} — no GPS data, skipping")
+            print(f"    ✗ No GPS data, skipping")
             continue
 
         # Reverse geocode (cache by rounded coords)
@@ -138,32 +192,41 @@ def main():
         else:
             location = geo_cache[coord_key]
 
+        # Upload to Firebase Storage
+        print(f"    Uploading to Firebase Storage...")
+        cdn_url = fb_upload_photo(path, f)
+        if not cdn_url:
+            print(f"    ✗ Upload failed, using local path")
+            cdn_url = f'img/travel/{f}'
+
         entry = {
             'file': f,
             'lat': gps['lat'],
             'lng': gps['lng'],
             'date': gps['date'],
             'location': location,
+            'url': cdn_url,
         }
         places.append(entry)
         photo_cache[f] = {'hash': fhash, 'data': entry}
         new_count += 1
-        print(f"  ✓ {f} → {location} ({gps['lat']}, {gps['lng']}) {gps['date']}")
+        print(f"    ✓ {location} ({gps['lat']}, {gps['lng']}) {gps['date']}")
 
     # Remove deleted files from cache
     for f in list(photo_cache.keys()):
         if f not in files:
             del photo_cache[f]
 
-    # Save cache
+    # Save cache to Firebase
     cache['photos'] = photo_cache
     cache['geocode'] = geo_cache
-    save_cache(cache)
+    fb_save_cache(cache)
 
-    # Generate JS
+    # Generate JS — use CDN URLs from Firebase Storage
     js_lines = [
         '/*',
         ' * places.js — Auto-generated by build-travel.py',
+        ' * Photos hosted on Firebase Storage. Cache in Firebase Realtime Database.',
         ' * DO NOT EDIT MANUALLY. Run: python3 build-travel.py',
         ' */',
         f'const PLACES = {json.dumps(places, indent=2)};',
@@ -172,7 +235,7 @@ def main():
     with open(OUTPUT, 'w') as f:
         f.write('\n'.join(js_lines) + '\n')
 
-    print(f"\nGenerated {OUTPUT}: {len(places)} places ({new_count} new, {cached_count} cached)")
+    print(f"\nDone: {len(places)} places ({new_count} new, {cached_count} cached)")
 
 if __name__ == '__main__':
     main()
