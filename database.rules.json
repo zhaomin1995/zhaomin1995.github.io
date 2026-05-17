@@ -1,0 +1,12 @@
+{
+  "rules": {
+    "travel-photos": {
+      ".read": true,
+      ".write": true
+    },
+    "travel-cache": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}

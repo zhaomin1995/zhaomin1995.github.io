@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="../assets/css/apple.css">
   <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
   <script src="https://unpkg.com/globe.gl@2.32.0/dist/globe.gl.min.js"></script>
-  <script src="https://unpkg.com/exif-js@2.3.0/exif.js"></script>
   <style>
     .travel-page ::selection {
       background: rgba(225, 112, 85, 0.35);
@@ -198,88 +197,44 @@
 
     /* ── Firebase config ── */
     const FB_DB = 'https://zhaomin-homepage-default-rtdb.firebaseio.com';
-    const FB_BUCKET = 'zhaomin-homepage.firebasestorage.app';
-    const FB_STORAGE = `https://firebasestorage.googleapis.com/v0/b/${FB_BUCKET}`;
 
     let places = [];
 
-    /* ── Load places: Firebase cache first, then scan storage + read EXIF client-side ── */
+    /* ── Load places from Firebase Realtime Database ──
+       Cloud Function writes to /travel-photos/ on every Storage upload.
+       This page just reads that data — no EXIF parsing needed client-side. */
     async function loadPlaces() {
       const instrEl = document.querySelector('.travel-instructions');
       instrEl.innerHTML = '<span>Loading photos...</span>';
 
-      // 1. Try cached place data from Firebase DB
       try {
-        const r = await fetch(`${FB_DB}/travel-cache.json`);
-        const cache = await r.json();
-        if (cache && cache.photos) {
-          places = Object.values(cache.photos)
-            .filter(p => p.data && p.data.lat)
+        const r = await fetch(`${FB_DB}/travel-photos.json`);
+        const data = await r.json();
+
+        if (data) {
+          places = Object.values(data)
+            .filter(p => p.lat && p.lng && p.url)
             .map(p => ({
-              name: p.data.location || p.data.file,
-              desc: p.data.date ? (isZh ? '拍摄于 ' + p.data.date : 'Taken on ' + p.data.date) : '',
-              lat: p.data.lat, lng: p.data.lng, img: p.data.url,
+              name: p.location || p.file || '',
+              desc: p.date ? (isZh ? '拍摄于 ' + p.date : 'Taken on ' + p.date) : '',
+              lat: p.lat,
+              lng: p.lng,
+              img: p.url,
             }));
         }
-      } catch {}
-
-      // 2. If no cache, list Firebase Storage and extract EXIF client-side
-      if (places.length === 0) {
-        try {
-          const r = await fetch(`${FB_STORAGE}/o?prefix=travel/`);
-          const data = await r.json();
-          const items = (data.items || []).filter(i => /\.(jpg|jpeg|png|webp)$/i.test(i.name));
-          if (items.length === 0) {
-            instrEl.innerHTML = '<span>No photos yet — upload geotagged photos to Firebase Storage /travel/</span>';
-            return;
-          }
-          instrEl.innerHTML = `<span>Processing ${items.length} photos...</span>`;
-          for (const item of items) {
-            const url = `${FB_STORAGE}/o/${encodeURIComponent(item.name)}?alt=media`;
-            const gps = await extractGPSFromUrl(url);
-            if (gps) {
-              places.push({ name: item.name.replace('travel/', ''), desc: '', lat: gps.lat, lng: gps.lng, img: url });
-            }
-          }
-          // Cache for next time
-          if (places.length > 0) {
-            const cacheData = { photos: {} };
-            places.forEach((p, i) => {
-              cacheData.photos['p' + i] = { hash: '', data: { file: p.name, lat: p.lat, lng: p.lng, date: '', location: p.name, url: p.img } };
-            });
-            fetch(`${FB_DB}/travel-cache.json`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cacheData) }).catch(() => {});
-          }
-        } catch { instrEl.innerHTML = '<span>Failed to load photos</span>'; return; }
+      } catch (e) {
+        console.error('Failed to load travel data:', e);
       }
 
-      instrEl.innerHTML = places.length > 0
-        ? '<span class="lang-en">Drag to rotate · Scroll to zoom · Hover markers for details</span><span class="lang-zh">拖动旋转 · 滚轮缩放 · 悬停标记查看详情</span>'
-        : '<span>No geotagged photos found</span>';
-    }
-
-    /* ── Extract GPS from image URL using EXIF.js ── */
-    function extractGPSFromUrl(url) {
-      return new Promise(resolve => {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = function() {
-          EXIF.getData(img, function() {
-            const lat = EXIF.getTag(this, 'GPSLatitude');
-            const latRef = EXIF.getTag(this, 'GPSLatitudeRef') || 'N';
-            const lng = EXIF.getTag(this, 'GPSLongitude');
-            const lngRef = EXIF.getTag(this, 'GPSLongitudeRef') || 'E';
-            if (lat && lng) {
-              const toDecimal = (dms, ref) => {
-                const d = dms[0] + dms[1] / 60 + dms[2] / 3600;
-                return (ref === 'S' || ref === 'W') ? -d : d;
-              };
-              resolve({ lat: toDecimal(lat, latRef), lng: toDecimal(lng, lngRef) });
-            } else { resolve(null); }
-          });
-        };
-        img.onerror = () => resolve(null);
-        img.src = url;
-      });
+      if (places.length > 0) {
+        instrEl.innerHTML =
+          '<span class="lang-en">Drag to rotate · Scroll to zoom · Hover markers for details</span>' +
+          '<span class="lang-zh">拖动旋转 · 滚轮缩放 · 悬停标记查看详情</span>';
+      } else {
+        instrEl.innerHTML =
+          '<span class="lang-en">No photos yet — upload geotagged photos to Firebase Storage /travel/</span>' +
+          '<span class="lang-zh">还没有照片 — 上传带GPS的照片到 Firebase Storage 的 travel/ 文件夹</span>';
+      }
     }
 
     /* ── Clustering: group nearby photos based on zoom level ──
