@@ -51,6 +51,53 @@
     .r-nav a:hover { color: var(--text); }
     .r-nav-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
 
+    /* ── Search ── */
+    .search-toggle {
+      background: none; border: none; cursor: pointer; color: var(--text-sec);
+      font-size: 0.95rem; padding: 0.3rem 0.5rem; border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .search-toggle:hover { color: var(--text); background: rgba(0,0,0,0.04); }
+    body.dark-mode .search-toggle:hover { background: rgba(255,255,255,0.06); }
+
+    .search-bar {
+      position: fixed; top: 48px; left: 0; right: 0; z-index: 90;
+      background: var(--bg); border-bottom: 1px solid rgba(0,0,0,0.06);
+      padding: 0.6rem 1.5rem;
+      transform: translateY(-100%); opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      pointer-events: none;
+    }
+    .search-bar.open {
+      transform: translateY(0); opacity: 1; pointer-events: auto;
+    }
+    body.dark-mode .search-bar { border-bottom-color: rgba(255,255,255,0.05); }
+
+    .search-inner {
+      max-width: 500px; margin: 0 auto; position: relative; display: flex; align-items: center;
+    }
+    .search-icon {
+      position: absolute; left: 12px; color: var(--text-sec); font-size: 0.8rem;
+    }
+    .search-bar input {
+      width: 100%; padding: 0.55rem 2.2rem 0.55rem 2.2rem;
+      border: 1px solid rgba(0,0,0,0.1); border-radius: 10px;
+      background: var(--sidebar-bg); color: var(--text);
+      font-family: 'Inter', sans-serif; font-size: 0.85rem;
+      outline: none; transition: border-color 0.2s;
+    }
+    .search-bar input:focus { border-color: #8b5e3c; }
+    .search-bar input::placeholder { color: var(--text-sec); }
+    body.dark-mode .search-bar input { border-color: rgba(255,255,255,0.08); }
+
+    .search-clear {
+      position: absolute; right: 10px; background: none; border: none;
+      cursor: pointer; color: var(--text-sec); font-size: 0.8rem;
+      padding: 0.3rem; display: none;
+    }
+    .search-clear.visible { display: block; }
+    .search-clear:hover { color: var(--text); }
+
     .main-layout {
       display: flex; height: 100vh; padding-top: 48px;
     }
@@ -254,8 +301,17 @@
   <nav class="r-nav">
     <a href="../index.html"><i class="fas fa-arrow-left"></i> <span class="lang-en">Back</span><span class="lang-zh">返回</span></a>
     <span class="r-nav-title"><span class="lang-en">Bookshelf</span><span class="lang-zh">书架</span></span>
-    <div></div>
+    <button class="search-toggle" id="searchToggle" title="Search books"><i class="fas fa-search"></i></button>
   </nav>
+
+  <!-- Search bar (hidden by default) -->
+  <div class="search-bar" id="searchBar">
+    <div class="search-inner">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" id="searchInput" placeholder="Search by title or author..." autocomplete="off">
+      <button class="search-clear" id="searchClear"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
 
   <div class="main-layout">
     <!-- Sidebar categories -->
@@ -353,9 +409,20 @@
       const container = document.getElementById('shelvesContainer');
       const titleEl = document.getElementById('shelfTitle');
       const cat = categories.find(c => c.id === activeCat);
-      titleEl.textContent = isZh ? cat.zh : cat.en;
 
-      const filtered = activeCat === 'all' ? books : books.filter(b => b.cat === activeCat);
+      let filtered = activeCat === 'all' ? [...books] : books.filter(b => b.cat === activeCat);
+
+      // Apply search filter
+      if (searchQuery) {
+        filtered = filtered.filter(b =>
+          b.title.toLowerCase().includes(searchQuery) ||
+          b.author.toLowerCase().includes(searchQuery)
+        );
+        titleEl.textContent = (isZh ? '搜索: ' : 'Search: ') + `"${searchInput.value}" (${filtered.length})`;
+      } else {
+        titleEl.textContent = isZh ? cat.zh : cat.en;
+      }
+
       container.innerHTML = '';
 
       // Distribute books across 4 shelves
@@ -509,6 +576,49 @@
         window.location.href = 'reader.html?book=' + bookIndex;
       }, 1500);
     }
+
+    /* ── Search ── */
+    const searchBar = document.getElementById('searchBar');
+    const searchInput = document.getElementById('searchInput');
+    const searchClear = document.getElementById('searchClear');
+    let searchQuery = '';
+
+    document.getElementById('searchToggle').addEventListener('click', () => {
+      const isOpen = searchBar.classList.toggle('open');
+      if (isOpen) {
+        searchInput.focus();
+      } else {
+        searchInput.value = '';
+        searchQuery = '';
+        searchClear.classList.remove('visible');
+        renderShelves();
+      }
+    });
+
+    searchInput.addEventListener('input', () => {
+      searchQuery = searchInput.value.trim().toLowerCase();
+      searchClear.classList.toggle('visible', searchQuery.length > 0);
+      renderShelves();
+    });
+
+    searchClear.addEventListener('click', () => {
+      searchInput.value = '';
+      searchQuery = '';
+      searchClear.classList.remove('visible');
+      searchInput.focus();
+      renderShelves();
+    });
+
+    // Close search with Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && searchBar.classList.contains('open')) {
+        searchBar.classList.remove('open');
+        searchInput.value = '';
+        searchQuery = '';
+        searchClear.classList.remove('visible');
+        renderShelves();
+      }
+    });
 
     /* ── Init ── */
     buildSidebar();
