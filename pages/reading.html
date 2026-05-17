@@ -291,6 +291,29 @@
     </div>
   </div>
 
+  <!-- Reader transition overlay -->
+  <div id="readerTransition" style="
+    position:fixed; inset:0; z-index:1000; pointer-events:none;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; transition: opacity 0.8s ease, background 1s ease;
+  ">
+    <div id="transitionBook" style="
+      display:flex; border-radius:8px; overflow:hidden;
+      box-shadow:0 30px 80px rgba(0,0,0,0.5);
+      width:700px; max-width:92vw; height:80vh; max-height:600px;
+      transition: transform 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.6s ease;
+    ">
+      <div id="transitionCover" style="
+        width:45%; display:flex; flex-direction:column;
+        align-items:center; justify-content:center; padding:2rem;
+        transition: width 0.8s ease, opacity 0.8s ease;
+      ">
+        <div style="font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:700; color:#fff; text-align:center;" id="transCoverTitle"></div>
+      </div>
+      <div style="flex:1; background:#faf6ee; transition: background 0.8s ease;" id="transitionPage"></div>
+    </div>
+  </div>
+
   <script>
     /* ── Preferences ── */
     if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
@@ -399,10 +422,14 @@
       tag.style.background = book.color + '18';
       tag.style.color = book.color;
 
-      // Set reader link — find book's index in BOOKS array
+      // Set reader link with transition animation
       const readBtn = document.getElementById('bvReadBtn');
       const bookIndex = BOOKS.indexOf(book);
-      readBtn.href = 'reader.html?book=' + bookIndex;
+      readBtn.href = '#';
+      readBtn.onclick = (e) => {
+        e.preventDefault();
+        startReaderTransition(book, bookIndex);
+      };
 
       // Animate in
       overlay.style.display = 'flex';
@@ -427,6 +454,60 @@
       let g = Math.min(255, Math.max(0, ((num >> 8) & 0xFF) + amount));
       let b = Math.min(255, Math.max(0, (num & 0xFF) + amount));
       return '#' + (r << 16 | g << 8 | b).toString(16).padStart(6, '0');
+    }
+
+    /* ── Reader transition animation ──
+       1. Fade the book info overlay out
+       2. Show a transition overlay with the book cover expanding
+       3. Cover shrinks away, page background fills the screen
+       4. Navigate to reader.html */
+    function startReaderTransition(book, bookIndex) {
+      const trans = document.getElementById('readerTransition');
+      const cover = document.getElementById('transitionCover');
+      const page = document.getElementById('transitionPage');
+      const transBook = document.getElementById('transitionBook');
+
+      // Set up initial state matching the book view
+      cover.style.background = book.color;
+      document.getElementById('transCoverTitle').textContent = book.title;
+      const isDark = document.body.classList.contains('dark-mode');
+      page.style.background = isDark ? '#252018' : '#faf6ee';
+      trans.style.background = 'rgba(0,0,0,0.6)';
+
+      // Show transition overlay on top of everything
+      trans.style.opacity = '1';
+      trans.style.pointerEvents = 'auto';
+
+      // Hide the book info overlay underneath
+      setTimeout(() => {
+        overlay.classList.remove('show');
+        overlay.style.display = 'none';
+      }, 100);
+
+      // Phase 1: cover shrinks, page expands
+      setTimeout(() => {
+        cover.style.width = '0';
+        cover.style.opacity = '0';
+        cover.style.padding = '0';
+      }, 300);
+
+      // Phase 2: book expands to fill screen, background fades to reader color
+      setTimeout(() => {
+        transBook.style.transform = 'scale(1.15)';
+        transBook.style.borderRadius = '0';
+        trans.style.background = isDark ? '#252018' : '#faf6ee';
+      }, 700);
+
+      // Phase 3: everything fades to reader page color
+      setTimeout(() => {
+        transBook.style.opacity = '0';
+        trans.style.background = isDark ? '#252018' : '#faf6ee';
+      }, 1100);
+
+      // Navigate
+      setTimeout(() => {
+        window.location.href = 'reader.html?book=' + bookIndex;
+      }, 1500);
     }
 
     /* ── Init ── */
