@@ -257,7 +257,9 @@
         }
         const avgLat = cluster.reduce((s, p) => s + p.lat, 0) / cluster.length;
         const avgLng = cluster.reduce((s, p) => s + p.lng, 0) / cluster.length;
-        clusters.push({ lat: avgLat, lng: avgLng, photos: cluster, thumb: cluster[0].img, count: cluster.length });
+        // Sample up to 4 photos once at cluster creation time (stable across hovers)
+        const sampled = [...cluster].sort(() => Math.random() - 0.5).slice(0, 4);
+        clusters.push({ lat: avgLat, lng: avgLng, photos: cluster, sampled: sampled, thumb: cluster[0].img, count: cluster.length });
       }
       return clusters;
     }
@@ -314,9 +316,8 @@
           const tooltip = document.createElement('div');
           tooltip.className = 'travel-tooltip';
 
-          // Randomly sample up to 4 photos from the cluster
-          const shuffled = [...d.photos].sort(() => Math.random() - 0.5);
-          const sampled = shuffled.slice(0, 4);
+          // Use the pre-sampled photos (stable — sampled once at cluster creation)
+          const sampled = d.sampled;
           const remaining = d.count - sampled.length;
 
           let html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px;">';
