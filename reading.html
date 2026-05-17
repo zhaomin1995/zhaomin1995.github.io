@@ -5,249 +5,238 @@
   <title>Reading — Zhaomin Xiao</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet">
   <script defer src="assets/fontawesome/js/all.min.js"></script>
   <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #f5efe6;
-      --wall: #ede4d4;
-      --shelf-top: #8b5e3c;
-      --shelf-front: #6b3f20;
-      --shelf-shadow: rgba(80, 40, 10, 0.25);
-      --text: #3b2f1e;
-      --text-sec: #7a6b5a;
-      --card-bg: rgba(255,255,255,0.85);
-      --card-shadow: rgba(80, 40, 10, 0.15);
+      --bg: #f5efe6; --wall: #ede4d4;
+      --shelf-top: #8b5e3c; --shelf-front: #6b3f20;
+      --shelf-shadow: rgba(80,40,10,0.25);
+      --text: #3b2f1e; --text-sec: #7a6b5a;
+      --sidebar-bg: #ece3d2; --sidebar-active: #d4c4a8;
+      --card-bg: rgba(255,255,255,0.9); --card-shadow: rgba(80,40,10,0.15);
+      --page-bg: #faf6ee; --page-text: #2c2416;
     }
-
     body.dark-mode {
-      --bg: #1a1410;
-      --wall: #211a12;
-      --shelf-top: #5c3d24;
-      --shelf-front: #3e2714;
-      --shelf-shadow: rgba(0, 0, 0, 0.5);
-      --text: #e8dcc8;
-      --text-sec: #a89880;
-      --card-bg: rgba(40, 30, 20, 0.9);
-      --card-shadow: rgba(0, 0, 0, 0.4);
+      --bg: #1a1410; --wall: #211a12;
+      --shelf-top: #5c3d24; --shelf-front: #3e2714;
+      --shelf-shadow: rgba(0,0,0,0.5);
+      --text: #e8dcc8; --text-sec: #a89880;
+      --sidebar-bg: #1e1812; --sidebar-active: #2e2418;
+      --card-bg: rgba(40,30,20,0.95); --card-shadow: rgba(0,0,0,0.4);
+      --page-bg: #2a2218; --page-text: #ddd0bc;
     }
-
     body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
+      font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
+      -webkit-font-smoothing: antialiased; height: 100vh; overflow: hidden;
     }
-
     .lang-zh { display: none; }
     body.zh .lang-en { display: none; }
     body.zh .lang-zh { display: inline; }
+    ::selection { background: rgba(139,94,60,0.25); }
 
-    /* Nav */
+    /* ── Layout ── */
     .r-nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      padding: 0 2rem; height: 48px;
+      padding: 0 1.5rem; height: 48px;
       display: flex; align-items: center; justify-content: space-between;
-      background: rgba(245,239,230,0.8);
-      backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px);
+      background: rgba(245,239,230,0.85); backdrop-filter: blur(20px);
     }
-    body.dark-mode .r-nav { background: rgba(26,20,16,0.85); }
+    body.dark-mode .r-nav { background: rgba(26,20,16,0.88); }
     .r-nav a { color: var(--text-sec); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: color 0.3s; }
     .r-nav a:hover { color: var(--text); }
     .r-nav-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
-    .r-nav-right { display: flex; align-items: center; gap: 0.5rem; }
 
-    /* Page content */
-    .bookshelf-page {
-      padding: 5rem 2rem 3rem;
-      max-width: 1100px;
-      margin: 0 auto;
+    .main-layout {
+      display: flex; height: 100vh; padding-top: 48px;
     }
 
-    .page-header {
-      text-align: center;
-      margin-bottom: 2.5rem;
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 200px; flex-shrink: 0; background: var(--sidebar-bg);
+      padding: 1.5rem 0; overflow-y: auto;
+      border-right: 1px solid rgba(0,0,0,0.06);
     }
-    .page-header h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.5rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      margin-bottom: 0.4rem;
+    body.dark-mode .sidebar { border-right-color: rgba(255,255,255,0.05); }
+    .sidebar-title {
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text-sec); padding: 0 1.2rem; margin-bottom: 0.6rem;
     }
-    .page-header p {
-      font-size: 1rem;
-      color: var(--text-sec);
+    .sidebar-item {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.55rem 1.2rem; cursor: pointer; font-size: 0.82rem; font-weight: 500;
+      color: var(--text-sec); transition: all 0.2s; border-left: 3px solid transparent;
+    }
+    .sidebar-item:hover { background: var(--sidebar-active); color: var(--text); }
+    .sidebar-item.active {
+      background: var(--sidebar-active); color: var(--text);
+      border-left-color: #8b5e3c; font-weight: 600;
+    }
+    .sidebar-item i { width: 16px; text-align: center; font-size: 0.8rem; }
+    .sidebar-count {
+      margin-left: auto; font-size: 0.65rem; font-weight: 600;
+      background: rgba(0,0,0,0.06); padding: 0.1em 0.5em; border-radius: 10px;
+    }
+    body.dark-mode .sidebar-count { background: rgba(255,255,255,0.08); }
+
+    @media (max-width: 768px) {
+      .sidebar { width: 56px; }
+      .sidebar-title, .sidebar-item span, .sidebar-count { display: none; }
+      .sidebar-item { justify-content: center; padding: 0.7rem 0; border-left: none; border-bottom: 3px solid transparent; }
+      .sidebar-item.active { border-bottom-color: #8b5e3c; border-left-color: transparent; }
     }
 
-    /* Shelf unit */
-    .shelf-section {
-      margin-bottom: 1rem;
+    /* ── Shelf area ── */
+    .shelf-area {
+      flex: 1; overflow-y: auto; padding: 2rem 2.5rem;
+      display: flex; flex-direction: column; gap: 0;
+    }
+    .shelf-area-title {
+      font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700;
+      margin-bottom: 1.5rem; letter-spacing: -0.02em;
     }
 
-    .shelf-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-sec);
-      margin-bottom: 0.6rem;
-      padding-left: 0.5rem;
-    }
-
-    .shelf {
-      position: relative;
-      padding: 1.2rem 1rem 0;
-      min-height: 160px;
-      display: flex;
-      align-items: flex-end;
-      gap: 6px;
+    /* ── Shelf ── */
+    .shelf-row {
+      position: relative; min-height: 170px;
+      display: flex; align-items: flex-end; gap: 8px;
+      padding: 1rem 1rem 0; background: var(--wall); border-radius: 6px 6px 0 0;
       flex-wrap: wrap;
-      background: var(--wall);
-      border-radius: 8px 8px 0 0;
     }
-
-    /* Wooden shelf plank */
     .shelf-plank {
-      width: 100%;
-      height: 14px;
-      background: linear-gradient(180deg, var(--shelf-top) 0%, var(--shelf-front) 60%, var(--shelf-front) 100%);
-      border-radius: 0 0 3px 3px;
-      box-shadow: 0 4px 12px var(--shelf-shadow);
-      position: relative;
+      width: 100%; height: 14px;
+      background: linear-gradient(180deg, var(--shelf-top) 0%, var(--shelf-front) 60%);
+      border-radius: 0 0 3px 3px; box-shadow: 0 4px 12px var(--shelf-shadow);
+      position: relative; margin-bottom: 0.5rem;
     }
     .shelf-plank::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 2px 2px 0 0;
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; background: rgba(255,255,255,0.15); border-radius: 2px 2px 0 0;
     }
 
-    /* Book spine */
+    /* ── Book ── */
     .book {
-      width: 36px;
-      border-radius: 3px 5px 5px 3px;
-      cursor: pointer;
-      position: relative;
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
+      width: 40px; border-radius: 3px 6px 6px 3px; cursor: pointer; position: relative;
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
     .book:hover {
-      transform: translateY(-14px) rotate(-2deg);
-      box-shadow: 4px 8px 20px rgba(0,0,0,0.3);
-      z-index: 10;
+      transform: translateY(-16px) rotate(-2deg);
+      box-shadow: 4px 8px 24px rgba(0,0,0,0.35); z-index: 10;
     }
-
-    /* Book spine title (rotated) */
-    .book-spine {
-      writing-mode: vertical-rl;
-      text-orientation: mixed;
-      font-size: 0.55rem;
-      font-weight: 600;
-      color: rgba(255,255,255,0.85);
-      letter-spacing: 0.02em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-height: calc(100% - 16px);
-      padding: 8px 2px;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-    }
-
-    /* Decorative spine details */
     .book::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 3px;
-      background: rgba(0,0,0,0.15);
-      border-radius: 3px 0 0 3px;
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px; background: rgba(0,0,0,0.15); border-radius: 3px 0 0 3px;
     }
-    .book::after {
-      content: '';
-      position: absolute;
-      top: 6px; right: 4px;
-      width: 8px; height: 2px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 1px;
+    .book-spine {
+      writing-mode: vertical-rl; text-orientation: mixed;
+      font-size: 0.55rem; font-weight: 600; color: rgba(255,255,255,0.85);
+      letter-spacing: 0.02em; white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; max-height: calc(100% - 16px);
+      padding: 8px 2px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    .empty-shelf-msg {
+      width: 100%; text-align: center; padding: 3rem 0; color: var(--text-sec);
+      font-size: 0.85rem; font-style: italic;
     }
 
-    /* Book detail popup */
-    .book-popup {
-      display: none;
-      position: absolute;
-      bottom: calc(100% + 16px);
-      left: 50%;
-      transform: translateX(-50%);
-      width: 260px;
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 1.1rem;
-      box-shadow: 0 12px 40px var(--card-shadow);
-      z-index: 100;
-      text-align: left;
+    /* ── Book view overlay (iBooks style) ── */
+    .book-view-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.3s ease;
     }
-    .book-popup::after {
-      content: '';
-      position: absolute;
-      top: 100%; left: 50%;
-      transform: translateX(-50%);
-      border: 8px solid transparent;
-      border-top-color: var(--card-bg);
-    }
-    .book:hover .book-popup { display: block; }
+    .book-view-overlay.show { display: flex; opacity: 1; }
 
-    .book-popup-title {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 0.2rem;
-      line-height: 1.3;
-      writing-mode: horizontal-tb;
-      text-orientation: initial;
+    .book-view {
+      width: 700px; max-width: 92vw; height: 80vh; max-height: 600px;
+      display: flex; border-radius: 8px; overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+      transform: scale(0.8) rotateY(-15deg); opacity: 0;
+      transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s ease;
+      perspective: 1200px;
     }
-    .book-popup-author {
-      font-size: 0.75rem;
-      color: var(--text-sec);
-      margin-bottom: 0.4rem;
-      writing-mode: horizontal-tb;
+    .book-view-overlay.show .book-view { transform: scale(1) rotateY(0); opacity: 1; }
+
+    /* Book cover (left page) */
+    .book-cover {
+      width: 45%; background: #2c1810; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 2rem;
+      position: relative; overflow: hidden;
     }
-    .book-popup-desc {
-      font-size: 0.72rem;
-      color: var(--text-sec);
-      line-height: 1.5;
-      writing-mode: horizontal-tb;
+    .book-cover::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%);
     }
-    .book-popup-tag {
-      display: inline-block;
-      font-size: 0.6rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      padding: 0.15em 0.5em;
-      border-radius: 10px;
-      margin-top: 0.4rem;
-      writing-mode: horizontal-tb;
+    .book-cover-title {
+      font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700;
+      color: #fff; text-align: center; line-height: 1.3; margin-bottom: 0.8rem;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
+    .book-cover-author {
+      font-size: 0.85rem; font-weight: 400; color: rgba(255,255,255,0.6);
+      text-align: center; font-style: italic;
+    }
+    .book-cover-decoration {
+      width: 40px; height: 2px; background: rgba(255,255,255,0.2);
+      margin: 1rem 0; border-radius: 1px;
+    }
+    .book-cover-category {
+      font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.1em; color: rgba(255,255,255,0.35); margin-top: 1.5rem;
+    }
+
+    /* Book page (right side) */
+    .book-page {
+      flex: 1; background: var(--page-bg); padding: 2.5rem 2rem;
+      display: flex; flex-direction: column; position: relative;
+      overflow-y: auto;
+    }
+    .book-page::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px;
+      background: rgba(0,0,0,0.08);
+    }
+    .book-page-header {
+      font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text-sec); margin-bottom: 1.5rem;
+    }
+    .book-page-title {
+      font-family: 'Merriweather', serif; font-size: 1.3rem; font-weight: 700;
+      color: var(--page-text); line-height: 1.4; margin-bottom: 0.5rem;
+    }
+    .book-page-author {
+      font-size: 0.9rem; color: var(--text-sec); margin-bottom: 1.5rem;
+    }
+    .book-page-desc {
+      font-family: 'Merriweather', serif; font-size: 0.88rem; line-height: 1.9;
+      color: var(--page-text); flex: 1;
+    }
+    .book-page-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 2rem; padding-top: 1rem;
+      border-top: 1px solid rgba(0,0,0,0.06);
+    }
+    .book-page-tag {
+      font-size: 0.65rem; font-weight: 600; padding: 0.25em 0.7em;
+      border-radius: 12px; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .book-close {
+      background: none; border: none; cursor: pointer; font-size: 0.78rem;
+      font-weight: 600; color: var(--text-sec); font-family: 'Inter', sans-serif;
+      transition: color 0.2s;
+    }
+    .book-close:hover { color: var(--text); }
 
     @media (max-width: 640px) {
-      .page-header h1 { font-size: 1.8rem; }
-      .book { width: 30px; }
-      .book-spine { font-size: 0.5rem; }
-      .book-popup { width: 220px; }
+      .book-view { flex-direction: column; height: 90vh; }
+      .book-cover { width: 100%; height: 35%; }
+      .book-cover-title { font-size: 1.2rem; }
+      .book-page { padding: 1.5rem; }
     }
-
-    /* Text selection */
-    ::selection { background: rgba(139, 94, 60, 0.25); color: var(--text); }
   </style>
 </head>
 
@@ -256,16 +245,40 @@
   <nav class="r-nav">
     <a href="index.html"><i class="fas fa-arrow-left"></i> <span class="lang-en">Back</span><span class="lang-zh">返回</span></a>
     <span class="r-nav-title"><span class="lang-en">Bookshelf</span><span class="lang-zh">书架</span></span>
-    <div class="r-nav-right"></div>
+    <div></div>
   </nav>
 
-  <div class="bookshelf-page">
-    <div class="page-header">
-      <h1><span class="lang-en">My Bookshelf</span><span class="lang-zh">我的书架</span></h1>
-      <p><span class="lang-en">Books that shaped my thinking — hover to explore</span><span class="lang-zh">塑造了我思想的书籍 — 悬停探索</span></p>
-    </div>
+  <div class="main-layout">
+    <!-- Sidebar categories -->
+    <div class="sidebar" id="sidebar"></div>
 
-    <div id="shelves"></div>
+    <!-- Shelf display -->
+    <div class="shelf-area" id="shelfArea">
+      <div class="shelf-area-title" id="shelfTitle"></div>
+      <div id="shelvesContainer"></div>
+    </div>
+  </div>
+
+  <!-- Book view overlay -->
+  <div class="book-view-overlay" id="bookOverlay">
+    <div class="book-view" id="bookView">
+      <div class="book-cover" id="bookCover">
+        <div class="book-cover-title" id="bvTitle"></div>
+        <div class="book-cover-decoration"></div>
+        <div class="book-cover-author" id="bvAuthor"></div>
+        <div class="book-cover-category" id="bvCategory"></div>
+      </div>
+      <div class="book-page">
+        <div class="book-page-header"><span class="lang-en">About This Book</span><span class="lang-zh">关于本书</span></div>
+        <div class="book-page-title" id="bvPageTitle"></div>
+        <div class="book-page-author" id="bvPageAuthor"></div>
+        <div class="book-page-desc" id="bvPageDesc"></div>
+        <div class="book-page-footer">
+          <span class="book-page-tag" id="bvTag"></span>
+          <button class="book-close" id="bookClose"><i class="fas fa-times"></i> <span class="lang-en">Close</span><span class="lang-zh">关闭</span></button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -275,121 +288,189 @@
     const isZh = document.body.classList.contains('zh');
 
     /* ── Book data ──
-       Each book: { title, author, desc, category, color, height (px) }
-       To add books: add an entry to the appropriate category array.
-       color: any CSS color for the spine. height: 110-160 recommended. */
-    const books = {
-      'Computer Science': [
-        { title: 'Deep Learning', author: 'Goodfellow, Bengio, Courville', desc: 'The definitive textbook on deep neural networks, covering theory and practice.', color: '#2c3e50', height: 150 },
-        { title: 'CLRS: Introduction to Algorithms', author: 'Cormen, Leiserson, Rivest, Stein', desc: 'The bible of algorithms — comprehensive and rigorous.', color: '#8e44ad', height: 155 },
-        { title: 'Artificial Intelligence: A Modern Approach', author: 'Russell & Norvig', desc: 'The leading textbook in AI, covering search, logic, learning, and more.', color: '#2980b9', height: 148 },
-        { title: 'Speech and Language Processing', author: 'Jurafsky & Martin', desc: 'The standard NLP textbook covering computational linguistics and language technology.', color: '#16a085', height: 145 },
-        { title: 'Pattern Recognition and Machine Learning', author: 'Christopher Bishop', desc: 'A comprehensive introduction to the fields of pattern recognition and machine learning.', color: '#e74c3c', height: 140 },
-        { title: 'The Elements of Statistical Learning', author: 'Hastie, Tibshirani, Friedman', desc: 'A classic on statistical learning from the Stanford statistics department.', color: '#2c3e50', height: 138 },
-        { title: 'Mining of Massive Datasets', author: 'Leskovec, Rajaraman, Ullman', desc: 'Algorithms for big data — MapReduce, similarity search, and recommendation systems.', color: '#d35400', height: 135 },
-        { title: 'Clean Code', author: 'Robert C. Martin', desc: 'A handbook of agile software craftsmanship — how to write readable, maintainable code.', color: '#27ae60', height: 130 },
-      ],
-      'Science': [
-        { title: 'A Brief History of Time', author: 'Stephen Hawking', desc: 'From the Big Bang to black holes — a journey through cosmology for everyone.', color: '#1a1a2e', height: 130 },
-        { title: 'The Selfish Gene', author: 'Richard Dawkins', desc: 'A gene-centered view of evolution that changed how we think about natural selection.', color: '#c0392b', height: 135 },
-        { title: 'Sapiens', author: 'Yuval Noah Harari', desc: 'A sweeping history of humankind from the Stone Age to the Silicon Age.', color: '#e67e22', height: 142 },
-        { title: 'Cosmos', author: 'Carl Sagan', desc: 'A poetic voyage through the universe, celebrating science and human curiosity.', color: '#0c2461', height: 138 },
-        { title: 'The Structure of Scientific Revolutions', author: 'Thomas Kuhn', desc: 'How paradigm shifts transform our understanding — coined the term "paradigm shift."', color: '#6c5ce7', height: 125 },
-        { title: 'Thinking, Fast and Slow', author: 'Daniel Kahneman', desc: 'Two systems of thought — and the cognitive biases that shape our decisions.', color: '#f39c12', height: 140 },
-      ],
-      'Fiction': [
-        { title: 'The Three-Body Problem', author: 'Liu Cixin', desc: 'Hard sci-fi masterpiece — first contact set against the Cultural Revolution.', color: '#2d3436', height: 145 },
-        { title: '1984', author: 'George Orwell', desc: 'A chilling vision of totalitarian surveillance that remains terrifyingly relevant.', color: '#636e72', height: 130 },
-        { title: 'One Hundred Years of Solitude', author: 'Gabriel García Márquez', desc: 'Magical realism at its finest — the epic saga of the Buendía family.', color: '#d4a574', height: 140 },
-        { title: 'Brave New World', author: 'Aldous Huxley', desc: 'A dystopia of engineered happiness — what if pleasure replaced freedom?', color: '#00b894', height: 128 },
-        { title: 'The Hitchhiker\'s Guide to the Galaxy', author: 'Douglas Adams', desc: 'The answer is 42. A hilarious journey through the absurdity of the universe.', color: '#0984e3', height: 132 },
-        { title: 'Dune', author: 'Frank Herbert', desc: 'Political intrigue, ecology, and religion on a desert planet. Sci-fi at its deepest.', color: '#b8860b', height: 150 },
-      ],
-      'Philosophy': [
-        { title: 'Meditations', author: 'Marcus Aurelius', desc: 'A Roman emperor\'s private journal on Stoic philosophy — timeless wisdom on resilience.', color: '#795548', height: 118 },
-        { title: 'The Republic', author: 'Plato', desc: 'Justice, the ideal state, and the allegory of the cave — foundational Western philosophy.', color: '#4a6fa5', height: 135 },
-        { title: 'Tao Te Ching', author: 'Laozi', desc: 'Ancient Chinese wisdom on the Way — simplicity, humility, and harmony with nature.', color: '#2d5a27', height: 112 },
-        { title: 'The Art of War', author: 'Sun Tzu', desc: 'Strategy, tactics, and the philosophy of conflict — still studied in business and military.', color: '#c0392b', height: 115 },
-        { title: 'Beyond Good and Evil', author: 'Friedrich Nietzsche', desc: 'A critique of traditional morality and the pursuit of truth beyond conventional values.', color: '#2c2c54', height: 128 },
-      ],
-      'History & Society': [
-        { title: 'Guns, Germs, and Steel', author: 'Jared Diamond', desc: 'Why did some civilizations conquer others? Geography, agriculture, and luck.', color: '#8B4513', height: 145 },
-        { title: 'The Silk Roads', author: 'Peter Frankopan', desc: 'A new history of the world — from the perspective of the routes that connected East and West.', color: '#DAA520', height: 140 },
-        { title: 'Educated', author: 'Tara Westover', desc: 'A memoir of growing up in a survivalist family and discovering the power of education.', color: '#5f27cd', height: 132 },
-        { title: 'The Diary of a Young Girl', author: 'Anne Frank', desc: 'A Jewish girl\'s diary during the Holocaust — intimate, heartbreaking, and enduring.', color: '#eb4d4b', height: 125 },
-        { title: 'Born a Crime', author: 'Trevor Noah', desc: 'Growing up mixed-race in apartheid South Africa — funny, moving, and eye-opening.', color: '#10ac84', height: 130 },
-      ],
-      'Self-Improvement': [
-        { title: 'Atomic Habits', author: 'James Clear', desc: 'Small changes, remarkable results — the science of building good habits.', color: '#f9ca24', height: 130 },
-        { title: 'Deep Work', author: 'Cal Newport', desc: 'The ability to focus deeply is becoming rare and valuable. How to cultivate it.', color: '#130f40', height: 128 },
-        { title: 'The Subtle Art of Not Giving a F*ck', author: 'Mark Manson', desc: 'A counterintuitive approach to living a good life — choose your struggles wisely.', color: '#e55039', height: 132 },
-        { title: 'Mindset', author: 'Carol Dweck', desc: 'Fixed vs. growth mindset — how your beliefs about ability shape your success.', color: '#4834d4', height: 126 },
-      ],
-    };
+       To add a book: push to the appropriate category array.
+       Fields: title, author, desc (English), color (hex), height (px, 110-160). */
+    const categories = [
+      { id: 'all', en: 'All Books', zh: '全部书籍', icon: 'fas fa-book' },
+      { id: 'cs', en: 'Computer Science', zh: '计算机科学', icon: 'fas fa-laptop-code' },
+      { id: 'science', en: 'Science', zh: '科学', icon: 'fas fa-flask' },
+      { id: 'fiction', en: 'Fiction', zh: '小说', icon: 'fas fa-feather-alt' },
+      { id: 'philosophy', en: 'Philosophy', zh: '哲学', icon: 'fas fa-yin-yang' },
+      { id: 'history', en: 'History & Society', zh: '历史与社会', icon: 'fas fa-landmark' },
+      { id: 'self', en: 'Self-Improvement', zh: '自我提升', icon: 'fas fa-seedling' },
+    ];
 
-    /* ── Render shelves ── */
-    const shelvesEl = document.getElementById('shelves');
+    const books = [
+      // Computer Science
+      { title: 'Deep Learning', author: 'Goodfellow, Bengio, Courville', desc: 'The definitive textbook on deep neural networks, covering mathematical foundations, optimization, regularization, CNNs, RNNs, and generative models. A must-read for anyone entering the field of deep learning.', cat: 'cs', color: '#2c3e50', height: 150 },
+      { title: 'Introduction to Algorithms', author: 'Cormen, Leiserson, Rivest, Stein', desc: 'Known as CLRS, this is the bible of algorithms. It covers data structures, sorting, graph algorithms, dynamic programming, and computational complexity with mathematical rigor.', cat: 'cs', color: '#8e44ad', height: 155 },
+      { title: 'AI: A Modern Approach', author: 'Russell & Norvig', desc: 'The leading AI textbook covering intelligent agents, search, logic, probabilistic reasoning, machine learning, NLP, robotics, and the philosophy of artificial intelligence.', cat: 'cs', color: '#2980b9', height: 148 },
+      { title: 'Speech & Language Processing', author: 'Jurafsky & Martin', desc: 'The standard NLP textbook covering tokenization, n-grams, neural language models, transformers, information extraction, question answering, and dialogue systems.', cat: 'cs', color: '#16a085', height: 145 },
+      { title: 'Pattern Recognition & ML', author: 'Christopher Bishop', desc: 'A comprehensive introduction to pattern recognition and machine learning, with deep coverage of probability distributions, neural networks, kernel methods, and graphical models.', cat: 'cs', color: '#e74c3c', height: 140 },
+      { title: 'Elements of Statistical Learning', author: 'Hastie, Tibshirani, Friedman', desc: 'A classic from the Stanford statistics department covering supervised and unsupervised learning, model assessment, ensemble methods, and high-dimensional problems.', cat: 'cs', color: '#2c3e50', height: 138 },
+      { title: 'Mining Massive Datasets', author: 'Leskovec, Rajaraman, Ullman', desc: 'Algorithms and techniques for big data — MapReduce, similarity search, link analysis, recommendation systems, and mining data streams.', cat: 'cs', color: '#d35400', height: 135 },
+      { title: 'Clean Code', author: 'Robert C. Martin', desc: 'A handbook of agile software craftsmanship. Covers meaningful naming, functions, comments, formatting, error handling, and the art of writing readable, maintainable code.', cat: 'cs', color: '#27ae60', height: 130 },
 
-    Object.entries(books).forEach(([category, bookList]) => {
-      const section = document.createElement('div');
-      section.className = 'shelf-section';
+      // Science
+      { title: 'A Brief History of Time', author: 'Stephen Hawking', desc: 'From the Big Bang to black holes, Hawking takes readers on a journey through cosmology, explaining the nature of space, time, and the universe in accessible prose.', cat: 'science', color: '#1a1a2e', height: 130 },
+      { title: 'The Selfish Gene', author: 'Richard Dawkins', desc: 'A gene-centered view of evolution that introduced the concept of memes. Dawkins argues that genes, not organisms or species, are the fundamental units of natural selection.', cat: 'science', color: '#c0392b', height: 135 },
+      { title: 'Sapiens', author: 'Yuval Noah Harari', desc: 'A sweeping history of humankind from the Cognitive Revolution 70,000 years ago through the Agricultural and Scientific Revolutions to the present day.', cat: 'science', color: '#e67e22', height: 142 },
+      { title: 'Cosmos', author: 'Carl Sagan', desc: 'A poetic voyage through the universe, exploring the evolution of galaxies, stars, and life itself. Sagan\'s love of science and wonder shines on every page.', cat: 'science', color: '#0c2461', height: 138 },
+      { title: 'Scientific Revolutions', author: 'Thomas Kuhn', desc: 'How paradigm shifts transform our understanding of the world. Kuhn coined the term "paradigm shift" and forever changed the philosophy of science.', cat: 'science', color: '#6c5ce7', height: 125 },
+      { title: 'Thinking, Fast and Slow', author: 'Daniel Kahneman', desc: 'Nobel laureate Kahneman explores the two systems of thought — fast intuitive thinking and slow deliberate reasoning — and the cognitive biases that shape our decisions.', cat: 'science', color: '#f39c12', height: 140 },
 
-      // Category label
-      const label = document.createElement('div');
-      label.className = 'shelf-label';
-      label.textContent = category;
-      section.appendChild(label);
+      // Fiction
+      { title: 'The Three-Body Problem', author: 'Liu Cixin', desc: 'A hard sci-fi masterpiece. Set against the backdrop of China\'s Cultural Revolution, a secret military project sends signals into space, making first contact with an alien civilization on the brink of destruction.', cat: 'fiction', color: '#2d3436', height: 145 },
+      { title: '1984', author: 'George Orwell', desc: 'In a totalitarian state where Big Brother watches everything and the Thought Police punish independent thinking, Winston Smith dares to dream of freedom. A chilling, prescient novel.', cat: 'fiction', color: '#636e72', height: 130 },
+      { title: 'One Hundred Years of Solitude', author: 'García Márquez', desc: 'The epic multigenerational saga of the Buendía family in the fictional town of Macondo. Magical realism at its most enchanting and profound.', cat: 'fiction', color: '#d4a574', height: 140 },
+      { title: 'Brave New World', author: 'Aldous Huxley', desc: 'A dystopia where citizens are engineered for happiness, drugged into compliance, and conditioned to consume. What happens when pleasure replaces freedom?', cat: 'fiction', color: '#00b894', height: 128 },
+      { title: 'Hitchhiker\'s Guide', author: 'Douglas Adams', desc: 'The answer to life, the universe, and everything is 42. Arthur Dent\'s absurd journey through space after Earth is demolished for a hyperspace bypass.', cat: 'fiction', color: '#0984e3', height: 132 },
+      { title: 'Dune', author: 'Frank Herbert', desc: 'Political intrigue, ecology, and religion collide on the desert planet Arrakis. Paul Atreides must navigate betrayal and prophecy in this sweeping sci-fi epic.', cat: 'fiction', color: '#b8860b', height: 150 },
 
-      // Shelf background (wall + books)
-      const shelf = document.createElement('div');
-      shelf.className = 'shelf';
+      // Philosophy
+      { title: 'Meditations', author: 'Marcus Aurelius', desc: 'A Roman emperor\'s private journal on Stoic philosophy. Written as personal notes, never intended for publication, these reflections offer timeless wisdom on resilience, duty, and inner peace.', cat: 'philosophy', color: '#795548', height: 118 },
+      { title: 'The Republic', author: 'Plato', desc: 'Socratic dialogues on justice, the ideal state, the allegory of the cave, and the nature of the philosopher-king. The foundation of Western political philosophy.', cat: 'philosophy', color: '#4a6fa5', height: 135 },
+      { title: 'Tao Te Ching', author: 'Laozi', desc: 'Eighty-one short chapters on the Tao — the Way. Ancient Chinese wisdom on simplicity, humility, compassion, and living in harmony with the natural order.', cat: 'philosophy', color: '#2d5a27', height: 112 },
+      { title: 'The Art of War', author: 'Sun Tzu', desc: 'Strategy, tactics, and the philosophy of conflict. Written 2,500 years ago, it remains essential reading for military leaders, business strategists, and anyone facing competition.', cat: 'philosophy', color: '#c0392b', height: 115 },
+      { title: 'Beyond Good and Evil', author: 'Nietzsche', desc: 'A critique of past philosophers and traditional morality. Nietzsche challenges the pursuit of truth beyond conventional values and the master-slave morality dichotomy.', cat: 'philosophy', color: '#2c2c54', height: 128 },
 
-      bookList.forEach(book => {
-        const bookEl = document.createElement('div');
-        bookEl.className = 'book';
-        bookEl.style.height = book.height + 'px';
-        bookEl.style.background = `linear-gradient(135deg, ${book.color} 0%, ${adjustColor(book.color, -20)} 100%)`;
+      // History & Society
+      { title: 'Guns, Germs, and Steel', author: 'Jared Diamond', desc: 'Why did some civilizations conquer and dominate others? Diamond argues it was geography, agriculture, and biogeography — not racial or cultural superiority.', cat: 'history', color: '#8B4513', height: 145 },
+      { title: 'The Silk Roads', author: 'Peter Frankopan', desc: 'A new history of the world from the perspective of the ancient trade routes that connected East and West, carrying goods, ideas, religions, and diseases.', cat: 'history', color: '#DAA520', height: 140 },
+      { title: 'Educated', author: 'Tara Westover', desc: 'A memoir of growing up in a survivalist family in Idaho and the transformative power of education. Westover didn\'t enter a classroom until age 17, then earned a PhD from Cambridge.', cat: 'history', color: '#5f27cd', height: 132 },
+      { title: 'Diary of a Young Girl', author: 'Anne Frank', desc: 'A Jewish girl\'s diary written while hiding from the Nazis in Amsterdam. An intimate, heartbreaking, and enduring testament to the human spirit.', cat: 'history', color: '#eb4d4b', height: 125 },
+      { title: 'Born a Crime', author: 'Trevor Noah', desc: 'Growing up mixed-race in apartheid South Africa, where his very existence was a crime. Funny, moving, and illuminating stories from the future Daily Show host.', cat: 'history', color: '#10ac84', height: 130 },
 
-        // Spine text
-        const spine = document.createElement('div');
-        spine.className = 'book-spine';
-        spine.textContent = book.title;
-        bookEl.appendChild(spine);
+      // Self-Improvement
+      { title: 'Atomic Habits', author: 'James Clear', desc: 'Tiny changes, remarkable results. Clear breaks down the science of habit formation into four simple laws: make it obvious, attractive, easy, and satisfying.', cat: 'self', color: '#f9ca24', height: 130 },
+      { title: 'Deep Work', author: 'Cal Newport', desc: 'In a world of constant distraction, the ability to focus deeply is becoming rare — and valuable. Newport offers rules for cultivating concentration in the age of social media.', cat: 'self', color: '#130f40', height: 128 },
+      { title: 'Subtle Art of Not Giving a F*ck', author: 'Mark Manson', desc: 'A counterintuitive approach to living well. Manson argues that choosing what to care about — and what not to — is the key to a meaningful life.', cat: 'self', color: '#e55039', height: 132 },
+      { title: 'Mindset', author: 'Carol Dweck', desc: 'Fixed mindset vs. growth mindset. Stanford psychologist Dweck shows how your beliefs about your own abilities profoundly affect motivation, achievement, and relationships.', cat: 'self', color: '#4834d4', height: 126 },
+    ];
 
-        // Hover popup
-        const popup = document.createElement('div');
-        popup.className = 'book-popup';
-        popup.innerHTML = `
-          <div class="book-popup-title">${book.title}</div>
-          <div class="book-popup-author">${book.author}</div>
-          <div class="book-popup-desc">${isZh ? book.desc : book.desc}</div>
-          <span class="book-popup-tag" style="background: ${book.color}20; color: ${book.color};">${category}</span>
-        `;
-        bookEl.appendChild(popup);
+    /* ── Sidebar ── */
+    const sidebarEl = document.getElementById('sidebar');
+    let activeCat = 'all';
 
-        shelf.appendChild(bookEl);
+    function buildSidebar() {
+      sidebarEl.innerHTML = '';
+      const title = document.createElement('div');
+      title.className = 'sidebar-title';
+      title.textContent = isZh ? '分类' : 'Categories';
+      sidebarEl.appendChild(title);
+
+      categories.forEach(cat => {
+        const item = document.createElement('div');
+        item.className = 'sidebar-item' + (cat.id === activeCat ? ' active' : '');
+        const count = cat.id === 'all' ? books.length : books.filter(b => b.cat === cat.id).length;
+        item.innerHTML = `<i class="${cat.icon}"></i><span>${isZh ? cat.zh : cat.en}</span><span class="sidebar-count">${count}</span>`;
+        item.addEventListener('click', () => { activeCat = cat.id; buildSidebar(); renderShelves(); });
+        sidebarEl.appendChild(item);
       });
+    }
 
-      section.appendChild(shelf);
+    /* ── Render books on 4 shelves ── */
+    function renderShelves() {
+      const container = document.getElementById('shelvesContainer');
+      const titleEl = document.getElementById('shelfTitle');
+      const cat = categories.find(c => c.id === activeCat);
+      titleEl.textContent = isZh ? cat.zh : cat.en;
 
-      // Wooden plank
-      const plank = document.createElement('div');
-      plank.className = 'shelf-plank';
-      section.appendChild(plank);
+      const filtered = activeCat === 'all' ? books : books.filter(b => b.cat === activeCat);
+      container.innerHTML = '';
 
-      shelvesEl.appendChild(section);
-    });
+      // Distribute books across 4 shelves
+      const SHELVES = 4;
+      const perShelf = Math.ceil(filtered.length / SHELVES);
+      const shelves = [];
+      for (let i = 0; i < SHELVES; i++) {
+        shelves.push(filtered.slice(i * perShelf, (i + 1) * perShelf));
+      }
 
-    /* ── Darken/lighten a hex color ── */
+      shelves.forEach((shelfBooks, si) => {
+        const row = document.createElement('div');
+        row.className = 'shelf-row';
+
+        if (shelfBooks.length === 0) {
+          const msg = document.createElement('div');
+          msg.className = 'empty-shelf-msg';
+          msg.textContent = '';
+          row.appendChild(msg);
+        }
+
+        shelfBooks.forEach(book => {
+          const el = document.createElement('div');
+          el.className = 'book';
+          el.style.height = book.height + 'px';
+          el.style.background = `linear-gradient(135deg, ${book.color} 0%, ${adjustColor(book.color, -25)} 100%)`;
+
+          const spine = document.createElement('div');
+          spine.className = 'book-spine';
+          spine.textContent = book.title;
+          el.appendChild(spine);
+
+          el.addEventListener('click', () => openBookView(book));
+          row.appendChild(el);
+        });
+
+        container.appendChild(row);
+
+        const plank = document.createElement('div');
+        plank.className = 'shelf-plank';
+        container.appendChild(plank);
+      });
+    }
+
+    /* ── Book view (iBooks style) ── */
+    const overlay = document.getElementById('bookOverlay');
+    const bookView = document.getElementById('bookView');
+
+    function openBookView(book) {
+      const cat = categories.find(c => c.id === book.cat);
+      const catName = isZh ? cat.zh : cat.en;
+
+      // Set cover color
+      document.getElementById('bookCover').style.background = book.color;
+      document.getElementById('bvTitle').textContent = book.title;
+      document.getElementById('bvAuthor').textContent = book.author;
+      document.getElementById('bvCategory').textContent = catName;
+      document.getElementById('bvPageTitle').textContent = book.title;
+      document.getElementById('bvPageAuthor').textContent = book.author;
+      document.getElementById('bvPageDesc').textContent = book.desc;
+
+      const tag = document.getElementById('bvTag');
+      tag.textContent = catName;
+      tag.style.background = book.color + '18';
+      tag.style.color = book.color;
+
+      // Animate in
+      overlay.style.display = 'flex';
+      requestAnimationFrame(() => { overlay.classList.add('show'); });
+    }
+
+    function closeBookView() {
+      overlay.classList.remove('show');
+      setTimeout(() => { overlay.style.display = 'none'; }, 400);
+    }
+
+    document.getElementById('bookClose').addEventListener('click', closeBookView);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeBookView(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeBookView(); });
+
+    /* ── Helpers ── */
     function adjustColor(hex, amount) {
       hex = hex.replace('#', '');
       if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
       const num = parseInt(hex, 16);
       let r = Math.min(255, Math.max(0, (num >> 16) + amount));
-      let g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
-      let b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
+      let g = Math.min(255, Math.max(0, ((num >> 8) & 0xFF) + amount));
+      let b = Math.min(255, Math.max(0, (num & 0xFF) + amount));
       return '#' + (r << 16 | g << 8 | b).toString(16).padStart(6, '0');
     }
+
+    /* ── Init ── */
+    buildSidebar();
+    renderShelves();
   </script>
 
 </body>
