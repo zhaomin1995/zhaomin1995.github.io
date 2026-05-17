@@ -329,17 +329,6 @@
 
         return el;
       })
-      .onHtmlElementHover(hoverObj => {
-        // Fallback hover handler via Globe.gl's built-in system
-        if (!hoverObj) {
-          // Mouse left all markers — schedule tooltip removal
-          setTimeout(() => {
-            if (!document.querySelector('.travel-tooltip:hover')) {
-              document.querySelectorAll('.travel-tooltip').forEach(t => t.remove());
-            }
-          }, 1500);
-        }
-      })
       (document.getElementById('globeContainer'));
 
     // Auto-rotation
