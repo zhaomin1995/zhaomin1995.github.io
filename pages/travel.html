@@ -351,9 +351,8 @@
       })
       (document.getElementById('globeContainer'));
 
-    // Auto-rotation
-    globe.controls().autoRotate = true;
-    globe.controls().autoRotateSpeed = 0.5;
+    // Static globe — no auto-rotation
+    globe.controls().autoRotate = false;
     globe.controls().enableDamping = true;
 
     // Load photos from Firebase, then cluster (with retry to ensure globe is ready)
