@@ -288,19 +288,41 @@
       } catch { /* ignore cache write failures */ }
     }
 
-    /* ── Fetch text with CORS proxy fallback chain ── */
+    /* ── Fetch with streaming progress + CORS proxy fallback ── */
+    async function fetchWithProgress(fetchUrl) {
+      const r = await fetch(fetchUrl);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+
+      const contentLength = r.headers.get('Content-Length');
+      const total = contentLength ? parseInt(contentLength, 10) : 0;
+      const reader = r.body.getReader();
+      const decoder = new TextDecoder();
+      let loaded = 0;
+      let text = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        loaded += value.length;
+        text += decoder.decode(value, { stream: true });
+        updateLoadingProgress(loaded, total);
+      }
+      text += decoder.decode(); // flush
+      return text;
+    }
+
     async function fetchWithProxy(url) {
       // Try direct fetch first
       try {
-        const r = await fetch(url);
-        if (r.ok) return await r.text();
+        return await fetchWithProgress(url);
       } catch { /* CORS blocked, try proxies */ }
 
       // Try each CORS proxy
       for (const proxy of CORS_PROXIES) {
         try {
-          const r = await fetch(proxy(url));
-          if (r.ok) return await r.text();
+          const status = document.getElementById('loadingStatus');
+          if (status) status.textContent = 'Connecting via proxy...';
+          return await fetchWithProgress(proxy(url));
         } catch { continue; }
       }
       throw new Error('All fetch attempts failed');
@@ -467,8 +489,37 @@
     let fullText = '';
 
     function showLoading() {
-      document.getElementById('contentRight').innerHTML = '<div class="loading-msg"><i class="fas fa-spinner"></i><p>Downloading book text...</p><p style="font-size:0.72rem;color:var(--page-sec);margin-top:0.5rem;">First load may take a moment. Text is cached for future visits.</p></div>';
       document.getElementById('contentLeft').innerHTML = '';
+      document.getElementById('contentRight').innerHTML = `
+        <div class="loading-msg">
+          <i class="fas fa-spinner"></i>
+          <p id="loadingStatus">Downloading book text...</p>
+          <div style="width:200px;height:6px;background:rgba(0,0,0,0.08);border-radius:3px;overflow:hidden;margin-top:0.5rem;">
+            <div id="loadingBar" style="height:100%;width:0%;background:#8b5e3c;border-radius:3px;transition:width 0.3s ease;"></div>
+          </div>
+          <p id="loadingDetail" style="font-size:0.68rem;color:var(--page-sec);margin-top:0.4rem;">0 KB downloaded</p>
+          <p style="font-size:0.65rem;color:var(--page-sec);margin-top:0.3rem;">First load may take a moment. Text is cached for future visits.</p>
+        </div>`;
+    }
+
+    function updateLoadingProgress(loaded, total) {
+      const bar = document.getElementById('loadingBar');
+      const detail = document.getElementById('loadingDetail');
+      const status = document.getElementById('loadingStatus');
+      if (!bar) return;
+
+      const loadedKB = (loaded / 1024).toFixed(0);
+
+      if (total > 0) {
+        const pct = Math.min(100, (loaded / total * 100)).toFixed(0);
+        const totalKB = (total / 1024).toFixed(0);
+        bar.style.width = pct + '%';
+        detail.textContent = `${loadedKB} KB / ${totalKB} KB (${pct}%)`;
+      } else {
+        // Unknown total — pulse the bar
+        bar.style.width = Math.min(90, loaded / 5000) + '%';
+        detail.textContent = `${loadedKB} KB downloaded`;
+      }
     }
 
     function showFallback(reason) {
