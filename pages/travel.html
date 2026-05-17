@@ -98,14 +98,10 @@
       line-height: 1.4;
     }
 
-    /* Globe.gl sets pointer-events:none on HTML overlay containers —
-       override it so markers are hoverable and clickable */
-    .scene-container div[style*="pointer-events"] { pointer-events: auto !important; }
-
     .travel-marker {
       cursor: pointer; position: relative;
       transition: transform 0.2s;
-      pointer-events: auto !important;
+      pointer-events: auto;
     }
     .travel-marker:hover { transform: scale(1.08); z-index: 10; }
 
