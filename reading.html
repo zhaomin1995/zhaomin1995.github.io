@@ -119,7 +119,7 @@
 
     /* ── Book ── */
     .book {
-      width: 40px; border-radius: 3px 6px 6px 3px; cursor: pointer; position: relative;
+      width: 48px; border-radius: 3px 6px 6px 3px; cursor: pointer; position: relative;
       transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
@@ -133,10 +133,11 @@
     }
     .book-spine {
       writing-mode: vertical-rl; text-orientation: mixed;
-      font-size: 0.55rem; font-weight: 600; color: rgba(255,255,255,0.85);
-      letter-spacing: 0.02em; white-space: nowrap; overflow: hidden;
-      text-overflow: ellipsis; max-height: calc(100% - 16px);
-      padding: 8px 2px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      font-size: 0.7rem; font-weight: 600; color: rgba(255,255,255,0.9);
+      letter-spacing: 0.02em; overflow: hidden;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      max-height: calc(100% - 16px); line-height: 1.3;
+      padding: 8px 3px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
     .empty-shelf-msg {
       width: 100%; text-align: center; padding: 3rem 0; color: var(--text-sec);
@@ -292,60 +293,81 @@
        Fields: title, author, desc (English), color (hex), height (px, 110-160). */
     const categories = [
       { id: 'all', en: 'All Books', zh: '全部书籍', icon: 'fas fa-book' },
-      { id: 'cs', en: 'Computer Science', zh: '计算机科学', icon: 'fas fa-laptop-code' },
-      { id: 'science', en: 'Science', zh: '科学', icon: 'fas fa-flask' },
-      { id: 'fiction', en: 'Fiction', zh: '小说', icon: 'fas fa-feather-alt' },
+      { id: 'ai-ml', en: 'AI & Machine Learning', zh: 'AI与机器学习', icon: 'fas fa-brain' },
+      { id: 'algorithms', en: 'Algorithms & Systems', zh: '算法与系统', icon: 'fas fa-project-diagram' },
+      { id: 'nlp', en: 'NLP & Language', zh: '自然语言处理', icon: 'fas fa-language' },
+      { id: 'software', en: 'Software Engineering', zh: '软件工程', icon: 'fas fa-code' },
+      { id: 'physics', en: 'Physics & Cosmology', zh: '物理与宇宙', icon: 'fas fa-atom' },
+      { id: 'biology', en: 'Biology & Evolution', zh: '生物与进化', icon: 'fas fa-dna' },
+      { id: 'psychology', en: 'Psychology & Mind', zh: '心理学与思维', icon: 'fas fa-head-side-virus' },
+      { id: 'sci-fi', en: 'Science Fiction', zh: '科幻小说', icon: 'fas fa-rocket' },
+      { id: 'literary', en: 'Literary Fiction', zh: '文学小说', icon: 'fas fa-feather-alt' },
       { id: 'philosophy', en: 'Philosophy', zh: '哲学', icon: 'fas fa-yin-yang' },
-      { id: 'history', en: 'History & Society', zh: '历史与社会', icon: 'fas fa-landmark' },
+      { id: 'history', en: 'History', zh: '历史', icon: 'fas fa-landmark' },
+      { id: 'society', en: 'Society & Memoir', zh: '社会与回忆录', icon: 'fas fa-users' },
       { id: 'self', en: 'Self-Improvement', zh: '自我提升', icon: 'fas fa-seedling' },
     ];
 
     const books = [
-      // Computer Science
-      { title: 'Deep Learning', author: 'Goodfellow, Bengio, Courville', desc: 'The definitive textbook on deep neural networks, covering mathematical foundations, optimization, regularization, CNNs, RNNs, and generative models. A must-read for anyone entering the field of deep learning.', cat: 'cs', color: '#2c3e50', height: 150 },
-      { title: 'Introduction to Algorithms', author: 'Cormen, Leiserson, Rivest, Stein', desc: 'Known as CLRS, this is the bible of algorithms. It covers data structures, sorting, graph algorithms, dynamic programming, and computational complexity with mathematical rigor.', cat: 'cs', color: '#8e44ad', height: 155 },
-      { title: 'AI: A Modern Approach', author: 'Russell & Norvig', desc: 'The leading AI textbook covering intelligent agents, search, logic, probabilistic reasoning, machine learning, NLP, robotics, and the philosophy of artificial intelligence.', cat: 'cs', color: '#2980b9', height: 148 },
-      { title: 'Speech & Language Processing', author: 'Jurafsky & Martin', desc: 'The standard NLP textbook covering tokenization, n-grams, neural language models, transformers, information extraction, question answering, and dialogue systems.', cat: 'cs', color: '#16a085', height: 145 },
-      { title: 'Pattern Recognition & ML', author: 'Christopher Bishop', desc: 'A comprehensive introduction to pattern recognition and machine learning, with deep coverage of probability distributions, neural networks, kernel methods, and graphical models.', cat: 'cs', color: '#e74c3c', height: 140 },
-      { title: 'Elements of Statistical Learning', author: 'Hastie, Tibshirani, Friedman', desc: 'A classic from the Stanford statistics department covering supervised and unsupervised learning, model assessment, ensemble methods, and high-dimensional problems.', cat: 'cs', color: '#2c3e50', height: 138 },
-      { title: 'Mining Massive Datasets', author: 'Leskovec, Rajaraman, Ullman', desc: 'Algorithms and techniques for big data — MapReduce, similarity search, link analysis, recommendation systems, and mining data streams.', cat: 'cs', color: '#d35400', height: 135 },
-      { title: 'Clean Code', author: 'Robert C. Martin', desc: 'A handbook of agile software craftsmanship. Covers meaningful naming, functions, comments, formatting, error handling, and the art of writing readable, maintainable code.', cat: 'cs', color: '#27ae60', height: 130 },
+      // AI & Machine Learning
+      { title: 'Deep Learning', author: 'Goodfellow, Bengio, Courville', desc: 'The definitive textbook on deep neural networks, covering mathematical foundations, optimization, regularization, CNNs, RNNs, and generative models.', cat: 'ai-ml', color: '#2c3e50', height: 150 },
+      { title: 'AI: A Modern Approach', author: 'Russell & Norvig', desc: 'The leading AI textbook covering intelligent agents, search, logic, probabilistic reasoning, machine learning, NLP, robotics, and the philosophy of AI.', cat: 'ai-ml', color: '#2980b9', height: 148 },
+      { title: 'Pattern Recognition & ML', author: 'Christopher Bishop', desc: 'A comprehensive introduction to pattern recognition and machine learning, with deep coverage of probability distributions, neural networks, kernel methods, and graphical models.', cat: 'ai-ml', color: '#e74c3c', height: 140 },
+      { title: 'Elements of Statistical Learning', author: 'Hastie, Tibshirani, Friedman', desc: 'A classic from the Stanford statistics department covering supervised and unsupervised learning, model assessment, ensemble methods, and high-dimensional problems.', cat: 'ai-ml', color: '#2c3e50', height: 138 },
 
-      // Science
-      { title: 'A Brief History of Time', author: 'Stephen Hawking', desc: 'From the Big Bang to black holes, Hawking takes readers on a journey through cosmology, explaining the nature of space, time, and the universe in accessible prose.', cat: 'science', color: '#1a1a2e', height: 130 },
-      { title: 'The Selfish Gene', author: 'Richard Dawkins', desc: 'A gene-centered view of evolution that introduced the concept of memes. Dawkins argues that genes, not organisms or species, are the fundamental units of natural selection.', cat: 'science', color: '#c0392b', height: 135 },
-      { title: 'Sapiens', author: 'Yuval Noah Harari', desc: 'A sweeping history of humankind from the Cognitive Revolution 70,000 years ago through the Agricultural and Scientific Revolutions to the present day.', cat: 'science', color: '#e67e22', height: 142 },
-      { title: 'Cosmos', author: 'Carl Sagan', desc: 'A poetic voyage through the universe, exploring the evolution of galaxies, stars, and life itself. Sagan\'s love of science and wonder shines on every page.', cat: 'science', color: '#0c2461', height: 138 },
-      { title: 'Scientific Revolutions', author: 'Thomas Kuhn', desc: 'How paradigm shifts transform our understanding of the world. Kuhn coined the term "paradigm shift" and forever changed the philosophy of science.', cat: 'science', color: '#6c5ce7', height: 125 },
-      { title: 'Thinking, Fast and Slow', author: 'Daniel Kahneman', desc: 'Nobel laureate Kahneman explores the two systems of thought — fast intuitive thinking and slow deliberate reasoning — and the cognitive biases that shape our decisions.', cat: 'science', color: '#f39c12', height: 140 },
+      // Algorithms & Systems
+      { title: 'Introduction to Algorithms', author: 'Cormen, Leiserson, Rivest, Stein', desc: 'Known as CLRS, this is the bible of algorithms. Covers data structures, sorting, graph algorithms, dynamic programming, and computational complexity.', cat: 'algorithms', color: '#8e44ad', height: 155 },
+      { title: 'Mining Massive Datasets', author: 'Leskovec, Rajaraman, Ullman', desc: 'Algorithms for big data — MapReduce, similarity search, link analysis, recommendation systems, and mining data streams.', cat: 'algorithms', color: '#d35400', height: 135 },
 
-      // Fiction
-      { title: 'The Three-Body Problem', author: 'Liu Cixin', desc: 'A hard sci-fi masterpiece. Set against the backdrop of China\'s Cultural Revolution, a secret military project sends signals into space, making first contact with an alien civilization on the brink of destruction.', cat: 'fiction', color: '#2d3436', height: 145 },
-      { title: '1984', author: 'George Orwell', desc: 'In a totalitarian state where Big Brother watches everything and the Thought Police punish independent thinking, Winston Smith dares to dream of freedom. A chilling, prescient novel.', cat: 'fiction', color: '#636e72', height: 130 },
-      { title: 'One Hundred Years of Solitude', author: 'García Márquez', desc: 'The epic multigenerational saga of the Buendía family in the fictional town of Macondo. Magical realism at its most enchanting and profound.', cat: 'fiction', color: '#d4a574', height: 140 },
-      { title: 'Brave New World', author: 'Aldous Huxley', desc: 'A dystopia where citizens are engineered for happiness, drugged into compliance, and conditioned to consume. What happens when pleasure replaces freedom?', cat: 'fiction', color: '#00b894', height: 128 },
-      { title: 'Hitchhiker\'s Guide', author: 'Douglas Adams', desc: 'The answer to life, the universe, and everything is 42. Arthur Dent\'s absurd journey through space after Earth is demolished for a hyperspace bypass.', cat: 'fiction', color: '#0984e3', height: 132 },
-      { title: 'Dune', author: 'Frank Herbert', desc: 'Political intrigue, ecology, and religion collide on the desert planet Arrakis. Paul Atreides must navigate betrayal and prophecy in this sweeping sci-fi epic.', cat: 'fiction', color: '#b8860b', height: 150 },
+      // NLP & Language
+      { title: 'Speech & Language Processing', author: 'Jurafsky & Martin', desc: 'The standard NLP textbook covering tokenization, n-grams, neural language models, transformers, information extraction, question answering, and dialogue systems.', cat: 'nlp', color: '#16a085', height: 145 },
+
+      // Software Engineering
+      { title: 'Clean Code', author: 'Robert C. Martin', desc: 'A handbook of agile software craftsmanship. Covers meaningful naming, functions, comments, formatting, error handling, and the art of writing readable, maintainable code.', cat: 'software', color: '#27ae60', height: 130 },
+
+      // Physics & Cosmology
+      { title: 'A Brief History of Time', author: 'Stephen Hawking', desc: 'From the Big Bang to black holes, Hawking takes readers on a journey through cosmology, explaining the nature of space, time, and the universe in accessible prose.', cat: 'physics', color: '#1a1a2e', height: 130 },
+      { title: 'Cosmos', author: 'Carl Sagan', desc: 'A poetic voyage through the universe, exploring the evolution of galaxies, stars, and life itself. Sagan\'s love of science and wonder shines on every page.', cat: 'physics', color: '#0c2461', height: 138 },
+
+      // Biology & Evolution
+      { title: 'The Selfish Gene', author: 'Richard Dawkins', desc: 'A gene-centered view of evolution that introduced the concept of memes. Dawkins argues that genes, not organisms or species, are the fundamental units of natural selection.', cat: 'biology', color: '#c0392b', height: 135 },
+      { title: 'Sapiens', author: 'Yuval Noah Harari', desc: 'A sweeping history of humankind from the Cognitive Revolution 70,000 years ago through the Agricultural and Scientific Revolutions to the present day.', cat: 'biology', color: '#e67e22', height: 142 },
+
+      // Psychology & Mind
+      { title: 'Thinking, Fast and Slow', author: 'Daniel Kahneman', desc: 'Nobel laureate Kahneman explores the two systems of thought — fast intuitive thinking and slow deliberate reasoning — and the cognitive biases that shape our decisions.', cat: 'psychology', color: '#f39c12', height: 140 },
+      { title: 'Scientific Revolutions', author: 'Thomas Kuhn', desc: 'How paradigm shifts transform our understanding of the world. Kuhn coined the term "paradigm shift" and forever changed the philosophy of science.', cat: 'psychology', color: '#6c5ce7', height: 125 },
+      { title: 'Mindset', author: 'Carol Dweck', desc: 'Fixed mindset vs. growth mindset. Stanford psychologist Dweck shows how your beliefs about your own abilities profoundly affect motivation, achievement, and relationships.', cat: 'psychology', color: '#4834d4', height: 126 },
+
+      // Science Fiction
+      { title: 'The Three-Body Problem', author: 'Liu Cixin', desc: 'A hard sci-fi masterpiece. Set against the backdrop of China\'s Cultural Revolution, a secret military project sends signals into space, making first contact with an alien civilization.', cat: 'sci-fi', color: '#2d3436', height: 145 },
+      { title: 'Brave New World', author: 'Aldous Huxley', desc: 'A dystopia where citizens are engineered for happiness, drugged into compliance, and conditioned to consume. What happens when pleasure replaces freedom?', cat: 'sci-fi', color: '#00b894', height: 128 },
+      { title: 'Hitchhiker\'s Guide', author: 'Douglas Adams', desc: 'The answer to life, the universe, and everything is 42. Arthur Dent\'s absurd journey through space after Earth is demolished for a hyperspace bypass.', cat: 'sci-fi', color: '#0984e3', height: 132 },
+      { title: 'Dune', author: 'Frank Herbert', desc: 'Political intrigue, ecology, and religion collide on the desert planet Arrakis. Paul Atreides must navigate betrayal and prophecy in this sweeping sci-fi epic.', cat: 'sci-fi', color: '#b8860b', height: 150 },
+      { title: '1984', author: 'George Orwell', desc: 'In a totalitarian state where Big Brother watches everything and the Thought Police punish independent thinking, Winston Smith dares to dream of freedom.', cat: 'sci-fi', color: '#636e72', height: 130 },
+
+      // Literary Fiction
+      { title: 'One Hundred Years of Solitude', author: 'García Márquez', desc: 'The epic multigenerational saga of the Buendía family in the fictional town of Macondo. Magical realism at its most enchanting and profound.', cat: 'literary', color: '#d4a574', height: 140 },
 
       // Philosophy
-      { title: 'Meditations', author: 'Marcus Aurelius', desc: 'A Roman emperor\'s private journal on Stoic philosophy. Written as personal notes, never intended for publication, these reflections offer timeless wisdom on resilience, duty, and inner peace.', cat: 'philosophy', color: '#795548', height: 118 },
+      { title: 'Meditations', author: 'Marcus Aurelius', desc: 'A Roman emperor\'s private journal on Stoic philosophy. Written as personal notes, never intended for publication, these reflections offer timeless wisdom on resilience and inner peace.', cat: 'philosophy', color: '#795548', height: 118 },
       { title: 'The Republic', author: 'Plato', desc: 'Socratic dialogues on justice, the ideal state, the allegory of the cave, and the nature of the philosopher-king. The foundation of Western political philosophy.', cat: 'philosophy', color: '#4a6fa5', height: 135 },
       { title: 'Tao Te Ching', author: 'Laozi', desc: 'Eighty-one short chapters on the Tao — the Way. Ancient Chinese wisdom on simplicity, humility, compassion, and living in harmony with the natural order.', cat: 'philosophy', color: '#2d5a27', height: 112 },
       { title: 'The Art of War', author: 'Sun Tzu', desc: 'Strategy, tactics, and the philosophy of conflict. Written 2,500 years ago, it remains essential reading for military leaders, business strategists, and anyone facing competition.', cat: 'philosophy', color: '#c0392b', height: 115 },
       { title: 'Beyond Good and Evil', author: 'Nietzsche', desc: 'A critique of past philosophers and traditional morality. Nietzsche challenges the pursuit of truth beyond conventional values and the master-slave morality dichotomy.', cat: 'philosophy', color: '#2c2c54', height: 128 },
 
-      // History & Society
+      // History
       { title: 'Guns, Germs, and Steel', author: 'Jared Diamond', desc: 'Why did some civilizations conquer and dominate others? Diamond argues it was geography, agriculture, and biogeography — not racial or cultural superiority.', cat: 'history', color: '#8B4513', height: 145 },
-      { title: 'The Silk Roads', author: 'Peter Frankopan', desc: 'A new history of the world from the perspective of the ancient trade routes that connected East and West, carrying goods, ideas, religions, and diseases.', cat: 'history', color: '#DAA520', height: 140 },
-      { title: 'Educated', author: 'Tara Westover', desc: 'A memoir of growing up in a survivalist family in Idaho and the transformative power of education. Westover didn\'t enter a classroom until age 17, then earned a PhD from Cambridge.', cat: 'history', color: '#5f27cd', height: 132 },
+      { title: 'The Silk Roads', author: 'Peter Frankopan', desc: 'A new history of the world from the perspective of the ancient trade routes connecting East and West, carrying goods, ideas, religions, and diseases.', cat: 'history', color: '#DAA520', height: 140 },
       { title: 'Diary of a Young Girl', author: 'Anne Frank', desc: 'A Jewish girl\'s diary written while hiding from the Nazis in Amsterdam. An intimate, heartbreaking, and enduring testament to the human spirit.', cat: 'history', color: '#eb4d4b', height: 125 },
-      { title: 'Born a Crime', author: 'Trevor Noah', desc: 'Growing up mixed-race in apartheid South Africa, where his very existence was a crime. Funny, moving, and illuminating stories from the future Daily Show host.', cat: 'history', color: '#10ac84', height: 130 },
+
+      // Society & Memoir
+      { title: 'Educated', author: 'Tara Westover', desc: 'A memoir of growing up in a survivalist family in Idaho and the transformative power of education. Westover didn\'t enter a classroom until age 17, then earned a PhD from Cambridge.', cat: 'society', color: '#5f27cd', height: 132 },
+      { title: 'Born a Crime', author: 'Trevor Noah', desc: 'Growing up mixed-race in apartheid South Africa, where his very existence was a crime. Funny, moving, and illuminating stories from the future Daily Show host.', cat: 'society', color: '#10ac84', height: 130 },
 
       // Self-Improvement
       { title: 'Atomic Habits', author: 'James Clear', desc: 'Tiny changes, remarkable results. Clear breaks down the science of habit formation into four simple laws: make it obvious, attractive, easy, and satisfying.', cat: 'self', color: '#f9ca24', height: 130 },
       { title: 'Deep Work', author: 'Cal Newport', desc: 'In a world of constant distraction, the ability to focus deeply is becoming rare — and valuable. Newport offers rules for cultivating concentration in the age of social media.', cat: 'self', color: '#130f40', height: 128 },
       { title: 'Subtle Art of Not Giving a F*ck', author: 'Mark Manson', desc: 'A counterintuitive approach to living well. Manson argues that choosing what to care about — and what not to — is the key to a meaningful life.', cat: 'self', color: '#e55039', height: 132 },
-      { title: 'Mindset', author: 'Carol Dweck', desc: 'Fixed mindset vs. growth mindset. Stanford psychologist Dweck shows how your beliefs about your own abilities profoundly affect motivation, achievement, and relationships.', cat: 'self', color: '#4834d4', height: 126 },
     ];
 
     /* ── Sidebar ── */

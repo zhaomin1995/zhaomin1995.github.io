@@ -45,7 +45,6 @@
         <a href="zhaomin_cv.pdf" title="CV"><i class="fas fa-file-alt"></i></a>
         <a href="https://github.com/zhaomin1995" title="GitHub"><i class="fab fa-github"></i></a>
         <a href="https://www.linkedin.com/in/zhaomin-xiao-635078221/" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
-        <a href="https://twitter.com/zhaomin_nlp" title="Twitter"><i class="fab fa-twitter"></i></a>
 
       </div>
     </div>
@@ -458,7 +457,7 @@
           overlay.style.width = '100vw';
           overlay.style.height = '100vh';
           overlay.style.borderRadius = '0';
-          overlay.style.background = '#2c1810';
+          overlay.style.background = getComputedStyle(document.documentElement).getPropertyValue('--card-bg').trim();
         });
       });
 
