@@ -98,9 +98,14 @@
       line-height: 1.4;
     }
 
+    /* Globe.gl sets pointer-events:none on HTML overlay containers —
+       override it so markers are hoverable and clickable */
+    .scene-container div[style*="pointer-events"] { pointer-events: auto !important; }
+
     .travel-marker {
       cursor: pointer; position: relative;
       transition: transform 0.2s;
+      pointer-events: auto !important;
     }
     .travel-marker:hover { transform: scale(1.08); z-index: 10; }
 
@@ -268,6 +273,7 @@
       .htmlElement(d => {
         const el = document.createElement('div');
         el.className = 'travel-marker';
+        el.style.pointerEvents = 'auto';
 
         // Thumbnail image
         const img = document.createElement('img');
@@ -322,6 +328,17 @@
         });
 
         return el;
+      })
+      .onHtmlElementHover(hoverObj => {
+        // Fallback hover handler via Globe.gl's built-in system
+        if (!hoverObj) {
+          // Mouse left all markers — schedule tooltip removal
+          setTimeout(() => {
+            if (!document.querySelector('.travel-tooltip:hover')) {
+              document.querySelectorAll('.travel-tooltip').forEach(t => t.remove());
+            }
+          }, 1500);
+        }
       })
       (document.getElementById('globeContainer'));
 
