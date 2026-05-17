@@ -7,12 +7,14 @@ const PLACES = [
     "file": "12273C23-C5F9-44A8-97B3-6FBE2C3E6E16_1_105_c.jpeg",
     "lat": 45.896708,
     "lng": -123.963806,
-    "date": "2024-12-26"
+    "date": "2024-12-26",
+    "location": "Cannon Beach, Oregon"
   },
   {
     "file": "5F50FB61-0E4E-451F-9A7C-C504B4B0AEAE_1_105_c.jpeg",
     "lat": 45.889861,
     "lng": -123.964989,
-    "date": "2024-12-26"
+    "date": "2024-12-26",
+    "location": "Cannon Beach, Oregon"
   }
 ];

@@ -199,7 +199,7 @@
        Each entry: { file, lat, lng, date }
        Only photos with valid GPS data appear on the globe. ── */
     const places = PLACES.map(p => ({
-      name: p.date || p.file,
+      name: p.location || p.file,
       desc: p.date ? (isZh ? '拍摄于 ' + p.date : 'Taken on ' + p.date) : '',
       lat: p.lat,
       lng: p.lng,
@@ -294,8 +294,8 @@
           });
           if (d.photos.length > 6) html += `<div style="display:flex;align-items:center;justify-content:center;width:70px;height:52px;border-radius:6px;background:rgba(0,0,0,0.3);color:#fff;font-size:0.75rem;font-weight:600;">+${d.photos.length - 6}</div>`;
           html += '</div>';
-          html += `<h4>${d.count} ${isZh ? '张照片' : (d.count === 1 ? 'photo' : 'photos')}</h4>`;
-          if (d.photos[0].desc) html += `<p>${d.photos[0].desc}</p>`;
+          html += `<h4>${d.photos[0].name}</h4>`;
+          html += `<p>${d.count} ${isZh ? '张照片' : (d.count === 1 ? 'photo' : 'photos')}${d.photos[0].desc ? ' · ' + d.photos[0].desc : ''}</p>`;
           tooltip.innerHTML = html;
 
           tooltip.style.position = 'fixed';

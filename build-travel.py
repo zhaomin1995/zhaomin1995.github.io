@@ -7,12 +7,30 @@ Usage: python3 build-travel.py
 Run this after adding/removing photos in img/travel/.
 """
 
-import os, json
+import os, json, time, urllib.request, urllib.parse
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
 
 TRAVEL_DIR = 'img/travel'
 OUTPUT = 'assets/js/places.js'
+
+def reverse_geocode(lat, lng):
+    """Convert lat/lng to 'City, State' using free Nominatim API via curl."""
+    try:
+        import subprocess
+        url = f'https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lng}&format=json&zoom=10'
+        result = subprocess.run(['curl', '-s', url, '-H', 'User-Agent: travel-build/1.0'],
+                                capture_output=True, text=True, timeout=15)
+        data = json.loads(result.stdout)
+        addr = data.get('address', {})
+        city = addr.get('city') or addr.get('town') or addr.get('village') or addr.get('county') or ''
+        state = addr.get('state') or addr.get('country') or ''
+        if city and state:
+            return f'{city}, {state}'
+        return city or state or f'{lat:.2f}, {lng:.2f}'
+    except Exception as e:
+        print(f"    Geocode failed: {e}")
+        return f'{lat:.2f}, {lng:.2f}'
 
 def get_exif_gps(path):
     """Extract GPS lat/lng and date from image EXIF data."""
@@ -62,17 +80,28 @@ def main():
                     if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp', '.heic'))])
 
     places = []
+    seen_coords = {}
     for f in files:
         path = os.path.join(TRAVEL_DIR, f)
         gps = get_exif_gps(path)
         if gps:
+            # Reverse geocode (cache by rounded coords to avoid redundant API calls)
+            coord_key = f"{gps['lat']:.2f},{gps['lng']:.2f}"
+            if coord_key not in seen_coords:
+                location = reverse_geocode(gps['lat'], gps['lng'])
+                seen_coords[coord_key] = location
+                time.sleep(1)  # respect Nominatim rate limit
+            else:
+                location = seen_coords[coord_key]
+
             places.append({
                 'file': f,
                 'lat': gps['lat'],
                 'lng': gps['lng'],
                 'date': gps['date'],
+                'location': location,
             })
-            print(f"  ✓ {f} → ({gps['lat']}, {gps['lng']}) {gps['date']}")
+            print(f"  ✓ {f} → {location} ({gps['lat']}, {gps['lng']}) {gps['date']}")
         else:
             print(f"  ✗ {f} — no GPS data, skipping")
 
