@@ -35,6 +35,7 @@
     }
   </style>
   <script>
+    /* Pre-render: apply dark mode and language before paint to prevent flash of unstyled content */
     if (localStorage.getItem('darkMode') === 'true') document.documentElement.classList.add('dark-mode-preload');
     if (localStorage.getItem('lang') === 'zh') document.documentElement.lang = 'zh';
   </script>
@@ -152,19 +153,21 @@
   </section>
 
   <script>
-    // Apply saved preferences
+    /* ===== Restore saved user preferences (dark mode & language) ===== */
     const isDark = localStorage.getItem('darkMode') === 'true';
     const isZh = localStorage.getItem('lang') === 'zh';
     if (isDark) document.body.classList.add('dark-mode');
     if (isZh) document.body.classList.add('zh');
 
-    // Initialize map
+    /* ===== Leaflet map setup ===== */
+    // Choose tile theme to match current dark/light mode
     const tileUrl = isDark
       ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
       : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 
+    // Center on equator with wide zoom so most continents are visible initially
     const map = L.map('visitorMap', {
-      scrollWheelZoom: false
+      scrollWheelZoom: false // prevent accidental zoom while scrolling the page
     }).setView([25, 0], 2);
 
     L.tileLayer(tileUrl, {
@@ -172,6 +175,7 @@
       maxZoom: 18
     }).addTo(map);
 
+    // Custom circular dot marker (replaces default Leaflet pin)
     const markerIcon = L.divIcon({
       className: 'visitor-marker',
       html: '<div style="width:12px;height:12px;background:#e17055;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>',
@@ -179,7 +183,9 @@
       iconAnchor: [6, 6]
     });
 
+    /* ===== Map marker clustering and placement ===== */
     function addMarkers(visitors) {
+      // Deduplicate nearby coordinates by rounding to 2 decimals (~1 km grid)
       const seen = {};
       visitors.forEach(v => {
         if (v.lat && v.lng) {
@@ -191,9 +197,11 @@
         }
       });
 
+      // Localized singular/plural visit label
       const visitLabel = isZh ? '次访问' : ' visit';
       const visitsLabel = isZh ? '次访问' : ' visits';
 
+      // Place one marker per unique grid cell with a popup showing visit count
       Object.entries(seen).forEach(([key, info]) => {
         const [lat, lng] = key.split(',').map(Number);
         const label = info.count > 1 ? visitsLabel : visitLabel;
@@ -202,15 +210,17 @@
           .bindPopup(`<strong>${info.location}</strong><br>${info.count}${label}`);
       });
 
+      // Auto-fit map bounds to show all markers with some padding
       const coords = visitors.filter(v => v.lat && v.lng).map(v => [v.lat, v.lng]);
       if (coords.length > 0) {
         map.fitBounds(coords, { padding: [40, 40], maxZoom: 6 });
       }
     }
 
-    // Parse browser from user agent
+    /* ===== User-agent parsing: extract browser name and version ===== */
     function getBrowser() {
       const ua = navigator.userAgent;
+      // Order matters: check Edge before Chrome (Edge UA contains "Chrome")
       if (ua.includes('Firefox/')) return 'Firefox ' + ua.split('Firefox/')[1].split(' ')[0];
       if (ua.includes('Edg/')) return 'Edge ' + ua.split('Edg/')[1].split(' ')[0];
       if (ua.includes('Chrome/')) return 'Chrome ' + ua.split('Chrome/')[1].split(' ')[0];
@@ -218,9 +228,10 @@
       return 'Unknown';
     }
 
-    // Parse OS from user agent
+    /* ===== User-agent parsing: extract operating system ===== */
     function getOS() {
       const ua = navigator.userAgent;
+      // "Windows NT 10" covers both Win 10 and 11 (same NT version)
       if (ua.includes('Windows NT 10')) return 'Windows 10/11';
       if (ua.includes('Windows')) return 'Windows';
       if (ua.includes('Mac OS X')) {
@@ -233,7 +244,7 @@
       return 'Unknown';
     }
 
-    // Load total visits
+    /* ===== Fetch global visit counter from CounterAPI ===== */
     fetch('https://api.counterapi.dev/v1/zhaomin1995.github.io/visits')
       .then(r => r.json())
       .then(data => {
@@ -243,17 +254,18 @@
         document.getElementById('totalVisits').textContent = '—';
       });
 
-    // Browser & OS
+    /* ===== Populate browser & OS info cards immediately (no network needed) ===== */
     const browser = getBrowser();
     const os = getOS();
-    document.getElementById('yourBrowser').textContent = browser.split(' ')[0];
+    document.getElementById('yourBrowser').textContent = browser.split(' ')[0]; // summary card shows name only
     document.getElementById('detailBrowser').textContent = browser;
     document.getElementById('detailOS').textContent = os;
 
-    // IP geolocation
+    /* ===== IP geolocation: fetch visitor location, then log and render ===== */
     fetch('https://ipapi.co/json/')
       .then(r => r.json())
       .then(data => {
+        // Extract fields with fallback dashes for missing data
         const ip = data.ip || '—';
         const city = data.city || '—';
         const region = data.region || '—';
@@ -263,6 +275,7 @@
         const lat = data.latitude || null;
         const lng = data.longitude || null;
 
+        // Populate all visitor detail fields in the DOM
         document.getElementById('yourLocation').textContent = city + ', ' + country;
         document.getElementById('yourIP').textContent = ip;
         document.getElementById('detailIP').textContent = ip;
@@ -272,7 +285,7 @@
         document.getElementById('detailTimezone').textContent = timezone;
         document.getElementById('detailISP').textContent = isp;
 
-        // Save to visitor log (localStorage)
+        /* ===== Visitor logging: persist visit record to localStorage ===== */
         const record = {
           time: new Date().toISOString(),
           ip: ip,
@@ -284,14 +297,15 @@
         };
 
         let visitors = JSON.parse(localStorage.getItem('visitorLog') || '[]');
-        visitors.unshift(record);
-        visitors = visitors.slice(0, 50);
+        visitors.unshift(record); // newest first
+        visitors = visitors.slice(0, 50); // cap at 50 entries to limit storage usage
         localStorage.setItem('visitorLog', JSON.stringify(visitors));
 
         renderTable(visitors);
         addMarkers(visitors);
       })
       .catch(() => {
+        // On network failure, show dashes and still render cached visitor data
         document.getElementById('yourLocation').textContent = '—';
         document.getElementById('yourIP').textContent = '—';
         ['detailIP','detailCity','detailRegion','detailCountry','detailTimezone','detailISP']
@@ -302,6 +316,7 @@
         addMarkers(visitors);
       });
 
+    /* ===== Render the recent visitors table from the visitor log array ===== */
     function renderTable(visitors) {
       const tbody = document.getElementById('visitorTableBody');
       const zh = document.body.classList.contains('zh');
@@ -323,22 +338,24 @@
       }).join('');
     }
 
-    // Language toggle
+    /* ===== Language toggle handler (EN <-> ZH) ===== */
     const langToggle = document.getElementById('langToggle');
     langToggle.addEventListener('click', () => {
       document.body.classList.toggle('zh');
       const nowZh = document.body.classList.contains('zh');
       document.documentElement.lang = nowZh ? 'zh' : 'en';
       localStorage.setItem('lang', nowZh ? 'zh' : 'en');
+      // Re-render table so empty-state message reflects new language
       const visitors = JSON.parse(localStorage.getItem('visitorLog') || '[]');
       renderTable(visitors);
     });
 
-    // Dark mode toggle
+    /* ===== Dark mode toggle handler ===== */
     const themeToggle = document.getElementById('themeToggle');
     themeToggle.addEventListener('click', () => {
       document.body.classList.toggle('dark-mode');
       localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+      // Note: map tiles are NOT swapped on toggle; requires page reload to change tile theme
     });
   </script>
 

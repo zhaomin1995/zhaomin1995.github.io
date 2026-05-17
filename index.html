@@ -266,6 +266,10 @@
   </button>
 
   <script>
+    /* ── Scroll-triggered fade-in ──
+       Elements with .fade-in start invisible and slide up once they
+       enter the viewport (threshold 10%). The IntersectionObserver
+       adds .visible which the CSS transition picks up. */
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -273,16 +277,17 @@
         }
       });
     }, { threshold: 0.1 });
-
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-    // Sticky nav background
+    /* ── Sticky nav ──
+       Adds a darker backdrop to the nav bar after scrolling 40px. */
     const nav = document.querySelector('.nav');
     window.addEventListener('scroll', () => {
       nav.classList.toggle('nav-scrolled', window.scrollY > 40);
     });
 
-    // Scroll to top button
+    /* ── Scroll-to-top button ──
+       Shows after 300px of scroll; smoothly scrolls to top on click. */
     const scrollTopBtn = document.getElementById('goTopBtn');
     window.addEventListener('scroll', () => {
       if (window.scrollY > 300) {
@@ -295,7 +300,10 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // Publication hover/tap toggle
+    /* ── Publication hover / tap popover ──
+       Clicking a conference name in the News timeline toggles a popover
+       card showing the paper's title, authors, and links.
+       Clicking elsewhere dismisses all open popovers. */
     document.querySelectorAll('.pub-hover-trigger').forEach(trigger => {
       trigger.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -309,7 +317,9 @@
       document.querySelectorAll('.pub-hover-wrap.active').forEach(w => w.classList.remove('active'));
     });
 
-    // Dark mode toggle
+    /* ── Dark mode toggle ──
+       Persisted in localStorage so preference carries across pages and sessions.
+       body.dark-mode swaps all CSS custom properties to dark palette. */
     const themeToggle = document.getElementById('themeToggle');
     if (localStorage.getItem('darkMode') === 'true') {
       document.body.classList.add('dark-mode');
@@ -319,7 +329,9 @@
       localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
     });
 
-    // Visitor counter
+    /* ── Visitor counter ──
+       Uses counterapi.dev to increment and display a persistent visit count.
+       ordinal() converts a number to "1st", "2nd", "3rd", "4th", etc. */
     function ordinal(n) {
       const s = ['th','st','nd','rd'];
       const v = n % 100;
@@ -337,12 +349,23 @@
         document.getElementById('visitorCountZh').textContent = '—';
       });
 
-    // Travel card expand animation
+    /* ── Card expand animation (shared by Travel & History) ──
+       1. Snapshot the card's position/size
+       2. Place a fixed overlay exactly on top of the card
+       3. Animate the overlay to cover the full viewport
+       4. Navigate to the target page after the animation finishes
+       Travel card additionally transitions background from light → dark
+       to match the 3D globe page's dark background. */
+
+    // Travel card: light-to-dark background fade during expansion
     document.getElementById('travelCard').addEventListener('click', () => {
       const card = document.getElementById('travelCard');
       const overlay = document.getElementById('cardExpandOverlay');
       const rect = card.getBoundingClientRect();
 
+      // Start at the card's exact position with its background color
+      overlay.style.transition = 'none';
+      overlay.style.background = getComputedStyle(document.documentElement).getPropertyValue('--card-bg').trim();
       overlay.style.top = rect.top + 'px';
       overlay.style.left = rect.left + 'px';
       overlay.style.width = rect.width + 'px';
@@ -350,20 +373,23 @@
       overlay.style.borderRadius = '16px';
       overlay.classList.add('active');
 
+      // Double rAF ensures the browser paints the initial state before transitioning
       requestAnimationFrame(() => {
-        overlay.style.top = '0';
-        overlay.style.left = '0';
-        overlay.style.width = '100vw';
-        overlay.style.height = '100vh';
-        overlay.style.borderRadius = '0';
+        requestAnimationFrame(() => {
+          overlay.style.transition = 'top 0.7s cubic-bezier(0.4,0,0.2,1), left 0.7s cubic-bezier(0.4,0,0.2,1), width 0.7s cubic-bezier(0.4,0,0.2,1), height 0.7s cubic-bezier(0.4,0,0.2,1), border-radius 0.7s cubic-bezier(0.4,0,0.2,1), background 1.2s ease-in, opacity 0.15s ease';
+          overlay.style.top = '0';
+          overlay.style.left = '0';
+          overlay.style.width = '100vw';
+          overlay.style.height = '100vh';
+          overlay.style.borderRadius = '0';
+          overlay.style.background = '#0a0a1a'; // matches travel.html dark bg
+        });
       });
 
-      setTimeout(() => {
-        window.location.href = 'travel.html';
-      }, 500);
+      setTimeout(() => { window.location.href = 'travel.html'; }, 1000);
     });
 
-    // History card expand animation
+    // History card: same expand animation, uses default card-bg color
     document.getElementById('historyCard').addEventListener('click', () => {
       const card = document.getElementById('historyCard');
       const overlay = document.getElementById('cardExpandOverlay');
@@ -374,7 +400,6 @@
       overlay.style.width = rect.width + 'px';
       overlay.style.height = rect.height + 'px';
       overlay.style.borderRadius = '16px';
-      overlay.style.background = '#1d1d1f';
       overlay.classList.add('active');
 
       requestAnimationFrame(() => {
@@ -385,12 +410,12 @@
         overlay.style.borderRadius = '0';
       });
 
-      setTimeout(() => {
-        window.location.href = 'history.html';
-      }, 500);
+      setTimeout(() => { window.location.href = 'history.html'; }, 500);
     });
 
-    // Language toggle
+    /* ── Language toggle (EN ↔ 中文) ──
+       Persisted in localStorage. body.zh hides .lang-en and shows .lang-zh.
+       Also updates the <html lang> attribute for accessibility. */
     const langToggle = document.getElementById('langToggle');
     if (localStorage.getItem('lang') === 'zh') {
       document.body.classList.add('zh');

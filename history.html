@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <script defer src="assets/fontawesome/js/all.min.js"></script>
   <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
-  <script src="assets/js/events.js"></script>
+  <script src="assets/js/events.js?v=2"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
@@ -352,7 +352,7 @@
         ctx.restore();
 
         // Particles
-        if (particles.length === 0 || Math.abs(particles[0]._segCount - segs.length) > 2) {
+        if (particles.length === 0 || !particles[0]._segCount || Math.abs(particles[0]._segCount - segs.length) > 2) {
           seedParticles(segs);
           particles.forEach(p => p._segCount = segs.length);
         }
@@ -545,7 +545,17 @@
     canvas.addEventListener('touchend', () => { dragging = false; lastTouchDist = 0; });
 
     window.addEventListener('resize', () => { resizeCanvas(); particles = []; });
-    animate();
+
+    // Wrap animate in try-catch so errors are visible
+    try {
+      if (typeof EVENTS === 'undefined') {
+        document.body.innerHTML = '<p style="padding:4rem;color:red;">Error: events.js failed to load. Check console.</p>';
+      } else {
+        animate();
+      }
+    } catch(err) {
+      document.body.innerHTML = '<p style="padding:4rem;color:red;">Error: ' + err.message + '</p>';
+    }
   </script>
 </body>
 </html>
