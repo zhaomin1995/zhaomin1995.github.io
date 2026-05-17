@@ -268,10 +268,11 @@
       return null;
     }
 
-    /* ── CORS proxy list (try in order, fall back if one fails) ── */
+    /* ── CORS proxy list (tried in order until one succeeds) ── */
     const CORS_PROXIES = [
-      url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
       url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+      url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+      url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
     ];
 
     /* ── IndexedDB cache for downloaded book texts ──
@@ -318,41 +319,60 @@
       } catch { /* ignore cache write failures */ }
     }
 
-    /* ── Fetch with streaming progress + CORS proxy fallback ── */
+    /* ── Fetch with streaming progress ── */
     async function fetchWithProgress(fetchUrl) {
       const r = await fetch(fetchUrl);
       if (!r.ok) throw new Error('HTTP ' + r.status);
 
       const contentLength = r.headers.get('Content-Length');
       const total = contentLength ? parseInt(contentLength, 10) : 0;
-      const reader = r.body.getReader();
-      const decoder = new TextDecoder();
-      let loaded = 0;
-      let text = '';
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        loaded += value.length;
-        text += decoder.decode(value, { stream: true });
-        updateLoadingProgress(loaded, total);
+      // Try streaming for progress, fall back to simple .text()
+      if (r.body && r.body.getReader) {
+        try {
+          const reader = r.body.getReader();
+          const decoder = new TextDecoder();
+          let loaded = 0;
+          let text = '';
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            loaded += value.length;
+            text += decoder.decode(value, { stream: true });
+            updateLoadingProgress(loaded, total);
+          }
+          text += decoder.decode();
+          updateLoadingProgress(total || text.length, total || text.length);
+          return text;
+        } catch {
+          // Streaming failed, re-fetch with simple .text()
+        }
       }
-      text += decoder.decode(); // flush
+
+      // Fallback: no streaming, just load entire text at once
+      const text = await r.text();
+      updateLoadingProgress(text.length, text.length);
       return text;
     }
 
+    /* ── Try direct + CORS proxies in order ── */
     async function fetchWithProxy(url) {
+      const dlDetail = document.getElementById('dlDetail');
+
       // Try direct fetch first
       try {
+        if (dlDetail) dlDetail.textContent = 'Connecting directly...';
         return await fetchWithProgress(url);
-      } catch { /* CORS blocked, try proxies */ }
+      } catch { /* CORS blocked */ }
 
       // Try each CORS proxy
-      for (const proxy of CORS_PROXIES) {
+      for (let i = 0; i < CORS_PROXIES.length; i++) {
         try {
-          const status = document.getElementById('loadingStatus');
-          if (status) status.textContent = 'Connecting via proxy...';
-          return await fetchWithProgress(proxy(url));
+          if (dlDetail) dlDetail.textContent = `Trying proxy ${i + 1}/${CORS_PROXIES.length}...`;
+          document.getElementById('dlBar').style.width = '0%';
+          const result = await fetchWithProgress(CORS_PROXIES[i](url));
+          if (result && result.length > 100) return result;
         } catch { continue; }
       }
       throw new Error('All fetch attempts failed');
