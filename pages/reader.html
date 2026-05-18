@@ -394,42 +394,58 @@
       return body.textContent || body.innerText || '';
     }
 
-    /* ── Paginate text into pages that fit the container ── */
-    function paginateText(text) {
-      // Clean up Gutenberg headers/footers
+    /* ── Strip Gutenberg boilerplate from raw text ── */
+    function stripGutenberg(text) {
       const startMarkers = ['*** START OF THE PROJECT GUTENBERG', '*** START OF THIS PROJECT GUTENBERG'];
       const endMarkers = ['*** END OF THE PROJECT GUTENBERG', '*** END OF THIS PROJECT GUTENBERG', '***END OF THE PROJECT GUTENBERG'];
-
       for (const m of startMarkers) {
         const idx = text.indexOf(m);
-        if (idx !== -1) {
-          const lineEnd = text.indexOf('\n', idx);
-          text = text.substring(lineEnd + 1);
-          break;
-        }
+        if (idx !== -1) { text = text.substring(text.indexOf('\n', idx) + 1); break; }
       }
       for (const m of endMarkers) {
         const idx = text.indexOf(m);
         if (idx !== -1) { text = text.substring(0, idx); break; }
       }
+      return text;
+    }
 
-      // Split into paragraphs
+    /* ── Paginate text using actual DOM measurement ──
+       Renders paragraphs into a hidden clone of the page container
+       and breaks whenever the content exceeds the available height. */
+    function paginateText(text) {
+      text = stripGutenberg(text);
       const paragraphs = text.split(/\n\s*\n/).map(p => p.trim()).filter(p => p.length > 0);
 
-      // Estimate chars per page based on font size and container
-      const charsPerPage = Math.floor(1800 * (0.92 / fontSize));
+      const ref = document.getElementById('contentRight');
+      const measure = ref.cloneNode(false);
+      measure.style.cssText = window.getComputedStyle(ref).cssText;
+      measure.style.position = 'fixed';
+      measure.style.visibility = 'hidden';
+      measure.style.left = '-9999px';
+      measure.style.width = ref.offsetWidth + 'px';
+      measure.style.height = ref.offsetHeight + 'px';
+      measure.style.overflow = 'hidden';
+      measure.style.fontSize = fontSize + 'rem';
+      document.body.appendChild(measure);
+
+      const maxH = ref.offsetHeight;
       const result = [];
-      let currentPageText = '';
+      let pageParas = [];
 
       for (const para of paragraphs) {
-        if (currentPageText.length + para.length + 2 > charsPerPage && currentPageText.length > 0) {
-          result.push(currentPageText.trim());
-          currentPageText = '';
-        }
-        currentPageText += para.replace(/\n/g, ' ').replace(/\s+/g, ' ') + '\n\n';
-      }
-      if (currentPageText.trim()) result.push(currentPageText.trim());
+        const clean = para.replace(/\n/g, ' ').replace(/\s+/g, ' ');
+        pageParas.push(clean);
+        measure.textContent = pageParas.join('\n\n');
 
+        if (measure.scrollHeight > maxH && pageParas.length > 1) {
+          pageParas.pop();
+          result.push(pageParas.join('\n\n'));
+          pageParas = [clean];
+        }
+      }
+      if (pageParas.length) result.push(pageParas.join('\n\n'));
+
+      document.body.removeChild(measure);
       return result;
     }
 
