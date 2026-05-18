@@ -348,12 +348,12 @@
       try {
         const r = await fetch(`${FB_DB}/auth/allowed-emails.json`);
         const data = await r.json();
-        if (!data) {
-          // Add a placeholder — replace with your actual email
+        if (!data || !data['yanglanting2017_gmail_com']) {
+          // Ensure both emails are in the allowlist
           await fetch(`${FB_DB}/auth/allowed-emails.json`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 'xzm01234_gmail_com': true }),
+            body: JSON.stringify({ 'xzm01234_gmail_com': true, 'yanglanting2017_gmail_com': true }),
           });
         }
       } catch {}
