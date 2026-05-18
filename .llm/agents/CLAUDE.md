@@ -1,6 +1,20 @@
 # Zhaomin Xiao — Personal Homepage
 
-A static personal academic website hosted on GitHub Pages at [zhaomin1995.github.io](https://zhaomin1995.github.io).
+A static personal website hosted on GitHub Pages at [zhaomin1995.github.io](https://zhaomin1995.github.io).
+
+## Development Guidelines
+
+**IMPORTANT: Follow these rules for every change.**
+
+1. **Comment coverage**: Every change must have good comment coverage. Add concise comments to explain non-obvious logic, data structures, and key decisions. Use `/* block */` for section headers and `//` for inline notes.
+
+2. **Update this file**: If a change affects the folder structure, adds/removes pages, changes architecture, updates Firebase config, or modifies the tech stack, update this CLAUDE.md to reflect the current state.
+
+3. **Test before committing**: Verify changes work in the browser before reporting as done.
+
+4. **No frameworks**: This is a pure HTML/CSS/JS site. Do not introduce React, Vue, or other frameworks.
+
+5. **Bilingual**: All user-facing text must have both `<span class="lang-en">` and `<span class="lang-zh">` versions.
 
 ## Folder Structure
 
@@ -8,117 +22,155 @@ A static personal academic website hosted on GitHub Pages at [zhaomin1995.github
 zhaomin1995.github.io/
 ├── index.html              # Main homepage (About, Education, News, Experience, Misc)
 ├── zhaomin_cv.pdf          # CV / resume PDF
-├── license.txt             # License file
-├── README.md               # This file
+├── README.md               # Placeholder README
+├── firebase.json           # Firebase deployment config
+├── database.rules.json     # Firebase Realtime Database rules
+├── .gitignore              # Ignores: node_modules/, .idea/, img/travel/, .travel-cache.json
 │
-├── pages/                  # Sub-pages (linked from index.html)
-│   ├── travel.html         # 3D globe page — interactive travel map (Globe.gl)
-│   ├── history.html        # Interactive zoomable world history timeline (Canvas)
-│   ├── reading.html        # Bookshelf with 201 books across 21 categories
+├── .llm/agents/
+│   └── CLAUDE.md           # THIS FILE — repo context for LLM agents
+│
+├── pages/                  # Sub-pages (linked from index.html via pages/)
+│   ├── travel.html         # 3D globe — photos from Firebase Storage, clustered markers
+│   ├── history.html        # Zoomable world history timeline (Canvas, 1971 events)
+│   ├── reading.html        # Bookshelf — 1060+ books, sidebar categories, search
 │   ├── reader.html         # In-browser book reader (iBooks-style, two-page spread)
-│   └── visitors.html       # Visitor stats page with IP geolocation and Leaflet map
+│   ├── pets.html           # Pet photo gallery — loads from Firebase Storage /pet/
+│   ├── visitors.html       # Visitor stats — IP geolocation, Leaflet map
+│   └── space.html          # Internal space — login (test/test), desktop with shortcuts
 │
 ├── assets/
 │   ├── css/
-│   │   └── apple.css       # Main stylesheet — shared by index.html & visitors.html
-│   │                       #   Light/dark mode via CSS custom properties
-│   │                       #   Language toggle (EN/中文) via .lang-en / .lang-zh classes
+│   │   └── apple.css       # Main stylesheet (light/dark mode via CSS custom properties)
 │   ├── js/
-│   │   ├── events.js       # World history event data (314 events, bilingual)
-│   │   │                   #   Used by history.html — ERAS, CONTINENTS, EVENTS arrays
-│   │   └── books.js        # Book data (201 books, 21 categories)
-│   │                       #   Used by reading.html — BOOK_CATEGORIES, BOOKS arrays
+│   │   ├── events.js       # World history events (1971 events, bilingual, continent/era tags)
+│   │   ├── books.js        # Book data (1060+ books, 19 categories, free PDF links)
+│   │   └── places.js       # [DEPRECATED] Was auto-generated, now reads from Firebase
 │   └── fontawesome/
-│       └── js/all.min.js   # FontAwesome icon library
+│       └── js/all.min.js   # FontAwesome icons
+│
+├── functions/              # Firebase Cloud Functions
+│   ├── index.js            # processTravelPhoto (onFinalize) + deleteTravelPhoto (onDelete)
+│   └── package.json        # Dependencies: firebase-functions, exif-parser, node-fetch
 │
 ├── img/
-│   ├── favicon.svg         # Site favicon — ZX monogram with gradient
+│   ├── favicon.svg         # ZX monogram favicon
 │   ├── zhaomin_photo.jpeg  # Profile photo
 │   └── UNT.png             # Legacy icon (unused)
 │
 └── files/
     └── posters/            # Conference poster PDFs
-        ├── aacl_2023_poster.pdf
-        └── coling_2022_poster.pdf
 ```
+
+## Firebase Setup
+
+- **Project**: `zhaomin-homepage` (Blaze plan)
+- **Realtime Database**: `https://zhaomin-homepage-default-rtdb.firebaseio.com`
+  - `/travel-photos/` — written by Cloud Function, read by travel.html
+  - `/travel-cache/` — legacy cache (may be removed)
+- **Storage bucket**: `zhaomin-homepage.firebasestorage.app`
+  - `/travel/` — travel photos (auto-processed by Cloud Function on upload)
+  - `/pet/` — pet photos (listed directly by pets.html)
+- **Cloud Functions**:
+  - `processTravelPhoto` — triggers on Storage upload to `/travel/`, reads EXIF GPS, reverse-geocodes via Nominatim, writes to Realtime DB
+  - `deleteTravelPhoto` — triggers on Storage delete, removes DB entry
 
 ## Pages
 
 ### `index.html` — Main Homepage
-- **Hero** section with name, tagline, and social links
-- **About + Education** in a two-column layout
-- **News** timeline with hover/click popovers showing publication details
-- **Experience** cards for work and research history
-- **Miscellaneous** grid: Travel and History cards have expand-to-page animations linking to their respective pages
-- **Footer** with a live visitor counter (via counterapi.dev)
-- Scroll-to-top button, dark mode toggle, language toggle (EN/中文)
+- Hero with name, tagline, social links (Email, CV, GitHub, LinkedIn)
+- About + Education in two-column layout (2.5:1 ratio)
+- News timeline with hover popovers showing publication details
+- Experience cards (On-Device LLM, Ads Signal Anonymizer, Meta internship, UNT research)
+- Miscellaneous grid: Travel, Pets, Reading, History — all clickable with expand animations
+- Footer: visitor counter (counterapi.dev) + Internal Space button
+- Scroll-to-top, dark mode toggle, language toggle (EN/中文)
 
-### `travel.html` — 3D Travel Globe
-- Full-screen interactive 3D globe using [Globe.gl](https://globe.gl/)
-- Travel destinations plotted as markers with hover tooltips
-- Auto-rotating globe with drag, zoom, and star field background
-- To add destinations: edit the `places` array in the `<script>` section
+### `pages/travel.html` — 3D Travel Globe
+- Globe.gl 3D globe with Firebase Storage photos as clustered markers
+- Photos loaded from Firebase Realtime DB `/travel-photos/` (written by Cloud Function)
+- Apple Photos-style clustering: nearby photos group, split on zoom
+- Hover shows 2x2 photo grid tooltip with location name
+- Click marker opens gallery overlay (globe stays in background)
+- Gallery has lightbox with full-size view
+- Static globe (no auto-rotation), drag to rotate, scroll to zoom
 
-### `history.html` — World History Timeline
-- Full-screen canvas rendering a zoomable, pannable timeline of 314 world events
-- Events are laid out in a snaking curved path with era-based gradient coloring
-- **Zoom controls visibility**: zoom out = landmark events only, zoom in = all events
-- **Continent filters**: Asia, Europe, Africa, N. America, S. America, Oceania, Global
-- **Era filters**: from Early Civilizations (~3000 BC) to Information Age (present)
-- Hover/tap shows tooltip with event details and a Wikipedia link
-- Animated particles flow along the path
-- Event data lives in `assets/js/events.js`
+### `pages/history.html` — World History Timeline
+- Canvas-rendered zoomable/pannable timeline, 1971 events
+- Snaking curved path with era-based gradient colors + animated particles
+- Default zoom shows ~20 major events; zoom in for more
+- Continent filters (Asia 561, Europe 595, Africa 551, N. America 156, S. America 74)
+- Era filters (Early Civilizations to Information Age)
+- Tooltip fixed near mark, persists 1.5s for Wikipedia link clicking
+- Smooth zoom via lerp interpolation
+- Event data in `assets/js/events.js`
 
-### `reading.html` — Interactive Bookshelf
-- Warm-toned page with realistic wooden bookshelves
-- Books displayed as colored spines organized by category (CS, Science, Fiction, Philosophy, History, Self-Improvement)
-- Hover a book spine to pull it up and see a popup with title, author, description, and category tag
-- Book data is defined in a JS object — easy to add/remove books
-- To add a book: add an entry to the `books` object in the `<script>` section with title, author, desc, color, and height
+### `pages/reading.html` — Bookshelf
+- Left sidebar with 19 categories sorted alphabetically
+- 4-shelf wooden bookshelf layout per category
+- 1060+ books with free/open-access PDF links
+- Search: inline expanding search box in nav
+- Click book → iBooks-style overlay (cover + description page)
+- "Read" button → reader.html or redirects to source for non-Gutenberg books
+- Animated transition from book info to reader page
+- Book data in `assets/js/books.js`
 
-### `visitors.html` — Visitor Statistics
-- Summary cards showing total visits, visitor location, IP, and browser
-- Interactive Leaflet.js map plotting visitor locations
-- Detailed visitor info panel (IP, city, region, country, timezone, ISP, browser, OS)
-- Recent visitors table (stored in localStorage, last 50 records)
-- Uses [ipapi.co](https://ipapi.co/) for IP geolocation
+### `pages/reader.html` — Book Reader
+- Two-page spread on wide screens, single page on mobile
+- Fetches book text via CORS proxy chain (corsproxy.io → allorigins → codetabs)
+- Caches in IndexedDB (session-based, clears on browser close)
+- Page-turn animation, font size controls, progress bar
+- Keyboard: arrows, space, Home/End
+- Non-Gutenberg books redirect to source website
+
+### `pages/pets.html` — Pet Gallery
+- Loads photos from Firebase Storage `/pet/` folder via REST API
+- Staggered fade-in animation (top-to-bottom, left-to-right)
+- "Load more cute pictures" button for lazy loading (6 per batch)
+- Lightbox with prev/next navigation buttons + keyboard arrows
+- Photos sorted by upload date (newest first)
+
+### `pages/visitors.html` — Visitor Stats
+- Summary cards (total visits, location, IP, browser)
+- Leaflet.js map with visitor location markers
+- Visitor detail panel (IP, city, region, country, timezone, ISP, browser, OS)
+- Recent visitors table (localStorage, last 50 records)
+
+### `pages/space.html` — Internal Space
+- Login required: username `test`, password `test` (session-based)
+- Desktop-style page with app shortcut icons
+- macOS-style dock at bottom
+- Live clock in taskbar
 
 ## Features
 
 ### Dark Mode
-- Toggle via moon/sun button in nav bar
-- Persisted in `localStorage` across all pages
-- CSS custom properties swap the entire color palette
+- `body.dark-mode` class swaps all CSS custom properties
+- Persisted in `localStorage`, synced across all pages
 
 ### Language Toggle (EN / 中文)
-- Toggle via "中/EN" button in nav bar
-- All content has `<span class="lang-en">` and `<span class="lang-zh">` pairs
-- `body.zh` CSS class hides English and shows Chinese
+- `body.zh` hides `.lang-en`, shows `.lang-zh`
 - Persisted in `localStorage`
 
-### Card Expand Animation
-- Travel and History misc cards have a click-to-expand animation
-- A fixed overlay grows from the card's position to fill the viewport
-- Travel card additionally fades from light to dark background
+### Card Expand Animations
+- Travel: light → dark background fade (1.2s ease-in)
+- Reading: same color, no fade
+- History: same color
+- Pets: same color
+- All use `requestAnimationFrame` double-RAF for smooth start
 
 ## Tech Stack
-- Pure HTML / CSS / JavaScript (no build step, no framework)
-- [Inter](https://fonts.google.com/specimen/Inter) + [Playfair Display](https://fonts.google.com/specimen/Playfair+Display) fonts
+- Pure HTML / CSS / JavaScript (no build step)
+- [Inter](https://fonts.google.com/specimen/Inter) + [Playfair Display](https://fonts.google.com/specimen/Playfair+Display) + [Merriweather](https://fonts.google.com/specimen/Merriweather) fonts
 - [FontAwesome](https://fontawesome.com/) icons
-- [Globe.gl](https://globe.gl/) for the 3D travel globe
-- [Leaflet.js](https://leafletjs.com/) + CARTO tiles for visitor map
-- [counterapi.dev](https://counterapi.dev/) for visitor counting
-- [ipapi.co](https://ipapi.co/) for IP geolocation
-
-## Development
-```bash
-# Serve locally
-cd zhaomin1995.github.io
-python3 -m http.server 8080
-
-# Open in browser
-open http://localhost:8080
-```
+- [Globe.gl](https://globe.gl/) — 3D travel globe
+- [Leaflet.js](https://leafletjs.com/) + CARTO tiles — visitor map
+- [Firebase](https://firebase.google.com/) — Storage (photos), Realtime Database (metadata), Cloud Functions (EXIF processing)
+- [counterapi.dev](https://counterapi.dev/) — visitor counting
+- [ipapi.co](https://ipapi.co/) — IP geolocation
+- [Nominatim/OSM](https://nominatim.openstreetmap.org/) — reverse geocoding
 
 ## Deployment
-Push to `master` branch — GitHub Pages auto-deploys from the root of the repo.
+- Push to `master` → GitHub Pages auto-deploys
+- Cloud Functions: `npx firebase deploy --only functions --project zhaomin-homepage`
+- DB rules: `npx firebase deploy --only database --project zhaomin-homepage`
