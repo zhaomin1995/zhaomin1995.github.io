@@ -68,8 +68,8 @@
     .dock-item:hover { transform: scale(1.2) translateY(-4px); }
 
     /* ── Finder Window ── */
-    .finder-overlay { position: fixed; inset: 0; z-index: 200; display: none; }
-    .finder-overlay.show { display: block; }
+    .finder-overlay { position: fixed; inset: 0; z-index: 200; display: none; pointer-events: none; }
+    .finder-overlay.show { display: block; pointer-events: none; }
 
     .finder {
       position: absolute; top: 50px; left: 50%; transform: translateX(-50%);
@@ -77,7 +77,7 @@
       background: #1e1e2e; border-radius: 10px; overflow: hidden;
       display: flex; flex-direction: column;
       box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-      resize: both; min-width: 400px; min-height: 300px;
+      resize: both; min-width: 400px; min-height: 300px; pointer-events: auto;
     }
     .finder.maximized { top: 28px !important; left: 0 !important; transform: none !important; width: 100vw !important; height: calc(100vh - 28px) !important; border-radius: 0; }
 
@@ -85,10 +85,16 @@
     .finder-titlebar { height: 36px; background: #2a2a3c; display: flex; align-items: center; padding: 0 12px; flex-shrink: 0; cursor: grab; }
     .finder-titlebar:active { cursor: grabbing; }
     .finder-dots { display: flex; gap: 6px; }
-    .finder-dot { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; }
+    .finder-dot { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .finder-dot.red { background: #ff5f57; }
+    .finder-dot.red::after { content: '×'; color: transparent; font-size: 10px; font-weight: 700; line-height: 12px; }
+    .finder-dots:hover .finder-dot.red::after { color: rgba(0,0,0,0.5); }
     .finder-dot.yellow { background: #febc2e; }
+    .finder-dot.yellow::after { content: '−'; color: transparent; font-size: 12px; font-weight: 700; line-height: 12px; }
+    .finder-dots:hover .finder-dot.yellow::after { color: rgba(0,0,0,0.5); }
     .finder-dot.green { background: #28c840; }
+    .finder-dot.green::after { content: '+'; color: transparent; font-size: 11px; font-weight: 700; line-height: 12px; }
+    .finder-dots:hover .finder-dot.green::after { color: rgba(0,0,0,0.5); }
     .finder-title { flex: 1; text-align: center; color: rgba(255,255,255,0.7); font-size: 0.75rem; font-weight: 600; }
 
     /* Toolbar */
@@ -153,7 +159,7 @@
   <!-- Desktop -->
   <div class="desktop" id="desktop">
     <div class="taskbar">
-      <div class="taskbar-left"><span class="taskbar-logo"><i class="fas fa-cube"></i> Internal Space</span></div>
+      <div class="taskbar-left"><span class="taskbar-logo"><i class="fab fa-apple"></i></span><span style="color:rgba(255,255,255,0.7);font-size:0.68rem;font-weight:600;">Finder</span></div>
       <div class="taskbar-right">
         <span class="taskbar-btn" id="userInfo" style="cursor:default;font-size:0.62rem;"></span>
         <span class="taskbar-time" id="clock"></span>
@@ -302,7 +308,7 @@
 
     // Clock
     function updateClock() {
-      document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('clock').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short' }) + ' ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
     }
     updateClock();
     setInterval(updateClock, 30000);
@@ -332,19 +338,21 @@
         if (app === 'finder') openFinder();
       });
 
-      // Drag to reposition
-      let dragOffX, dragOffY, isDragging = false;
+      // Drag to reposition (5px threshold to avoid accidental drags)
+      let dragOffX, dragOffY, isDragging = false, startX, startY;
       icon.addEventListener('mousedown', (e) => {
         if (e.button !== 0) return;
         isDragging = false;
+        startX = e.clientX; startY = e.clientY;
         dragOffX = e.clientX - icon.offsetLeft;
         dragOffY = e.clientY - icon.offsetTop;
         const onMove = (ev) => {
+          const dist = Math.abs(ev.clientX - startX) + Math.abs(ev.clientY - startY);
+          if (dist < 5) return; // threshold before drag starts
           isDragging = true;
           const areaRect = desktopArea.getBoundingClientRect();
           let x = ev.clientX - dragOffX;
           let y = ev.clientY - dragOffY;
-          // Clamp to desktop area
           x = Math.max(0, Math.min(x, areaRect.width - icon.offsetWidth));
           y = Math.max(0, Math.min(y, areaRect.height - icon.offsetHeight));
           icon.style.left = x + 'px';
@@ -432,11 +440,6 @@
       finderEl.style.top = (e.clientY - winDragY) + 'px';
     });
     document.addEventListener('mouseup', () => { winDragging = false; });
-
-    function openFinder() {
-      finderOverlay.classList.add('show');
-      navigateTo('');
-    }
 
     // Sidebar navigation
     document.querySelectorAll('.finder-sb-item').forEach(item => {
