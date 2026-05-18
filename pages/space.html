@@ -8,6 +8,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script defer src="../assets/fontawesome/js/all.min.js"></script>
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg">
+  <!-- Firebase SDK (compat mode for simplicity) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
@@ -22,11 +25,8 @@
     .login-screen.hidden { opacity: 0; pointer-events: none; }
     .login-avatar { width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; font-size: 2rem; color: #fff; backdrop-filter: blur(10px); }
     .login-title { color: #fff; font-size: 1.2rem; font-weight: 600; margin-bottom: 1.5rem; }
-    .login-form { display: flex; flex-direction: column; gap: 0.7rem; width: 260px; }
-    .login-input { padding: 0.65rem 1rem; border: none; border-radius: 10px; background: rgba(255,255,255,0.2); color: #fff; font-family: 'Inter', sans-serif; font-size: 0.85rem; backdrop-filter: blur(10px); outline: none; }
-    .login-input::placeholder { color: rgba(255,255,255,0.6); }
-    .login-input:focus { background: rgba(255,255,255,0.3); }
-    .login-btn { padding: 0.65rem; border: none; border-radius: 10px; background: rgba(255,255,255,0.9); color: #5b4a9e; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+    .login-form { display: flex; flex-direction: column; gap: 0.7rem; width: 280px; align-items: center; }
+    .login-btn { padding: 0.75rem 1.5rem; border: none; border-radius: 10px; background: rgba(255,255,255,0.9); color: #5b4a9e; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 0.5rem; }
     .login-btn:hover { background: #fff; }
     .login-error { color: #ffb3b3; font-size: 0.75rem; text-align: center; min-height: 1.2em; }
     .login-back { position: absolute; top: 1rem; left: 1.5rem; color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.82rem; font-weight: 500; }
@@ -123,9 +123,7 @@
     <div class="login-avatar"><i class="fas fa-user-astronaut"></i></div>
     <div class="login-title">Internal Space</div>
     <div class="login-form">
-      <input type="text" class="login-input" id="username" placeholder="Username" autocomplete="off">
-      <input type="password" class="login-input" id="password" placeholder="Password">
-      <button class="login-btn" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+      <button class="login-btn" id="googleLoginBtn"><i class="fab fa-google"></i> Sign in with Google</button>
       <div class="login-error" id="loginError"></div>
     </div>
   </div>
@@ -135,6 +133,7 @@
     <div class="taskbar">
       <div class="taskbar-left"><span class="taskbar-logo"><i class="fas fa-cube"></i> ZX Space</span></div>
       <div class="taskbar-right">
+        <span class="taskbar-btn" id="userInfo" style="cursor:default;font-size:0.62rem;"></span>
         <span class="taskbar-time" id="clock"></span>
         <button class="taskbar-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </div>
@@ -227,64 +226,77 @@
     const FB_BUCKET = 'zhaomin-homepage.firebasestorage.app';
     const FB_STORAGE = `https://firebasestorage.googleapis.com/v0/b/${FB_BUCKET}`;
 
-    /* ── Auth: check Firebase DB first, fallback to hardcoded ──
-       To manage the allowlist, edit /auth/users/ in Firebase Console:
-       https://console.firebase.google.com/project/zhaomin-homepage/database
-       Format: { "username": { "password": "pass", "role": "admin" } } */
-    const FALLBACK_USERS = [{ u: 'test', p: 'test' }];
+    /* ── Firebase Auth with Google sign-in ──
+       Allowlist managed in Firebase DB at /auth/allowed-emails/
+       Format: { "email_domain_com": true }
+       To add a user: go to Firebase Console → Realtime Database →
+       /auth/allowed-emails/ → add their email (replace . with _) */
+    firebase.initializeApp({
+      apiKey: 'AIzaSyCcZ8-SHNef_CIFl2rrZ8tWW0Z6dGb1bL4',
+      authDomain: 'zhaomin-homepage.firebaseapp.com',
+      databaseURL: FB_DB,
+      storageBucket: FB_BUCKET,
+    });
 
-    // Initialize the DB allowlist if it doesn't exist yet
+    const auth = firebase.auth();
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+    // Check if user's email is in the allowlist
+    async function isEmailAllowed(email) {
+      try {
+        const key = email.replace(/\./g, '_');
+        const r = await fetch(`${FB_DB}/auth/allowed-emails/${key}.json`);
+        const data = await r.json();
+        return data === true;
+      } catch { return false; }
+    }
+
+    // Initialize allowlist with a default email if empty
     async function initAllowlist() {
       try {
-        const r = await fetch(`${FB_DB}/auth/users.json`);
+        const r = await fetch(`${FB_DB}/auth/allowed-emails.json`);
         const data = await r.json();
         if (!data) {
-          await fetch(`${FB_DB}/auth/users.json`, {
+          // Add a placeholder — replace with your actual email
+          await fetch(`${FB_DB}/auth/allowed-emails.json`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ test: { password: 'test', role: 'admin' } }),
+            body: JSON.stringify({ 'xzm01234_gmail_com': true }),
           });
         }
       } catch {}
     }
     initAllowlist();
 
-    async function authenticate(username, password) {
-      // Try Firebase DB first
-      try {
-        const r = await fetch(`${FB_DB}/auth/users/${username}.json`);
-        const user = await r.json();
-        if (user && user.password === password) return true;
-      } catch {}
-      // Fallback to hardcoded
-      return FALLBACK_USERS.some(a => a.u === username && a.p === password);
-    }
-
-    // Session check
-    if (sessionStorage.getItem('spaceAuth') === '1') {
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('desktop').classList.add('show');
-    }
-
-    document.getElementById('loginBtn').addEventListener('click', tryLogin);
-    document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
-
-    async function tryLogin() {
-      const u = document.getElementById('username').value.trim();
-      const p = document.getElementById('password').value;
-      const ok = await authenticate(u, p);
-      if (ok) {
-        sessionStorage.setItem('spaceAuth', '1');
-        document.getElementById('loginScreen').classList.add('hidden');
-        setTimeout(() => document.getElementById('desktop').classList.add('show'), 300);
-      } else {
-        document.getElementById('loginError').textContent = 'Invalid username or password';
-        document.getElementById('password').value = '';
+    // Listen for auth state changes
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        const allowed = await isEmailAllowed(user.email);
+        if (allowed) {
+          document.getElementById('loginScreen').classList.add('hidden');
+          document.getElementById('desktop').classList.add('show');
+          // Show user info in taskbar
+          document.getElementById('userInfo').textContent = user.email;
+        } else {
+          document.getElementById('loginError').textContent = 'Access denied — your email is not in the allowlist';
+          await auth.signOut();
+        }
       }
-    }
+    });
 
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      sessionStorage.removeItem('spaceAuth');
+    // Google sign-in button
+    document.getElementById('googleLoginBtn').addEventListener('click', async () => {
+      try {
+        document.getElementById('loginError').textContent = '';
+        await auth.signInWithPopup(googleProvider);
+      } catch (e) {
+        document.getElementById('loginError').textContent = e.message;
+      }
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await auth.signOut();
       location.reload();
     });
 
