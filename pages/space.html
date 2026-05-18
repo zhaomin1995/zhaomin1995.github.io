@@ -37,7 +37,7 @@
     .desktop.show { display: flex; }
 
     .taskbar { height: 28px; background: rgba(0,0,0,0.5); backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; flex-shrink: 0; }
-    .taskbar-left { display: flex; align-items: center; gap: 1rem; }
+    .taskbar-left { display: flex; align-items: center; gap: 0.6rem; }
     .taskbar-logo { color: #fff; font-size: 0.72rem; font-weight: 700; }
     .taskbar-time { color: rgba(255,255,255,0.7); font-size: 0.68rem; }
     .taskbar-right { display: flex; align-items: center; gap: 0.8rem; }
@@ -52,12 +52,13 @@
       align-items: center; gap: 0.4rem; cursor: default; text-decoration: none;
       padding: 0.4rem; border-radius: 8px; user-select: none;
     }
-    .desktop-icon.selected { background: rgba(255,255,255,0.1); }
+    .desktop-icon.selected { background: none; }
+    .desktop-icon.selected .desktop-icon-label { background: #3478f6; padding: 0.1em 0.5em; border-radius: 3px; color: #fff; }
     .desktop-icon-img { width: 78px; height: 78px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #fff; pointer-events: none; }
     .desktop-icon-label { font-size: 0.62rem; font-weight: 500; color: rgba(255,255,255,0.85); text-align: center; text-shadow: 0 1px 3px rgba(0,0,0,0.5); pointer-events: none; }
 
     /* Desktop right-click context menu */
-    .desktop-ctx { position: fixed; z-index: 150; background: rgba(40,40,55,0.95); backdrop-filter: blur(20px); border-radius: 8px; padding: 0.3rem 0; box-shadow: 0 8px 30px rgba(0,0,0,0.5); min-width: 180px; display: none; border: 1px solid rgba(255,255,255,0.08); }
+    .desktop-ctx { position: fixed; z-index: 350; background: rgba(40,40,55,0.95); backdrop-filter: blur(20px); border-radius: 8px; padding: 0.3rem 0; box-shadow: 0 8px 30px rgba(0,0,0,0.5); min-width: 180px; display: none; border: 1px solid rgba(255,255,255,0.08); }
     .desktop-ctx.show { display: block; }
     .desktop-ctx-item { padding: 0.35rem 1rem; font-size: 0.72rem; color: rgba(255,255,255,0.8); cursor: default; display: flex; align-items: center; gap: 0.5rem; }
     .desktop-ctx-item:hover { background: #3478f6; color: #fff; }
@@ -96,7 +97,7 @@
     .finder-dot.yellow::after { content: '−'; color: transparent; font-size: 12px; font-weight: 700; line-height: 12px; }
     .finder-dots:hover .finder-dot.yellow::after { color: rgba(0,0,0,0.5); }
     .finder-dot.green { background: #28c840; }
-    .finder-dot.green::after { content: '+'; color: transparent; font-size: 11px; font-weight: 700; line-height: 12px; }
+    .finder-dot.green::after { content: '⤢'; color: transparent; font-size: 11px; font-weight: 700; line-height: 12px; }
     .finder-dots:hover .finder-dot.green::after { color: rgba(0,0,0,0.5); }
     .finder-title { flex: 1; text-align: center; color: rgba(255,255,255,0.7); font-size: 0.75rem; font-weight: 600; }
 
@@ -138,7 +139,7 @@
     .finder-files.dragover { outline: 2px dashed #7c83ff; outline-offset: -8px; background: rgba(100,100,255,0.05); }
 
     /* Context menu */
-    .context-menu { position: fixed; z-index: 300; background: #2a2a3c; border-radius: 8px; padding: 0.3rem 0; box-shadow: 0 8px 30px rgba(0,0,0,0.5); min-width: 160px; display: none; }
+    .context-menu { position: fixed; z-index: 350; background: #2a2a3c; border-radius: 8px; padding: 0.3rem 0; box-shadow: 0 8px 30px rgba(0,0,0,0.5); min-width: 160px; display: none; }
     .context-menu.show { display: block; }
     .context-menu-item { padding: 0.4rem 1rem; font-size: 0.72rem; color: rgba(255,255,255,0.8); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
     .context-menu-item:hover { background: rgba(100,100,255,0.2); }
@@ -214,7 +215,7 @@
       </div>
       <div class="finder-body">
         <div class="finder-sidebar">
-          <div class="finder-sb-title">Locations</div>
+          <div class="finder-sb-title">Favorites</div>
           <div class="finder-sb-item active" data-path=""><i class="fas fa-hdd"></i> Root</div>
           <div class="finder-sb-item" data-path="travel/"><i class="fas fa-plane"></i> Travel</div>
           <div class="finder-sb-item" data-path="pet/"><i class="fas fa-paw"></i> Pets</div>
@@ -320,7 +321,7 @@
       document.getElementById('clock').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short' }) + ' ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
     }
     updateClock();
-    setInterval(updateClock, 30000);
+    setInterval(updateClock, 10000);
 
     /* ── Desktop interactions: select, double-click, drag icons ── */
     const desktopArea = document.getElementById('desktopArea');
@@ -353,7 +354,12 @@
         if (e.button !== 0) return;
         isDragging = false;
         startX = e.clientX; startY = e.clientY;
-        dragOffX = e.clientX - icon.offsetLeft;
+        // Convert right-positioned to left-positioned for drag
+          if (icon.style.right && icon.style.left === 'auto') {
+            icon.style.left = icon.offsetLeft + 'px';
+            icon.style.right = 'auto';
+          }
+          dragOffX = e.clientX - icon.offsetLeft;
         dragOffY = e.clientY - icon.offsetTop;
         const onMove = (ev) => {
           const dist = Math.abs(ev.clientX - startX) + Math.abs(ev.clientY - startY);
@@ -383,7 +389,7 @@
       desktopCtx.style.top = e.clientY + 'px';
       desktopCtx.classList.add('show');
     });
-    document.addEventListener('click', () => desktopCtx.classList.remove('show'));
+    document.addEventListener('click', () => { desktopCtx.classList.remove('show'); contextMenu.classList.remove('show'); });
 
     // Wallpaper changer
     const wallpapers = [
@@ -574,8 +580,6 @@
       document.getElementById('btnDelete').style.display = 'none';
     });
 
-    // Hide context menu
-    document.addEventListener('click', () => contextMenu.classList.remove('show'));
 
     /* ── Upload files ── */
     const fileInput = document.getElementById('fileInput');
