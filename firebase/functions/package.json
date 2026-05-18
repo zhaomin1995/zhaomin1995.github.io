@@ -8,6 +8,7 @@
     "firebase-functions": "^5.0.0",
     "exif-parser": "^0.1.12",
     "node-fetch": "^2.7.0",
-    "@google-cloud/vision": "^4.0.0"
+    "@google-cloud/vision": "^4.0.0",
+    "@google-cloud/vertexai": "^1.0.0"
   }
 }

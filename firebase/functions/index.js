@@ -2,12 +2,17 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const ExifParser = require('exif-parser');
 const fetch = require('node-fetch');
-const vision = require('@google-cloud/vision');
+const { VertexAI } = require('@google-cloud/vertexai');
 
 admin.initializeApp();
 const db = admin.database();
 const storage = admin.storage();
-const visionClient = new vision.ImageAnnotatorClient();
+
+// Gemini Flash for image captioning
+const PROJECT_ID = 'zhaomin-homepage';
+const LOCATION = 'us-central1';
+const vertexAI = new VertexAI({ project: PROJECT_ID, location: LOCATION });
+const gemini = vertexAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
 /*
  * ── Shared utilities ──
@@ -68,17 +73,23 @@ async function reverseGeocode(lat, lng) {
   }
 }
 
-/** Use Google Cloud Vision API to get a short image summary (2-3 labels) */
+/** Use Gemini Flash to generate a short descriptive image summary (2-4 words) */
 async function getImageSummary(bucketName, filePath) {
   try {
-    const [result] = await visionClient.labelDetection(`gs://${bucketName}/${filePath}`);
-    const labels = (result.labelAnnotations || [])
-      .map(l => l.description.toLowerCase())
-      .filter(l => !['photograph', 'photo', 'image', 'picture', 'snapshot', 'stock photography'].includes(l))
-      .slice(0, 3);
-    return labels.length > 0 ? toSlug(labels.join(' ')) : 'photo';
+    const result = await gemini.generateContent({
+      contents: [{
+        role: 'user',
+        parts: [
+          { fileData: { mimeType: 'image/jpeg', fileUri: `gs://${bucketName}/${filePath}` } },
+          { text: 'Describe this image in exactly 2 to 4 words, using only lowercase English words separated by spaces. Focus on the main subject and setting. Examples: "dog playing beach", "sunset mountain lake", "cat sleeping couch". Do not use articles, punctuation, or complete sentences.' },
+        ],
+      }],
+    });
+    const caption = result.response.candidates[0].content.parts[0].text.trim();
+    const slug = toSlug(caption);
+    return slug || 'photo';
   } catch (e) {
-    console.log(`Vision API failed: ${e.message}`);
+    console.log(`Gemini Flash failed: ${e.message}`);
     return 'photo';
   }
 }
