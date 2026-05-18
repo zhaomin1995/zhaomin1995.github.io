@@ -220,7 +220,7 @@ function openActivityMonitor() {
 }
 
 function buildActivityMonitor(container, win) {
-  container.innerHTML = `<div class="activity-content"><div class="activity-section"><h3>Loading...</h3></div></div>`;
+  container.innerHTML = `<div class="activity-content"><div class="app-loading-spinner"><i class="fas fa-spinner fa-spin"></i></div></div>`;
   const content = container.querySelector('.activity-content');
 
   async function refresh() {
@@ -351,6 +351,7 @@ function buildSystemPreferences(container, win) {
         document.getElementById('desktop').style.background = wallpapers[wallIdx];
         content.querySelectorAll('.wallpaper-option').forEach(o => o.classList.remove('active'));
         opt.classList.add('active');
+        saveUserSettings(); // #13 sync to Firebase
       });
     });
   }
@@ -376,6 +377,7 @@ function buildSystemPreferences(container, win) {
       label.textContent = val + 'px';
       document.body.style.fontSize = val + 'px';
       localStorage.setItem('space-font-size', val);
+      saveUserSettings(); // #13 sync to Firebase
     });
   }
 
@@ -918,7 +920,7 @@ function buildImageGallery(container, win) {
   container.innerHTML = `
     <div style="display:flex;flex-direction:column;height:100%;background:#1a1a1a;">
       <div class="gallery-toolbar" style="padding:8px 12px;display:flex;gap:8px;border-bottom:1px solid rgba(255,255,255,0.08);align-items:center;">
-        <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);" class="gallery-status">Loading...</span>
+        <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);" class="gallery-status"><i class="fas fa-spinner fa-spin"></i> Loading...</span>
       </div>
       <div class="gallery-app-grid" style="flex:1;overflow-y:auto;padding:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;align-content:start;"></div>
     </div>

@@ -132,6 +132,28 @@ class WindowManager {
       opts.buildContent(w.contentEl, w);
     }
 
+    // #10 Add resize handles
+    ['n','s','e','w','ne','nw','se','sw'].forEach(dir => {
+      const handle = document.createElement('div');
+      handle.className = `window-resize-handle ${dir}`;
+      el.appendChild(handle);
+      handle.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+        const startX = e.clientX, startY = e.clientY;
+        const startRect = el.getBoundingClientRect();
+        const onMove = (ev) => {
+          const dx = ev.clientX - startX, dy = ev.clientY - startY;
+          if (dir.includes('e')) el.style.width = Math.max(400, startRect.width + dx) + 'px';
+          if (dir.includes('w')) { el.style.width = Math.max(400, startRect.width - dx) + 'px'; el.style.left = (startRect.left + dx) + 'px'; }
+          if (dir.includes('s')) el.style.height = Math.max(300, startRect.height + dy) + 'px';
+          if (dir.includes('n')) { el.style.height = Math.max(300, startRect.height - dy) + 'px'; el.style.top = (startRect.top + dy) + 'px'; }
+        };
+        const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+      });
+    });
+
     this.container.appendChild(el);
     // Remove opening animation class after it finishes
     el.addEventListener('animationend', function onOpen() {
@@ -163,6 +185,12 @@ class WindowManager {
   _setupDrag(w) {
     const titlebar = w.element.querySelector('.window-titlebar');
     let dragX, dragY, dragging = false;
+
+    // #1 Double-click title bar to maximize
+    titlebar.addEventListener('dblclick', (e) => {
+      if (e.target.closest('.window-dots')) return;
+      this.maximizeWindow(w.id);
+    });
 
     titlebar.addEventListener('mousedown', (e) => {
       if (e.target.closest('.window-dots')) return;
@@ -343,6 +371,43 @@ function initDesktop() {
   initMissionControl();
   initKeyboardShortcuts();
   initDesktopContextMenu();
+  loadUserSettings(); // #13
+}
+
+/* #13 Settings sync to Firebase */
+async function saveUserSettings() {
+  if (!currentUser) return;
+  const key = currentUser.email.replace(/[.@]/g, '_');
+  const settings = {
+    wallpaperIndex: wallIdx,
+    fontSize: localStorage.getItem('space-font-size') || '14',
+  };
+  try {
+    await fetch(`${FB_DB}/settings/${key}.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(settings),
+    });
+  } catch {}
+}
+
+async function loadUserSettings() {
+  if (!currentUser) return;
+  const key = currentUser.email.replace(/[.@]/g, '_');
+  try {
+    const r = await fetch(`${FB_DB}/settings/${key}.json`);
+    const data = await r.json();
+    if (data) {
+      if (data.wallpaperIndex != null && wallpapers[data.wallpaperIndex]) {
+        wallIdx = data.wallpaperIndex;
+        document.getElementById('desktop').style.background = wallpapers[wallIdx];
+      }
+      if (data.fontSize) {
+        document.body.style.fontSize = data.fontSize + 'px';
+        localStorage.setItem('space-font-size', data.fontSize);
+      }
+    }
+  } catch {}
 }
 
 /* ── Clock ── */
@@ -387,6 +452,33 @@ function initDesktopIcons() {
       openApp(icon.dataset.app);
     });
 
+    // #4 Right-click desktop icon context menu
+    icon.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const iconCtx = document.getElementById('desktopIconCtx');
+      const appName = icon.dataset.app;
+      const labelEl = icon.querySelector('.desktop-icon-label');
+      const appLabel = labelEl ? labelEl.textContent : appName;
+
+      iconCtx.style.left = e.clientX + 'px';
+      iconCtx.style.top = e.clientY + 'px';
+      iconCtx.classList.add('show');
+
+      document.getElementById('iconCtxOpen').onclick = () => {
+        openApp(appName);
+        iconCtx.classList.remove('show');
+      };
+      document.getElementById('iconCtxGetInfo').onclick = () => {
+        alert('App: ' + appLabel + '\nType: Application');
+        iconCtx.classList.remove('show');
+      };
+      document.getElementById('iconCtxTrash').onclick = () => {
+        icon.style.display = 'none';
+        iconCtx.classList.remove('show');
+      };
+    });
+
     // Drag to reposition
     let dragOffX, dragOffY, isDragging = false, startX, startY;
     icon.addEventListener('mousedown', (e) => {
@@ -412,9 +504,9 @@ function initDesktopIcons() {
         const areaRect = desktopArea.getBoundingClientRect();
         let x = ev.clientX - dragOffX;
         let y = ev.clientY - dragOffY;
-        // Grid snapping (90px grid)
-        x = Math.round(x / 90) * 90;
-        y = Math.round(y / 90) * 90;
+        // Grid snapping (110px grid)
+        x = Math.round(x / 110) * 110;
+        y = Math.round(y / 110) * 110;
         x = Math.max(0, Math.min(x, areaRect.width - icon.offsetWidth));
         y = Math.max(0, Math.min(y, areaRect.height - icon.offsetHeight));
         icon.style.left = x + 'px';
@@ -485,9 +577,8 @@ function initDock() {
     });
   });
 
-  // Dock magnification
+  // #15 Smooth dock magnification
   dock.addEventListener('mousemove', (e) => {
-    const dockRect = dock.getBoundingClientRect();
     items.forEach(item => {
       if (item.classList.contains('dock-separator')) return;
       const itemRect = item.getBoundingClientRect();
@@ -495,16 +586,20 @@ function initDock() {
       const dist = Math.abs(e.clientX - itemCenterX);
       const maxDist = 120;
       if (dist < maxDist) {
-        const scale = 1 + 0.5 * (1 - dist / maxDist);
+        // max 1.4x for closest, tapering to 1.0x at maxDist
+        const scale = 1 + 0.4 * (1 - dist / maxDist);
         item.style.transform = `scale(${scale}) translateY(-${(scale - 1) * 20}px)`;
       } else {
-        item.style.transform = '';
+        item.style.transform = 'scale(1) translateY(0)';
       }
     });
   });
 
   dock.addEventListener('mouseleave', () => {
-    items.forEach(item => { item.style.transform = ''; });
+    items.forEach(item => {
+      if (item.classList.contains('dock-separator')) return;
+      item.style.transform = '';
+    });
   });
 }
 
@@ -565,6 +660,7 @@ function initMenuBar() {
     if (openMenu) { openMenu.classList.remove('open'); openMenu = null; }
     document.getElementById('desktopCtx').classList.remove('show');
     document.getElementById('contextMenu').classList.remove('show');
+    document.getElementById('desktopIconCtx').classList.remove('show');
   });
 
   // Menu actions
@@ -638,6 +734,11 @@ function initMenuBar() {
           if (fw && fw.app === 'finder' && fw.togglePathBar) fw.togglePathBar();
           break;
         }
+        case 'show-preview': {
+          const fw = wm.getFocusedWindow();
+          if (fw && fw.app === 'finder' && fw.togglePreview) fw.togglePreview();
+          break;
+        }
         case 'copy': {
           const fw = wm.getFocusedWindow();
           if (fw && fw.app === 'finder' && fw.copySelected) fw.copySelected();
@@ -679,6 +780,8 @@ function initDesktopContextMenu() {
     desktopCtx.innerHTML = `
       <div class="desktop-ctx-item" id="ctxNewFolder"><i class="fas fa-folder-plus"></i> New Folder</div>
       <div class="desktop-ctx-divider"></div>
+      <div class="desktop-ctx-item" id="ctxCleanUp"><i class="fas fa-th"></i> Clean Up</div>
+      <div class="desktop-ctx-divider"></div>
       <div class="desktop-ctx-item" id="ctxGetInfo"><i class="fas fa-info-circle"></i> Get Info</div>
       <div class="desktop-ctx-divider"></div>
       <div class="desktop-ctx-item" id="ctxWallpaper"><i class="fas fa-image"></i> Change Wallpaper</div>
@@ -694,6 +797,26 @@ function initDesktopContextMenu() {
     document.getElementById('ctxNewFolder').addEventListener('click', () => {
       const fw = wm.getFocusedWindow();
       if (fw && fw.app === 'finder' && fw.createFolder) fw.createFolder();
+    });
+    // #9 Clean Up (auto-arrange icons)
+    document.getElementById('ctxCleanUp').addEventListener('click', () => {
+      const icons = Array.from(document.querySelectorAll('.desktop-icon')).filter(i => i.style.display !== 'none');
+      const areaRect = desktopArea.getBoundingClientRect();
+      const gridX = 110, gridY = 110;
+      const cols = Math.floor(areaRect.width / gridX);
+      // Start from top-right, go down then left
+      let col = cols - 1, row = 0;
+      icons.forEach(icon => {
+        const x = col * gridX;
+        const y = row * gridY + 20;
+        icon.style.left = x + 'px';
+        icon.style.top = y + 'px';
+        icon.style.right = 'auto';
+        icon.style.bottom = 'auto';
+        row++;
+        const maxRows = Math.floor((areaRect.height - 80) / gridY);
+        if (row >= maxRows) { row = 0; col--; }
+      });
     });
   });
 }
@@ -913,6 +1036,18 @@ function initKeyboardShortcuts() {
       return;
     }
 
+    // #2 Cmd+Q: quit app (close all windows of focused app)
+    if (e.metaKey && e.key === 'q' && !e.ctrlKey) {
+      e.preventDefault();
+      const fw = wm.getFocusedWindow();
+      if (fw) {
+        const appName = fw.app;
+        const appWindows = wm.getWindowsByApp(appName);
+        [...appWindows].forEach(w => wm.closeWindow(w.id));
+      }
+      return;
+    }
+
     // Cmd+N: new Finder window
     if (e.metaKey && e.key === 'n') { e.preventDefault(); openFinderWindow(); return; }
 
@@ -929,6 +1064,14 @@ function initKeyboardShortcuts() {
       e.preventDefault();
       const fw = wm.getFocusedWindow();
       if (fw) wm.minimizeWindow(fw.id);
+      return;
+    }
+
+    // #6 Cmd+R: refresh Finder
+    if (e.metaKey && e.key === 'r') {
+      e.preventDefault();
+      const fw = wm.getFocusedWindow();
+      if (fw && fw.app === 'finder' && fw.refresh) fw.refresh();
       return;
     }
 
@@ -982,6 +1125,12 @@ function initKeyboardShortcuts() {
       }
       if (document.getElementById('missionControlOverlay').classList.contains('show')) {
         closeMissionControl();
+        return;
+      }
+      // #7 Escape closes focused window if no overlays are open
+      const fw = wm.getFocusedWindow();
+      if (fw) {
+        wm.closeWindow(fw.id);
         return;
       }
     }

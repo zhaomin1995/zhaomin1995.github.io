@@ -33,6 +33,8 @@ function buildFinderUI(container, win, initialPath) {
   let showPathBar = false;
   let history = [currentPath];
   let historyIdx = 0;
+  let lastSelectedIndex = -1; // #11 batch selection tracking
+  let showPreview = false; // #12 preview pane state
 
   /* ── Tabs state ── */
   let tabs = [{ path: currentPath, label: 'Root' }];
@@ -46,6 +48,7 @@ function buildFinderUI(container, win, initialPath) {
       <button class="finder-tb-btn btn-upload"><i class="fas fa-upload"></i> Upload</button>
       <button class="finder-tb-btn btn-newfolder"><i class="fas fa-folder-plus"></i> New Folder</button>
       <button class="finder-tb-btn btn-delete" style="display:none;"><i class="fas fa-trash"></i> Delete</button>
+      <button class="finder-tb-btn btn-refresh" title="Refresh"><i class="fas fa-sync-alt"></i></button>
       <div style="flex:1;"></div>
       <button class="finder-tb-btn btn-view-icons active" title="Icon view"><i class="fas fa-th-large"></i></button>
       <button class="finder-tb-btn btn-view-list" title="List view"><i class="fas fa-list"></i></button>
@@ -81,6 +84,7 @@ function buildFinderUI(container, win, initialPath) {
   const btnUpload = toolbar.querySelector('.btn-upload');
   const btnNewFolder = toolbar.querySelector('.btn-newfolder');
   const btnDelete = toolbar.querySelector('.btn-delete');
+  const btnRefresh = toolbar.querySelector('.btn-refresh');
   const btnViewIcons = toolbar.querySelector('.btn-view-icons');
   const btnViewList = toolbar.querySelector('.btn-view-list');
   const btnViewCols = toolbar.querySelector('.btn-view-cols');
@@ -100,6 +104,8 @@ function buildFinderUI(container, win, initialPath) {
   win.selectAll = selectAll;
   win.createFolder = createFolder;
   win.addTab = addTab;
+  win.refresh = () => navigateTo(currentPath); // #6
+  win.togglePreview = togglePreview; // #12
 
   /* ── Navigation ── */
   async function navigateTo(path) {
@@ -268,13 +274,13 @@ function buildFinderUI(container, win, initialPath) {
 
       el.addEventListener('click', (e) => {
         e.stopPropagation();
-        selectFileAt(idx);
+        selectFileAt(idx, e);
       });
 
       el.addEventListener('contextmenu', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        selectFileAt(idx);
+        selectFileAt(idx, e);
         showContextMenu(e.clientX, e.clientY, f);
       });
 
@@ -347,7 +353,7 @@ function buildFinderUI(container, win, initialPath) {
 
       row.innerHTML = `<div class="name-cell">${nameIcon} ${f.name}</div><div>${date}</div><div>${size}</div><div>${kind}</div>`;
 
-      row.addEventListener('click', (e) => { e.stopPropagation(); selectFileAt(idx); });
+      row.addEventListener('click', (e) => { e.stopPropagation(); selectFileAt(idx, e); });
       row.addEventListener('dblclick', () => { if (f.type === 'folder') navigateTo(f.path); });
       row.addEventListener('contextmenu', (e) => {
         e.preventDefault(); e.stopPropagation();
@@ -431,9 +437,38 @@ function buildFinderUI(container, win, initialPath) {
   }
 
   /* ── Selection ── */
-  function selectFileAt(idx) {
+  function selectFileAt(idx, event) {
+    // #11 Batch selection with Shift/Cmd
+    if (event && event.shiftKey && lastSelectedIndex >= 0) {
+      // Shift-click: select range
+      const start = Math.min(lastSelectedIndex, idx);
+      const end = Math.max(lastSelectedIndex, idx);
+      const allFiles = mainArea.querySelectorAll('.finder-file, .list-row');
+      allFiles.forEach(el => {
+        const i = parseInt(el.dataset.index);
+        if (i >= start && i <= end) el.classList.add('selected');
+      });
+      selectedIndex = idx;
+      selectedFile = fileList[idx] || null;
+      btnDelete.style.display = selectedFile && selectedFile.type === 'file' ? '' : 'none';
+      updatePreview();
+      return;
+    }
+    if (event && (event.metaKey || event.ctrlKey)) {
+      // Cmd/Ctrl-click: toggle selection
+      const target = mainArea.querySelector(`[data-index="${idx}"]`);
+      if (target) target.classList.toggle('selected');
+      selectedIndex = idx;
+      selectedFile = fileList[idx] || null;
+      lastSelectedIndex = idx;
+      btnDelete.style.display = selectedFile && selectedFile.type === 'file' ? '' : 'none';
+      updatePreview();
+      return;
+    }
+
     selectedIndex = idx;
     selectedFile = fileList[idx] || null;
+    lastSelectedIndex = idx;
     btnDelete.style.display = selectedFile && selectedFile.type === 'file' ? '' : 'none';
 
     // Update visual selection
@@ -441,6 +476,7 @@ function buildFinderUI(container, win, initialPath) {
     allFiles.forEach(el => el.classList.remove('selected'));
     const target = mainArea.querySelector(`[data-index="${idx}"]`);
     if (target) target.classList.add('selected');
+    updatePreview();
   }
 
   function deselectAll() {
@@ -513,6 +549,10 @@ function buildFinderUI(container, win, initialPath) {
       finderClipboard = { file, sourcePath: currentPath };
     };
     document.getElementById('ctxRename').onclick = () => startRename();
+    // #14 Share link
+    document.getElementById('ctxShare').onclick = () => {
+      if (file && file.path) openShareDialog(file.path);
+    };
   }
 
   /* ── File operations ── */
@@ -678,14 +718,19 @@ function buildFinderUI(container, win, initialPath) {
   async function createFolder() {
     const name = prompt('New folder name:');
     if (!name) return;
-    // Create a placeholder file inside the folder
-    const folderPath = currentPath + name + '/.placeholder';
-    await fetch(`${FB_STORAGE}/o?uploadType=media&name=${encodeURIComponent(folderPath)}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: '',
-    });
-    navigateTo(currentPath);
+    statusEl.textContent = `Creating folder "${name}"...`;
+    try {
+      // Create a .keep file inside the folder (Firebase Storage needs at least one file)
+      const folderPath = currentPath + name + '/.keep';
+      await fetch(`${FB_STORAGE}/o?uploadType=media&name=${encodeURIComponent(folderPath)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: '',
+      });
+      navigateTo(currentPath);
+    } catch (e) {
+      statusEl.textContent = `Failed to create folder: ${e.message}`;
+    }
   }
 
   btnNewFolder.addEventListener('click', createFolder);
@@ -793,6 +838,53 @@ function buildFinderUI(container, win, initialPath) {
       });
       tabBar.appendChild(el);
     });
+  }
+
+  /* ── Refresh button ── */
+  btnRefresh.addEventListener('click', () => navigateTo(currentPath));
+
+  /* ── #12 Preview pane ── */
+  function togglePreview() {
+    showPreview = !showPreview;
+    updatePreview();
+  }
+
+  function updatePreview() {
+    // Remove existing preview
+    const existing = container.querySelector('.finder-preview');
+    if (existing) existing.remove();
+
+    if (!showPreview) return;
+
+    const previewDiv = document.createElement('div');
+    previewDiv.className = 'finder-preview';
+
+    if (selectedFile) {
+      const isImage = selectedFile.contentType && selectedFile.contentType.startsWith('image/');
+      if (isImage && selectedFile.url) {
+        previewDiv.innerHTML += `<img src="${selectedFile.url}" alt="${selectedFile.name}">`;
+      } else {
+        const icon = selectedFile.type === 'folder' ? 'fa-folder' :
+          (selectedFile.contentType || '').includes('pdf') ? 'fa-file-pdf' :
+          (selectedFile.contentType || '').includes('text') ? 'fa-file-alt' : 'fa-file';
+        previewDiv.innerHTML += `<div style="font-size:3rem;color:${selectedFile.type === 'folder' ? '#4a90d9' : '#aaa'};"><i class="fas ${icon}"></i></div>`;
+      }
+      previewDiv.innerHTML += `<div class="finder-preview-name">${selectedFile.name}</div>`;
+      const details = [];
+      if (selectedFile.size) details.push(`<dt>Size</dt><dd>${formatSize(selectedFile.size)}</dd>`);
+      if (selectedFile.contentType) details.push(`<dt>Type</dt><dd>${selectedFile.contentType}</dd>`);
+      if (selectedFile.path) details.push(`<dt>Path</dt><dd>${selectedFile.path}</dd>`);
+      if (selectedFile.updated) details.push(`<dt>Modified</dt><dd>${new Date(selectedFile.updated).toLocaleDateString()}</dd>`);
+      if (details.length) {
+        previewDiv.innerHTML += `<dl class="finder-preview-detail">${details.join('')}</dl>`;
+      }
+    } else {
+      previewDiv.innerHTML = '<div class="finder-preview-info">Select a file to preview</div>';
+    }
+
+    // Insert preview into finder-body
+    const finderBody = container.querySelector('.finder-body');
+    if (finderBody) finderBody.appendChild(previewDiv);
   }
 
   /* ── Status bar ── */

@@ -70,6 +70,7 @@
             <div class="menu-drop-item" data-action="view-columns"><span class="checkmark"> </span> as Columns</div>
             <div class="menu-drop-divider"></div>
             <div class="menu-drop-item" data-action="show-path">Show Path Bar</div>
+            <div class="menu-drop-item" data-action="show-preview">Show Preview</div>
           </div>
         </div>
         <div class="menu-item" data-menu="go">Go
@@ -184,6 +185,15 @@
     <div class="desktop-ctx-item" id="ctxWallpaper"><i class="fas fa-image"></i> Change Wallpaper</div>
   </div>
 
+  <!-- Desktop icon right-click context menu -->
+  <div class="desktop-icon-ctx" id="desktopIconCtx">
+    <div class="desktop-icon-ctx-item" id="iconCtxOpen"><i class="fas fa-external-link-alt"></i> Open</div>
+    <div class="desktop-icon-ctx-divider"></div>
+    <div class="desktop-icon-ctx-item" id="iconCtxGetInfo"><i class="fas fa-info-circle"></i> Get Info</div>
+    <div class="desktop-icon-ctx-divider"></div>
+    <div class="desktop-icon-ctx-item danger" id="iconCtxTrash"><i class="fas fa-trash"></i> Move to Trash</div>
+  </div>
+
   <!-- Hidden file input for uploads -->
   <input type="file" id="fileInput" multiple style="display:none" accept="image/*,application/pdf,text/*,application/json">
 
@@ -199,6 +209,8 @@
     <div class="context-menu-item" id="ctxDownload"><i class="fas fa-download"></i> Download</div>
     <div class="context-menu-item" id="ctxCopyFile"><i class="fas fa-copy"></i> Copy</div>
     <div class="context-menu-item" id="ctxRename"><i class="fas fa-pen"></i> Rename</div>
+    <div class="context-menu-divider"></div>
+    <div class="context-menu-item" id="ctxShare"><i class="fas fa-share-alt"></i> Share...</div>
     <div class="context-menu-divider"></div>
     <div class="context-menu-item danger" id="ctxDelete"><i class="fas fa-trash"></i> Delete</div>
   </div>
