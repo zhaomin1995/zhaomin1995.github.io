@@ -542,3 +542,174 @@ body { font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
 /* ── Trash Icon states ── */
 .desktop-icon[data-app="trash"] .desktop-icon-img { background: rgba(255,255,255,0.08); }
 .desktop-icon[data-app="trash"].trash-full .desktop-icon-img i::before { content: '\f2ed'; /* fa-trash-restore */ }
+
+/* ── Dock Bounce Animation ── */
+@keyframes dockBounce {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-20px); }
+  50% { transform: translateY(-5px); }
+  75% { transform: translateY(-12px); }
+}
+.dock-item.launching { animation: dockBounce 0.8s ease 3; }
+
+/* ── Window Open Animation ── */
+@keyframes windowOpen {
+  0% { transform: scale(0.3) translateY(50vh); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+.window.opening { animation: windowOpen 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
+/* ── Window Close Animation ── */
+@keyframes windowClose {
+  0% { transform: scale(1) translateY(0); opacity: 1; }
+  100% { transform: scale(0.3) translateY(50vh); opacity: 0; }
+}
+.window.closing { animation: windowClose 0.25s ease-in forwards; pointer-events: none; }
+
+/* ── Desktop Selection Rectangle ── */
+.selection-rect {
+  position: absolute; border: 1px solid rgba(52, 120, 246, 0.6);
+  background: rgba(52, 120, 246, 0.15); pointer-events: none; z-index: 50;
+}
+
+/* ── Resize Cursors on Window Edges ── */
+.window-resize-handle {
+  position: absolute; z-index: 5;
+}
+.window-resize-handle.n { top: -3px; left: 10px; right: 10px; height: 6px; cursor: n-resize; }
+.window-resize-handle.s { bottom: -3px; left: 10px; right: 10px; height: 6px; cursor: s-resize; }
+.window-resize-handle.e { right: -3px; top: 10px; bottom: 10px; width: 6px; cursor: e-resize; }
+.window-resize-handle.w { left: -3px; top: 10px; bottom: 10px; width: 6px; cursor: w-resize; }
+.window-resize-handle.ne { top: -3px; right: -3px; width: 12px; height: 12px; cursor: ne-resize; }
+.window-resize-handle.nw { top: -3px; left: -3px; width: 12px; height: 12px; cursor: nw-resize; }
+.window-resize-handle.se { bottom: -3px; right: -3px; width: 12px; height: 12px; cursor: se-resize; }
+.window-resize-handle.sw { bottom: -3px; left: -3px; width: 12px; height: 12px; cursor: sw-resize; }
+
+/* ── Finder Preview Pane ── */
+.finder-preview {
+  width: 240px; background: #1a1a28; border-left: 1px solid rgba(255,255,255,0.05);
+  padding: 1.5rem; display: flex; flex-direction: column; align-items: center;
+  gap: 0.8rem; overflow-y: auto; flex-shrink: 0;
+}
+.finder-preview img { width: 100%; border-radius: 8px; }
+.finder-preview-name { font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.85); text-align: center; word-break: break-all; }
+.finder-preview-info { font-size: 0.65rem; color: rgba(255,255,255,0.4); }
+.finder-preview-detail { width: 100%; font-size: 0.62rem; color: rgba(255,255,255,0.5); }
+.finder-preview-detail dt { font-weight: 600; color: rgba(255,255,255,0.6); margin-top: 0.5rem; }
+.finder-preview-detail dd { margin: 0; }
+
+/* ── File Tags ── */
+.file-tag { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+.file-tag.red { background: #ff3b30; }
+.file-tag.orange { background: #ff9500; }
+.file-tag.yellow { background: #ffcc00; }
+.file-tag.green { background: #34c759; }
+.file-tag.blue { background: #007aff; }
+.file-tag.purple { background: #af52de; }
+.file-tag.gray { background: #8e8e93; }
+
+/* ── Info Panel (Cmd+I) ── */
+.info-panel {
+  width: 280px; background: #1e1e2e; border-radius: 10px; overflow: hidden;
+}
+.info-panel-header { padding: 1.2rem; text-align: center; background: #252535; }
+.info-panel-header i { font-size: 3rem; color: #4a90d9; }
+.info-panel-header h3 { font-size: 0.85rem; color: rgba(255,255,255,0.85); margin-top: 0.5rem; }
+.info-panel-body { padding: 1rem; }
+.info-panel-row { display: flex; justify-content: space-between; padding: 0.3rem 0; font-size: 0.68rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.info-panel-row dt { color: rgba(255,255,255,0.5); }
+.info-panel-row dd { color: rgba(255,255,255,0.8); text-align: right; }
+
+/* ── Lock Screen ── */
+.lock-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  backdrop-filter: blur(30px);
+}
+.lock-screen.show { display: flex; }
+.lock-screen-time { font-size: 5rem; font-weight: 200; color: #fff; letter-spacing: -0.02em; }
+.lock-screen-date { font-size: 1.2rem; color: rgba(255,255,255,0.7); margin-top: 0.5rem; }
+.lock-screen-unlock { margin-top: 3rem; font-size: 0.82rem; color: rgba(255,255,255,0.4); cursor: pointer; }
+.lock-screen-unlock:hover { color: rgba(255,255,255,0.7); }
+
+/* ── Calculator App ── */
+.calc-display { background: #1a1a28; padding: 1rem; text-align: right; font-size: 2rem; color: #fff; font-weight: 300; min-height: 60px; display: flex; align-items: flex-end; justify-content: flex-end; }
+.calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(255,255,255,0.05); }
+.calc-btn { padding: 0.8rem; background: #2a2a3c; color: #fff; border: none; font-size: 1.1rem; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.1s; }
+.calc-btn:hover { background: #353545; }
+.calc-btn.operator { background: #ff9500; color: #fff; }
+.calc-btn.operator:hover { background: #ffaa33; }
+.calc-btn.equals { background: #ff9500; }
+.calc-btn.clear { background: #a5a5a5; color: #1a1a28; }
+.calc-btn.zero { grid-column: span 2; }
+
+/* ── Markdown Previewer ── */
+.md-editor-wrap { display: flex; flex: 1; overflow: hidden; }
+.md-editor-pane { flex: 1; display: flex; flex-direction: column; }
+.md-editor-pane textarea { flex: 1; background: #1a1a28; color: rgba(255,255,255,0.85); border: none; padding: 1rem; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; resize: none; outline: none; }
+.md-preview-pane { flex: 1; padding: 1rem; overflow-y: auto; background: #252535; color: rgba(255,255,255,0.85); font-size: 0.82rem; line-height: 1.7; }
+.md-preview-pane h1, .md-preview-pane h2, .md-preview-pane h3 { margin: 1em 0 0.5em; color: #fff; }
+.md-preview-pane code { background: rgba(255,255,255,0.08); padding: 0.15em 0.4em; border-radius: 3px; font-size: 0.85em; }
+.md-preview-pane pre { background: rgba(0,0,0,0.3); padding: 0.8rem; border-radius: 6px; overflow-x: auto; }
+.md-preview-pane blockquote { border-left: 3px solid #3478f6; padding-left: 1rem; color: rgba(255,255,255,0.6); }
+.md-divider { width: 1px; background: rgba(255,255,255,0.06); }
+
+/* ── JSON Viewer ── */
+.json-viewer { flex: 1; padding: 1rem; overflow: auto; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.78rem; line-height: 1.6; background: #1a1a28; }
+.json-key { color: #7c83ff; }
+.json-string { color: #98c379; }
+.json-number { color: #d19a66; }
+.json-bool { color: #56b6c2; }
+.json-null { color: #8e8e93; }
+.json-bracket { color: rgba(255,255,255,0.4); }
+
+/* ── User Management Panel ── */
+.user-list { list-style: none; }
+.user-list li { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.75rem; color: rgba(255,255,255,0.7); }
+.user-list li button { background: #ff3b30; color: #fff; border: none; border-radius: 4px; padding: 0.2em 0.5em; font-size: 0.65rem; cursor: pointer; }
+.user-add-form { display: flex; gap: 0.5rem; margin-top: 0.8rem; }
+.user-add-form input { flex: 1; padding: 0.4rem 0.6rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 0.72rem; outline: none; font-family: 'Inter', sans-serif; }
+.user-add-form button { padding: 0.4rem 0.8rem; background: #3478f6; color: #fff; border: none; border-radius: 6px; font-size: 0.72rem; cursor: pointer; }
+
+/* ── Clipboard Manager ── */
+.clipboard-list { list-style: none; max-height: 300px; overflow-y: auto; }
+.clipboard-list li { padding: 0.5rem 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.72rem; color: rgba(255,255,255,0.7); cursor: pointer; display: flex; gap: 0.5rem; }
+.clipboard-list li:hover { background: rgba(100,100,255,0.1); }
+.clipboard-list .clip-type { color: rgba(255,255,255,0.3); font-size: 0.6rem; flex-shrink: 0; width: 40px; }
+.clipboard-list .clip-content { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Share Link Dialog ── */
+.share-dialog { padding: 1.5rem; text-align: center; }
+.share-dialog input { width: 100%; padding: 0.5rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 0.78rem; margin: 0.8rem 0; font-family: 'SF Mono', monospace; }
+.share-dialog button { padding: 0.5rem 1.5rem; background: #3478f6; color: #fff; border: none; border-radius: 6px; font-size: 0.78rem; cursor: pointer; }
+
+/* ── Image Gallery App ── */
+.gallery-app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 4px; padding: 0.5rem; overflow-y: auto; flex: 1; }
+.gallery-app-thumb { width: 100%; aspect-ratio: 1; object-fit: cover; cursor: pointer; transition: transform 0.15s; border-radius: 2px; }
+.gallery-app-thumb:hover { transform: scale(1.05); z-index: 1; }
+.gallery-app-viewer { position: absolute; inset: 0; background: #000; display: none; align-items: center; justify-content: center; }
+.gallery-app-viewer.show { display: flex; }
+.gallery-app-viewer img { max-width: 95%; max-height: 95%; object-fit: contain; }
+.gallery-app-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); border: none; color: #fff; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; }
+.gallery-app-nav:hover { background: rgba(255,255,255,0.2); }
+.gallery-app-nav.prev { left: 1rem; }
+.gallery-app-nav.next { right: 1rem; }
+
+/* ── Log Viewer ── */
+.log-viewer { flex: 1; overflow-y: auto; padding: 0.8rem; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.7rem; line-height: 1.5; background: #0a0a14; }
+.log-entry { padding: 0.15rem 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.log-time { color: #8e8e93; margin-right: 0.5rem; }
+.log-level-info { color: #32ade6; }
+.log-level-warn { color: #ff9500; }
+.log-level-error { color: #ff3b30; }
+.log-msg { color: rgba(255,255,255,0.7); }
+
+/* ── Multi-desktop Spaces Bar ── */
+.spaces-bar { display: flex; gap: 0.8rem; padding: 1rem 2rem; justify-content: center; }
+.space-thumb { width: 160px; height: 100px; background: rgba(255,255,255,0.05); border-radius: 6px; border: 2px solid transparent; cursor: pointer; overflow: hidden; position: relative; }
+.space-thumb.active { border-color: #3478f6; }
+.space-thumb:hover { border-color: rgba(255,255,255,0.3); }
+.space-thumb-label { position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; font-size: 0.55rem; color: rgba(255,255,255,0.6); }
+.space-add { width: 40px; height: 100px; background: rgba(255,255,255,0.05); border-radius: 6px; border: 2px dashed rgba(255,255,255,0.15); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: rgba(255,255,255,0.3); }
+.space-add:hover { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.5); }

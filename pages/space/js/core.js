@@ -103,7 +103,7 @@ class WindowManager {
 
     // Build DOM
     const el = document.createElement('div');
-    el.className = 'window focused';
+    el.className = 'window focused opening';
     el.id = id;
     el.style.cssText = `left:${w.x}px;top:${w.y}px;width:${w.width}px;height:${w.height}px;z-index:${this.nextZ++};`;
 
@@ -128,6 +128,11 @@ class WindowManager {
     }
 
     this.container.appendChild(el);
+    // Remove opening animation class after it finishes
+    el.addEventListener('animationend', function onOpen() {
+      el.removeEventListener('animationend', onOpen);
+      el.classList.remove('opening');
+    });
     this.windows.push(w);
 
     // Wire title bar events
@@ -193,8 +198,11 @@ class WindowManager {
     const w = this.windows[idx];
     // Custom close handler (e.g., finder cleanup)
     if (w.onClose) w.onClose();
-    w.element.remove();
+    // Animate close then remove
+    w.element.classList.add('closing');
+    const el = w.element;
     this.windows.splice(idx, 1);
+    el.addEventListener('animationend', () => el.remove());
 
     // Check if any windows of this app remain
     const sameApp = this.windows.filter(x => x.app === w.app);
@@ -497,6 +505,12 @@ function initDock() {
 
 /* ── Open App (central dispatcher) ── */
 function openApp(appName) {
+  // Dock bounce animation
+  const dockItem = document.querySelector(`.dock-item[data-app="${appName}"]`);
+  if (dockItem) {
+    dockItem.classList.add('launching');
+    setTimeout(() => dockItem.classList.remove('launching'), 2400);
+  }
   switch (appName) {
     case 'finder': openFinderWindow(); break;
     case 'terminal': openTerminal(); break;
@@ -506,6 +520,12 @@ function openApp(appName) {
     case 'chat': openChat(); break;
     case 'editor': openCodeEditor(); break;
     case 'trash': openTrash(); break;
+    case 'calculator': openCalculator(); break;
+    case 'gallery': openImageGallery(); break;
+    case 'markdown': openMarkdownEditor(); break;
+    case 'json': openJsonViewer(); break;
+    case 'logs': openLogViewer(); break;
+    case 'clipboard': openClipboardManager(); break;
     default: break;
   }
 }
@@ -733,6 +753,12 @@ function initSpotlight() {
           { name: 'System Preferences', icon: 'fas fa-cog', app: 'preferences' },
           { name: 'Chat', icon: 'fas fa-comments', app: 'chat' },
           { name: 'Code Editor', icon: 'fas fa-code', app: 'editor' },
+          { name: 'Calculator', icon: 'fas fa-calculator', app: 'calculator' },
+          { name: 'Photos', icon: 'fas fa-images', app: 'gallery' },
+          { name: 'Markdown', icon: 'fas fa-file-alt', app: 'markdown' },
+          { name: 'JSON Viewer', icon: 'fas fa-code', app: 'json' },
+          { name: 'Log Viewer', icon: 'fas fa-scroll', app: 'logs' },
+          { name: 'Clipboard', icon: 'fas fa-clipboard-list', app: 'clipboard' },
         ].filter(a => a.name.toLowerCase().includes(q));
 
         results.innerHTML = '';
@@ -860,6 +886,13 @@ function initMissionControl() {
 /* ── Keyboard Shortcuts ── */
 function initKeyboardShortcuts() {
   document.addEventListener('keydown', (e) => {
+    // Lock screen: Cmd+Ctrl+Q
+    if (e.metaKey && e.ctrlKey && e.key === 'q') {
+      e.preventDefault();
+      lockScreen();
+      return;
+    }
+
     // Spotlight: Cmd+Space
     if (e.metaKey && e.code === 'Space') {
       e.preventDefault();
@@ -1009,4 +1042,71 @@ document.getElementById('quicklook').addEventListener('click', () => {
 /* ── Trash (simple) ── */
 function openTrash() {
   openFinderWindow('trash/');
+}
+
+
+/* ── Lock Screen (Cmd+Ctrl+Q) ── */
+function lockScreen() {
+  const lock = document.getElementById('lockScreen');
+  if (!lock) return;
+  lock.classList.add('show');
+  updateLockClock();
+}
+
+function unlockScreen() {
+  const lock = document.getElementById('lockScreen');
+  if (lock) lock.classList.remove('show');
+}
+
+function updateLockClock() {
+  const lock = document.getElementById('lockScreen');
+  if (!lock || !lock.classList.contains('show')) return;
+  const now = new Date();
+  const timeEl = lock.querySelector('.lock-screen-time');
+  const dateEl = lock.querySelector('.lock-screen-date');
+  if (timeEl) timeEl.textContent = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  if (dateEl) dateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  setTimeout(updateLockClock, 1000);
+}
+
+/* ── Desktop Selection Rectangle ── */
+function initDesktopSelection() {
+  const area = document.getElementById('desktopArea');
+  let selecting = false, startX, startY, rect;
+
+  area.addEventListener('mousedown', (e) => {
+    // Only start selection on empty desktop area (not on icons or windows)
+    if (e.target !== area) return;
+    selecting = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    rect = document.createElement('div');
+    rect.className = 'selection-rect';
+    area.appendChild(rect);
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!selecting) return;
+    const x = Math.min(e.clientX, startX);
+    const y = Math.min(e.clientY, startY);
+    const w = Math.abs(e.clientX - startX);
+    const h = Math.abs(e.clientY - startY);
+    const areaRect = area.getBoundingClientRect();
+    rect.style.left = (x - areaRect.left) + 'px';
+    rect.style.top = (y - areaRect.top) + 'px';
+    rect.style.width = w + 'px';
+    rect.style.height = h + 'px';
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (selecting && rect) {
+      rect.remove();
+      selecting = false;
+    }
+  });
+}
+
+// Initialize desktop selection on load
+if (document.getElementById('desktopArea')) {
+  initDesktopSelection();
 }
