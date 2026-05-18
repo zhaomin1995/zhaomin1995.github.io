@@ -44,6 +44,19 @@
     .taskbar-btn { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 0.68rem; cursor: pointer; font-family: 'Inter', sans-serif; }
     .taskbar-btn:hover { color: #fff; }
 
+    /* Menu bar dropdowns */
+    .menu-item { position: relative; color: rgba(255,255,255,0.85); font-size: 0.68rem; cursor: default; padding: 0.15em 0.5em; border-radius: 4px; }
+    .menu-item.open { background: rgba(255,255,255,0.15); }
+    .menu-drop { position: absolute; top: 100%; left: 0; min-width: 220px; background: rgba(40,40,55,0.95); backdrop-filter: blur(20px); border-radius: 6px; padding: 0.25rem 0; box-shadow: 0 8px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); display: none; z-index: 400; }
+    .menu-item.open .menu-drop { display: block; }
+    .menu-drop-item { padding: 0.3rem 0.8rem; font-size: 0.7rem; color: rgba(255,255,255,0.8); display: flex; justify-content: space-between; align-items: center; cursor: default; }
+    .menu-drop-item:hover { background: #3478f6; color: #fff; border-radius: 3px; margin: 0 0.2rem; padding-left: 0.6rem; padding-right: 0.6rem; }
+    .menu-drop-item .shortcut { color: rgba(255,255,255,0.35); font-size: 0.62rem; }
+    .menu-drop-item:hover .shortcut { color: rgba(255,255,255,0.6); }
+    .menu-drop-item.disabled { color: rgba(255,255,255,0.25); pointer-events: none; }
+    .menu-drop-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 0.2rem 0; }
+    .menu-drop-item .checkmark { width: 14px; display: inline-block; }
+
     .desktop-area { flex: 1; position: relative; overflow: hidden; }
 
     /* Desktop icon: draggable, single-click selects, double-click opens */
@@ -84,6 +97,25 @@
       resize: both; min-width: 400px; min-height: 300px; pointer-events: auto;
     }
     .finder.maximized { top: 28px !important; left: 0 !important; transform: none !important; width: 100vw !important; height: calc(100vh - 28px) !important; border-radius: 0; }
+
+    /* Genie minimize animation */
+    @keyframes genieMin {
+      0% { transform: scale(1) translateY(0); opacity: 1; }
+      100% { transform: scale(0.15) translateY(80vh) scaleX(0.3); opacity: 0; }
+    }
+    @keyframes genieRestore {
+      0% { transform: scale(0.15) translateY(80vh) scaleX(0.3); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .finder.minimizing { animation: genieMin 0.5s cubic-bezier(0.4, 0, 1, 1) forwards; pointer-events: none; }
+    .finder.restoring { animation: genieRestore 0.4s cubic-bezier(0, 0, 0.2, 1) forwards; }
+    .finder.minimized { display: none; }
+
+    /* Focus/blur: active window vs inactive */
+    .finder.focused { box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+    .finder:not(.focused) { box-shadow: 0 8px 20px rgba(0,0,0,0.25); }
+    .finder:not(.focused) .finder-titlebar { background: #353545; }
+    .finder:not(.focused) .finder-dot { opacity: 0.5; }
 
     /* Title bar */
     .finder-titlebar { height: 36px; background: #2a2a3c; display: flex; align-items: center; padding: 0 12px; flex-shrink: 0; cursor: grab; }
@@ -163,13 +195,57 @@
   <!-- Desktop -->
   <div class="desktop" id="desktop">
     <div class="taskbar">
-      <div class="taskbar-left"><span class="taskbar-logo"><i class="fab fa-apple"></i></span><span style="color:rgba(255,255,255,0.9);font-size:0.68rem;font-weight:600;">Finder</span>
-        <span class="taskbar-btn" style="font-size:0.65rem;">File</span>
-        <span class="taskbar-btn" style="font-size:0.65rem;">Edit</span>
-        <span class="taskbar-btn" style="font-size:0.65rem;">View</span>
-        <span class="taskbar-btn" style="font-size:0.65rem;">Go</span>
-        <span class="taskbar-btn" style="font-size:0.65rem;">Window</span>
-        <span class="taskbar-btn" style="font-size:0.65rem;">Help</span></div>
+      <div class="taskbar-left">
+        <span class="taskbar-logo"><i class="fab fa-apple"></i></span>
+        <span style="color:rgba(255,255,255,0.9);font-size:0.68rem;font-weight:600;">Finder</span>
+        <div class="menu-item" data-menu="file">File
+          <div class="menu-drop">
+            <div class="menu-drop-item" data-action="new-window">New Finder Window <span class="shortcut">⌘N</span></div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item" data-action="close-window">Close Window <span class="shortcut">⌘W</span></div>
+          </div>
+        </div>
+        <div class="menu-item" data-menu="edit">Edit
+          <div class="menu-drop">
+            <div class="menu-drop-item disabled">Undo <span class="shortcut">⌘Z</span></div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item disabled">Copy <span class="shortcut">⌘C</span></div>
+            <div class="menu-drop-item disabled">Paste <span class="shortcut">⌘V</span></div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item" data-action="select-all">Select All <span class="shortcut">⌘A</span></div>
+          </div>
+        </div>
+        <div class="menu-item" data-menu="view">View
+          <div class="menu-drop">
+            <div class="menu-drop-item" data-action="view-icons"><span class="checkmark">✓</span> as Icons</div>
+            <div class="menu-drop-item" data-action="view-list"><span class="checkmark"> </span> as List</div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item" data-action="show-path">Show Path Bar</div>
+          </div>
+        </div>
+        <div class="menu-item" data-menu="go">Go
+          <div class="menu-drop">
+            <div class="menu-drop-item" data-action="go-back">Back <span class="shortcut">⌘[</span></div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item" data-action="go-root">Root</div>
+            <div class="menu-drop-item" data-action="go-travel">Travel</div>
+            <div class="menu-drop-item" data-action="go-pets">Pets</div>
+          </div>
+        </div>
+        <div class="menu-item" data-menu="window">Window
+          <div class="menu-drop">
+            <div class="menu-drop-item" data-action="minimize">Minimize <span class="shortcut">⌘M</span></div>
+            <div class="menu-drop-item" data-action="zoom">Zoom</div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item" id="windowList" style="color:rgba(255,255,255,0.4);font-style:italic;">No windows</div>
+          </div>
+        </div>
+        <div class="menu-item" data-menu="help">Help
+          <div class="menu-drop">
+            <div class="menu-drop-item" data-action="about">About Internal Space</div>
+          </div>
+        </div>
+      </div>
       <div class="taskbar-right">
         <span class="taskbar-btn" id="userInfo" style="cursor:default;font-size:0.62rem;"></span>
         <span class="taskbar-time" id="clock"></span>
@@ -428,8 +504,15 @@
     // Close (red dot)
     document.getElementById('finderClose').addEventListener('click', () => finderOverlay.classList.remove('show'));
 
-    // Minimize (yellow dot) — hide the window
-    document.querySelector('.finder-dot.yellow').addEventListener('click', () => finderOverlay.classList.remove('show'));
+    // Minimize (yellow dot) — genie animation
+    document.querySelector('.finder-dot.yellow').addEventListener('click', () => {
+      finderEl.classList.add('minimizing');
+      finderEl.addEventListener('animationend', function onEnd() {
+        finderEl.removeEventListener('animationend', onEnd);
+        finderEl.classList.remove('minimizing');
+        finderEl.classList.add('minimized');
+      });
+    });
 
     // Maximize (green dot) — toggle fullscreen
     document.querySelector('.finder-dot.green').addEventListener('click', () => {
@@ -645,14 +728,125 @@
       }
     });
 
+    /* ── Focus/blur: add focused class to Finder on open ── */
+    function focusFinder() {
+      finderEl.classList.add('focused');
+    }
+    finderEl.addEventListener('mousedown', focusFinder);
+
+    // Restore minimized window
+    function restoreWindow() {
+      if (finderEl.classList.contains('minimized')) {
+        finderEl.classList.remove('minimized');
+        finderEl.classList.add('restoring');
+        finderEl.addEventListener('animationend', function onEnd() {
+          finderEl.removeEventListener('animationend', onEnd);
+          finderEl.classList.remove('restoring');
+        });
+      }
+      finderOverlay.classList.add('show');
+      focusFinder();
+    }
+
+    /* ── Menu bar dropdown logic ── */
+    let openMenu = null;
+
+    document.querySelectorAll('.menu-item').forEach(item => {
+      // Click to toggle menu
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (openMenu === item) {
+          item.classList.remove('open');
+          openMenu = null;
+        } else {
+          if (openMenu) openMenu.classList.remove('open');
+          item.classList.add('open');
+          openMenu = item;
+        }
+      });
+      // Hover to switch while one is open
+      item.addEventListener('mouseenter', () => {
+        if (openMenu && openMenu !== item) {
+          openMenu.classList.remove('open');
+          item.classList.add('open');
+          openMenu = item;
+        }
+      });
+    });
+
+    // Close menus on outside click
+    document.addEventListener('click', () => {
+      if (openMenu) { openMenu.classList.remove('open'); openMenu = null; }
+      desktopCtx.classList.remove('show');
+      contextMenu.classList.remove('show');
+    });
+
+    // Menu actions
+    document.querySelectorAll('.menu-drop-item[data-action]').forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const action = item.dataset.action;
+        if (openMenu) { openMenu.classList.remove('open'); openMenu = null; }
+
+        switch (action) {
+          case 'new-window': openFinder(); break;
+          case 'close-window': finderOverlay.classList.remove('show'); break;
+          case 'minimize': document.querySelector('.finder-dot.yellow').click(); break;
+          case 'zoom': document.querySelector('.finder-dot.green').click(); break;
+          case 'go-back': document.getElementById('btnBack').click(); break;
+          case 'go-root': navigateTo(''); break;
+          case 'go-travel': navigateTo('travel/'); break;
+          case 'go-pets': navigateTo('pet/'); break;
+          case 'about': alert('Internal Space v1.0\nA macOS-style desktop for managing Firebase Storage.'); break;
+        }
+      });
+    });
+
     /* ── Keyboard shortcuts ── */
     document.addEventListener('keydown', e => {
+      // Global shortcuts
+      if (e.metaKey && e.key === 'n') { e.preventDefault(); openFinder(); return; }
+      if (e.metaKey && e.key === 'm') { e.preventDefault(); document.querySelector('.finder-dot.yellow').click(); return; }
+
       if (!finderOverlay.classList.contains('show')) return;
       if (e.key === 'Escape' || (e.metaKey && e.key === 'w')) { e.preventDefault(); finderOverlay.classList.remove('show'); }
       if (e.key === 'Delete' || e.key === 'Backspace') {
         if (selectedFile && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); deleteFile(selectedFile); }
       }
+      if (e.metaKey && e.key === '[') { e.preventDefault(); document.getElementById('btnBack').click(); }
     });
+
+    // Update window list in Window menu
+    function updateWindowList() {
+      const wl = document.getElementById('windowList');
+      if (finderOverlay.classList.contains('show') && !finderEl.classList.contains('minimized')) {
+        wl.textContent = '✓ ' + (finderTitle.textContent || 'Finder');
+        wl.style.color = 'rgba(255,255,255,0.8)';
+        wl.style.fontStyle = 'normal';
+        wl.style.cursor = 'pointer';
+        wl.onclick = () => { restoreWindow(); if (openMenu) { openMenu.classList.remove('open'); openMenu = null; } };
+      } else if (finderEl.classList.contains('minimized')) {
+        wl.textContent = '  ' + (finderTitle.textContent || 'Finder') + ' (minimized)';
+        wl.style.color = 'rgba(255,255,255,0.5)';
+        wl.style.fontStyle = 'normal';
+        wl.style.cursor = 'pointer';
+        wl.onclick = () => { restoreWindow(); if (openMenu) { openMenu.classList.remove('open'); openMenu = null; } };
+      } else {
+        wl.textContent = 'No windows';
+        wl.style.color = 'rgba(255,255,255,0.4)';
+        wl.style.fontStyle = 'italic';
+        wl.onclick = null;
+      }
+    }
+
+    // Monitor window state changes
+    const origOpen = openFinder;
+    openFinder = function() { origOpen(); focusFinder(); setTimeout(updateWindowList, 100); };
+    const origClose = document.getElementById('finderClose').onclick;
+
+    // Observe overlay changes to update window list
+    new MutationObserver(updateWindowList).observe(finderOverlay, { attributes: true, attributeFilter: ['class'] });
+    new MutationObserver(updateWindowList).observe(finderEl, { attributes: true, attributeFilter: ['class'] });
   </script>
 </body>
 </html>
