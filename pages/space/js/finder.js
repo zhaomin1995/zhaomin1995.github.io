@@ -825,11 +825,15 @@ function buildFinderUI(container, win, initialPath) {
       el.innerHTML = `<span>${tab.label || 'Root'}</span><div class="finder-tab-close"><i class="fas fa-times"></i></div>`;
       el.addEventListener('click', (e) => {
         if (e.target.closest('.finder-tab-close')) {
-          tabs.splice(i, 1);
-          if (activeTab >= tabs.length) activeTab = tabs.length - 1;
-          if (tabs.length === 0) { tabs = [{ path: '', label: 'Root' }]; activeTab = 0; }
-          renderTabs();
-          navigateTo(tabs[activeTab].path);
+          // #82 Tab close animation
+          el.classList.add('closing');
+          el.addEventListener('animationend', () => {
+            tabs.splice(i, 1);
+            if (activeTab >= tabs.length) activeTab = tabs.length - 1;
+            if (tabs.length === 0) { tabs = [{ path: '', label: 'Root' }]; activeTab = 0; }
+            renderTabs();
+            navigateTo(tabs[activeTab].path);
+          });
           return;
         }
         activeTab = i;

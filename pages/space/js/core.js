@@ -374,16 +374,32 @@ function initDesktop() {
   loadUserSettings(); // #13
 }
 
-/* #13 Settings sync to Firebase */
+/* ── Settings sync to Firebase (#90 multi-user support) ── */
+let customWallpaper = null; // #12 stores Firebase image URL if set
+
 async function saveUserSettings() {
   if (!currentUser) return;
   const key = currentUser.email.replace(/[.@]/g, '_');
+  // #90 Collect icon positions
+  const iconPositions = {};
+  document.querySelectorAll('.desktop-icon').forEach(icon => {
+    const app = icon.dataset.app;
+    if (app) {
+      iconPositions[app] = {
+        left: icon.style.left,
+        top: icon.style.top,
+        label: icon.querySelector('.desktop-icon-label')?.textContent || app,
+      };
+    }
+  });
   const settings = {
     wallpaperIndex: wallIdx,
+    customWallpaper: customWallpaper || null,
     fontSize: localStorage.getItem('space-font-size') || '14',
+    iconPositions: iconPositions,
   };
   try {
-    await fetch(`${FB_DB}/settings/${key}.json`, {
+    await fetch(`${FB_DB}/desktop-state/${key}.json`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(settings),
@@ -395,19 +411,46 @@ async function loadUserSettings() {
   if (!currentUser) return;
   const key = currentUser.email.replace(/[.@]/g, '_');
   try {
-    const r = await fetch(`${FB_DB}/settings/${key}.json`);
+    const r = await fetch(`${FB_DB}/desktop-state/${key}.json`);
     const data = await r.json();
     if (data) {
-      if (data.wallpaperIndex != null && wallpapers[data.wallpaperIndex]) {
+      // Wallpaper
+      if (data.customWallpaper) {
+        customWallpaper = data.customWallpaper;
+        const desktop = document.getElementById('desktop');
+        desktop.style.backgroundImage = `url(${customWallpaper})`;
+        desktop.style.backgroundSize = 'cover';
+        desktop.style.backgroundPosition = 'center';
+      } else if (data.wallpaperIndex != null && wallpapers[data.wallpaperIndex]) {
         wallIdx = data.wallpaperIndex;
         document.getElementById('desktop').style.background = wallpapers[wallIdx];
       }
+      // Font size
       if (data.fontSize) {
         document.body.style.fontSize = data.fontSize + 'px';
         localStorage.setItem('space-font-size', data.fontSize);
       }
+      // #90 Icon positions
+      if (data.iconPositions) {
+        document.querySelectorAll('.desktop-icon').forEach(icon => {
+          const app = icon.dataset.app;
+          const pos = data.iconPositions[app];
+          if (pos) {
+            icon.style.left = pos.left;
+            icon.style.top = pos.top;
+            icon.style.right = 'auto';
+            icon.style.bottom = 'auto';
+            if (pos.label) {
+              const labelEl = icon.querySelector('.desktop-icon-label');
+              if (labelEl) labelEl.textContent = pos.label;
+            }
+          }
+        });
+      }
     }
   } catch {}
+  // #15 Apply dynamic wallpaper if no custom wallpaper
+  if (!customWallpaper) applyDynamicWallpaper();
 }
 
 /* ── Clock ── */
@@ -439,16 +482,57 @@ function initDesktopIcons() {
   });
 
   document.querySelectorAll('.desktop-icon').forEach(icon => {
+    // #9 Slow double-click label editing
+    let lastClickTime = 0;
+    let labelEditTimeout = null;
+
     // Single click: select
     icon.addEventListener('click', (e) => {
       e.stopPropagation();
+      const now = Date.now();
+      const elapsed = now - lastClickTime;
+      lastClickTime = now;
       document.querySelectorAll('.desktop-icon.selected').forEach(i => i.classList.remove('selected'));
       icon.classList.add('selected');
+
+      // Clear any pending label edit
+      if (labelEditTimeout) { clearTimeout(labelEditTimeout); labelEditTimeout = null; }
+
+      // If 500-1500ms since last click (slow double-click), start label editing
+      if (elapsed >= 500 && elapsed <= 1500) {
+        const labelEl = icon.querySelector('.desktop-icon-label');
+        if (labelEl && !labelEl.querySelector('input')) {
+          const oldName = labelEl.textContent;
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.value = oldName;
+          input.style.cssText = 'font-size:0.75rem;font-weight:600;color:#fff;background:rgba(0,0,0,0.5);border:1px solid #3478f6;border-radius:3px;text-align:center;width:80px;outline:none;font-family:Inter,sans-serif;padding:1px 3px;';
+          labelEl.textContent = '';
+          labelEl.style.pointerEvents = 'auto';
+          labelEl.appendChild(input);
+          input.focus();
+          input.select();
+
+          const finishEdit = () => {
+            const newName = input.value.trim() || oldName;
+            labelEl.textContent = newName;
+            labelEl.style.pointerEvents = '';
+          };
+          input.addEventListener('keydown', (ev) => {
+            ev.stopPropagation();
+            if (ev.key === 'Enter') { ev.preventDefault(); finishEdit(); }
+            if (ev.key === 'Escape') { labelEl.textContent = oldName; labelEl.style.pointerEvents = ''; }
+          });
+          input.addEventListener('blur', finishEdit);
+        }
+        return;
+      }
     });
 
     // Double click: open app
     icon.addEventListener('dblclick', (e) => {
       e.stopPropagation();
+      if (labelEditTimeout) { clearTimeout(labelEditTimeout); labelEditTimeout = null; }
       openApp(icon.dataset.app);
     });
 
@@ -515,6 +599,8 @@ function initDesktopIcons() {
       const onUp = () => {
         document.removeEventListener('mousemove', onMove);
         document.removeEventListener('mouseup', onUp);
+        // #90 Auto-save icon positions on drag
+        if (isDragging) saveUserSettings();
       };
       document.addEventListener('mousemove', onMove);
       document.addEventListener('mouseup', onUp);
@@ -776,35 +862,58 @@ function initDesktopContextMenu() {
   desktopArea.addEventListener('contextmenu', (e) => {
     if (e.target.closest('.desktop-icon') || e.target.closest('.window')) return;
     e.preventDefault();
-    // Restore default context menu items
+    // Restore default context menu items (matches index.html #desktopCtx)
     desktopCtx.innerHTML = `
       <div class="desktop-ctx-item" id="ctxNewFolder"><i class="fas fa-folder-plus"></i> New Folder</div>
       <div class="desktop-ctx-divider"></div>
       <div class="desktop-ctx-item" id="ctxCleanUp"><i class="fas fa-th"></i> Clean Up</div>
+      <div class="desktop-ctx-submenu">
+        <div class="desktop-ctx-item"><i class="fas fa-sort"></i> Sort By <span style="margin-left:auto;font-size:0.6rem;"><i class="fas fa-chevron-right"></i></span></div>
+        <div class="desktop-ctx-sub">
+          <div class="desktop-ctx-item" data-sort="name"><i class="fas fa-font"></i> Name</div>
+          <div class="desktop-ctx-item" data-sort="kind"><i class="fas fa-shapes"></i> Kind</div>
+          <div class="desktop-ctx-item" data-sort="date"><i class="fas fa-clock"></i> Date Added</div>
+        </div>
+      </div>
       <div class="desktop-ctx-divider"></div>
       <div class="desktop-ctx-item" id="ctxGetInfo"><i class="fas fa-info-circle"></i> Get Info</div>
       <div class="desktop-ctx-divider"></div>
       <div class="desktop-ctx-item" id="ctxWallpaper"><i class="fas fa-image"></i> Change Wallpaper</div>
+      <div class="desktop-ctx-divider"></div>
+      <div class="desktop-ctx-item" id="ctxSaveDesktopState"><i class="fas fa-save"></i> Save Desktop State</div>
     `;
     desktopCtx.style.left = e.clientX + 'px';
     desktopCtx.style.top = e.clientY + 'px';
     desktopCtx.classList.add('show');
 
     document.getElementById('ctxWallpaper').addEventListener('click', () => {
+      customWallpaper = null;
       wallIdx = (wallIdx + 1) % wallpapers.length;
       document.getElementById('desktop').style.background = wallpapers[wallIdx];
+      document.getElementById('desktop').style.backgroundImage = '';
+      saveUserSettings();
     });
     document.getElementById('ctxNewFolder').addEventListener('click', () => {
       const fw = wm.getFocusedWindow();
       if (fw && fw.app === 'finder' && fw.createFolder) fw.createFolder();
     });
-    // #9 Clean Up (auto-arrange icons)
+    // #88 Save Desktop State
+    document.getElementById('ctxSaveDesktopState').addEventListener('click', () => {
+      exportDesktopState();
+    });
+    // #14 Sort By submenu
+    desktopCtx.querySelectorAll('[data-sort]').forEach(item => {
+      item.addEventListener('click', () => {
+        sortDesktopIcons(item.dataset.sort);
+        desktopCtx.classList.remove('show');
+      });
+    });
+    // Clean Up (auto-arrange icons)
     document.getElementById('ctxCleanUp').addEventListener('click', () => {
       const icons = Array.from(document.querySelectorAll('.desktop-icon')).filter(i => i.style.display !== 'none');
       const areaRect = desktopArea.getBoundingClientRect();
       const gridX = 110, gridY = 110;
       const cols = Math.floor(areaRect.width / gridX);
-      // Start from top-right, go down then left
       let col = cols - 1, row = 0;
       icons.forEach(icon => {
         const x = col * gridX;
@@ -817,6 +926,7 @@ function initDesktopContextMenu() {
         const maxRows = Math.floor((areaRect.height - 80) / gridY);
         if (row >= maxRows) { row = 0; col--; }
       });
+      saveUserSettings();
     });
   });
 }
@@ -1017,6 +1127,32 @@ function initMissionControl() {
   });
 }
 
+/* ── #13 Show Desktop toggle ── */
+let showDesktopActive = false;
+let showDesktopSavedStates = [];
+
+function toggleShowDesktop() {
+  if (!showDesktopActive) {
+    // Minimize all windows
+    showDesktopSavedStates = [];
+    wm.getAllWindows().forEach(w => {
+      if (!w.isMinimized) {
+        showDesktopSavedStates.push(w.id);
+        wm.minimizeWindow(w.id);
+      }
+    });
+    showDesktopActive = true;
+  } else {
+    // Restore all previously minimized windows
+    showDesktopSavedStates.forEach(id => {
+      const w = wm.getWindow(id);
+      if (w && w.isMinimized) wm.restoreWindow(id);
+    });
+    showDesktopSavedStates = [];
+    showDesktopActive = false;
+  }
+}
+
 /* ── Keyboard Shortcuts ── */
 function initKeyboardShortcuts() {
   document.addEventListener('keydown', (e) => {
@@ -1088,6 +1224,13 @@ function initKeyboardShortcuts() {
       e.preventDefault();
       const fw = wm.getFocusedWindow();
       if (fw && fw.app === 'finder' && fw.addTab) fw.addTab();
+      return;
+    }
+
+    // #13 Cmd+F3: Show Desktop toggle
+    if (e.metaKey && e.key === 'F3') {
+      e.preventDefault();
+      toggleShowDesktop();
       return;
     }
 
@@ -1260,6 +1403,17 @@ function initDesktopSelection() {
 
   document.addEventListener('mouseup', () => {
     if (selecting && rect) {
+      // #11 Select icons that overlap with the selection rectangle
+      const selRect = rect.getBoundingClientRect();
+      if (selRect.width > 5 || selRect.height > 5) {
+        document.querySelectorAll('.desktop-icon').forEach(icon => {
+          if (icon.style.display === 'none') return;
+          const iconRect = icon.getBoundingClientRect();
+          const overlaps = !(iconRect.right < selRect.left || iconRect.left > selRect.right ||
+                            iconRect.bottom < selRect.top || iconRect.top > selRect.bottom);
+          if (overlaps) icon.classList.add('selected');
+        });
+      }
       rect.remove();
       selecting = false;
     }
@@ -1269,4 +1423,197 @@ function initDesktopSelection() {
 // Initialize desktop selection on load
 if (document.getElementById('desktopArea')) {
   initDesktopSelection();
+}
+
+/* ── #14 Sort desktop icons ── */
+function sortDesktopIcons(criteria) {
+  const desktopArea = document.getElementById('desktopArea');
+  const icons = Array.from(document.querySelectorAll('.desktop-icon')).filter(i => i.style.display !== 'none');
+  // Sort based on criteria
+  icons.sort((a, b) => {
+    const labelA = (a.querySelector('.desktop-icon-label')?.textContent || '').toLowerCase();
+    const labelB = (b.querySelector('.desktop-icon-label')?.textContent || '').toLowerCase();
+    const appA = a.dataset.app || '';
+    const appB = b.dataset.app || '';
+    switch (criteria) {
+      case 'name': return labelA.localeCompare(labelB);
+      case 'kind': return appA.localeCompare(appB);
+      case 'date': return 0; // preserve current order (no date metadata on desktop icons)
+      default: return labelA.localeCompare(labelB);
+    }
+  });
+  // Arrange in grid order (top-right, going down then left)
+  const areaRect = desktopArea.getBoundingClientRect();
+  const gridX = 110, gridY = 110;
+  const cols = Math.floor(areaRect.width / gridX);
+  let col = cols - 1, row = 0;
+  icons.forEach(icon => {
+    const x = col * gridX;
+    const y = row * gridY + 20;
+    icon.style.left = x + 'px';
+    icon.style.top = y + 'px';
+    icon.style.right = 'auto';
+    icon.style.bottom = 'auto';
+    row++;
+    const maxRows = Math.floor((areaRect.height - 80) / gridY);
+    if (row >= maxRows) { row = 0; col--; }
+  });
+  saveUserSettings();
+}
+
+/* ── #15 Dynamic wallpaper ── */
+function getDynamicWallpaper() {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 8) {
+    // Dawn: warm oranges/pinks
+    return 'linear-gradient(135deg, #2c1810 0%, #c04e36 40%, #f4845f 70%, #f5a623 100%)';
+  } else if (hour >= 8 && hour < 17) {
+    // Day: light blues
+    return 'linear-gradient(135deg, #2980b9 0%, #6dd5fa 50%, #a8e6cf 100%)';
+  } else if (hour >= 17 && hour < 20) {
+    // Dusk: purples/oranges
+    return 'linear-gradient(135deg, #2c1654 0%, #7b2d8b 30%, #d4507a 60%, #f09819 100%)';
+  } else {
+    // Night: current dark blues (default)
+    return 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)';
+  }
+}
+
+function applyDynamicWallpaper() {
+  if (customWallpaper) return; // Don't override custom wallpaper
+  const desktop = document.getElementById('desktop');
+  if (!desktop) return;
+  desktop.style.background = getDynamicWallpaper();
+  desktop.style.backgroundImage = '';
+}
+
+// Check dynamic wallpaper every 30 minutes
+setInterval(() => {
+  if (!customWallpaper) applyDynamicWallpaper();
+}, 30 * 60 * 1000);
+
+/* ── #88 Export desktop state ── */
+async function exportDesktopState() {
+  if (!currentUser) return;
+  const key = currentUser.email.replace(/[.@]/g, '_');
+  // Collect all state
+  const iconPositions = {};
+  document.querySelectorAll('.desktop-icon').forEach(icon => {
+    const app = icon.dataset.app;
+    if (app) {
+      iconPositions[app] = {
+        left: icon.style.left,
+        top: icon.style.top,
+        label: icon.querySelector('.desktop-icon-label')?.textContent || app,
+      };
+    }
+  });
+
+  const openWindows = wm.getAllWindows().map(w => ({
+    app: w.app,
+    title: w.title,
+    x: parseInt(w.element.style.left) || 0,
+    y: parseInt(w.element.style.top) || 0,
+    width: parseInt(w.element.style.width) || 850,
+    height: parseInt(w.element.style.height) || 550,
+  }));
+
+  const dockConfig = Array.from(document.querySelectorAll('.dock-item')).map(item => item.dataset.app).filter(Boolean);
+
+  const state = {
+    iconPositions,
+    openWindows,
+    wallpaperIndex: wallIdx,
+    customWallpaper: customWallpaper || null,
+    dockConfig,
+    fontSize: localStorage.getItem('space-font-size') || '14',
+    timestamp: new Date().toISOString(),
+  };
+
+  // Save to Firebase
+  try {
+    await fetch(`${FB_DB}/desktop-state/${key}.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(state),
+    });
+    alert('Desktop state saved successfully!');
+  } catch (e) {
+    alert('Failed to save: ' + e.message);
+  }
+}
+
+/* ── #89 Import/export settings (used by System Preferences) ── */
+function exportSettingsAsFile() {
+  if (!currentUser) return;
+  const key = currentUser.email.replace(/[.@]/g, '_');
+  fetch(`${FB_DB}/desktop-state/${key}.json`)
+    .then(r => r.json())
+    .then(data => {
+      // Also include localStorage settings
+      const allSettings = {
+        firebase: data || {},
+        localStorage: {
+          'space-font-size': localStorage.getItem('space-font-size'),
+        },
+        exportDate: new Date().toISOString(),
+      };
+      const blob = new Blob([JSON.stringify(allSettings, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `internal-space-settings-${key}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    })
+    .catch(e => alert('Export failed: ' + e.message));
+}
+
+function importSettingsFromFile() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.addEventListener('change', async () => {
+    if (!input.files.length) return;
+    try {
+      const text = await input.files[0].text();
+      const allSettings = JSON.parse(text);
+      if (!currentUser) { alert('Not logged in'); return; }
+      const key = currentUser.email.replace(/[.@]/g, '_');
+      // Write Firebase settings
+      if (allSettings.firebase) {
+        await fetch(`${FB_DB}/desktop-state/${key}.json`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(allSettings.firebase),
+        });
+      }
+      // Write localStorage settings
+      if (allSettings.localStorage) {
+        Object.entries(allSettings.localStorage).forEach(([k, v]) => {
+          if (v != null) localStorage.setItem(k, v);
+        });
+      }
+      alert('Settings imported! Reloading...');
+      location.reload();
+    } catch (e) {
+      alert('Import failed: ' + e.message);
+    }
+  });
+  input.click();
+}
+
+/* ── #12 Load wallpaper images from Firebase Storage ── */
+async function loadFirebaseWallpapers() {
+  try {
+    const r = await fetch(`${FB_STORAGE}/o?prefix=images/&maxResults=50`);
+    const data = await r.json();
+    const images = (data.items || []).filter(i =>
+      (i.contentType || '').startsWith('image/')
+    );
+    return images.map(i => ({
+      name: i.name,
+      url: `${FB_STORAGE}/o/${encodeURIComponent(i.name)}?alt=media`,
+    }));
+  } catch { return []; }
 }

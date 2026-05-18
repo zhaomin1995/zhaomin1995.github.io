@@ -317,6 +317,10 @@ function buildSystemPreferences(container, win) {
           <div class="prefs-pane-icon"><i class="fas fa-users-cog" style="color:#e67e22;"></i></div>
           <div class="prefs-pane-label">Users</div>
         </div>
+        <div class="prefs-pane" data-pane="backup">
+          <div class="prefs-pane-icon"><i class="fas fa-hdd" style="color:#28a745;"></i></div>
+          <div class="prefs-pane-label">Backup & Restore</div>
+        </div>
       </div>
     `;
 
@@ -331,6 +335,7 @@ function buildSystemPreferences(container, win) {
       case 'general': showGeneralPane(); break;
       case 'about': showAboutPane(); break;
       case 'users': showUsersPane(); break;
+      case 'backup': showBackupPane(); break;
     }
   }
 
@@ -339,19 +344,73 @@ function buildSystemPreferences(container, win) {
       <div class="prefs-panel">
         <button class="prefs-back"><i class="fas fa-chevron-left"></i> Back</button>
         <h3>Wallpaper</h3>
+        <h4 style="font-size:0.7rem;color:rgba(255,255,255,0.5);margin-bottom:0.5rem;">Gradients</h4>
         <div class="wallpaper-grid">
-          ${wallpapers.map((wp, i) => `<div class="wallpaper-option ${i === wallIdx ? 'active' : ''}" data-idx="${i}" style="background:${wp};"></div>`).join('')}
+          ${wallpapers.map((wp, i) => `<div class="wallpaper-option ${i === wallIdx && !customWallpaper ? 'active' : ''}" data-idx="${i}" style="background:${wp};"></div>`).join('')}
+        </div>
+        <h4 style="font-size:0.7rem;color:rgba(255,255,255,0.5);margin:1rem 0 0.5rem;">Dynamic (Time-based)</h4>
+        <div class="wallpaper-grid">
+          <div class="wallpaper-option wallpaper-dynamic ${!customWallpaper && wallIdx === -1 ? 'active' : ''}" style="background:${getDynamicWallpaper()};position:relative;">
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:rgba(255,255,255,0.8);font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,0.5);">Auto</div>
+          </div>
+        </div>
+        <h4 style="font-size:0.7rem;color:rgba(255,255,255,0.5);margin:1rem 0 0.5rem;">From Firebase Storage</h4>
+        <div class="wallpaper-grid wallpaper-firebase-grid">
+          <div style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,0.3);font-size:0.7rem;padding:0.5rem;"><i class="fas fa-spinner fa-spin"></i> Loading images...</div>
         </div>
       </div>
     `;
     content.querySelector('.prefs-back').addEventListener('click', showMainGrid);
-    content.querySelectorAll('.wallpaper-option').forEach(opt => {
+
+    // Gradient wallpapers
+    content.querySelectorAll('.wallpaper-option[data-idx]').forEach(opt => {
       opt.addEventListener('click', () => {
         wallIdx = parseInt(opt.dataset.idx);
-        document.getElementById('desktop').style.background = wallpapers[wallIdx];
-        content.querySelectorAll('.wallpaper-option').forEach(o => o.classList.remove('active'));
+        customWallpaper = null;
+        const desktop = document.getElementById('desktop');
+        desktop.style.background = wallpapers[wallIdx];
+        desktop.style.backgroundImage = '';
+        content.querySelectorAll('.wallpaper-option, .wallpaper-img-option').forEach(o => o.classList.remove('active'));
         opt.classList.add('active');
-        saveUserSettings(); // #13 sync to Firebase
+        saveUserSettings();
+      });
+    });
+
+    // Dynamic wallpaper option
+    content.querySelector('.wallpaper-dynamic').addEventListener('click', () => {
+      customWallpaper = null;
+      wallIdx = -1; // special value for dynamic
+      applyDynamicWallpaper();
+      content.querySelectorAll('.wallpaper-option, .wallpaper-img-option').forEach(o => o.classList.remove('active'));
+      content.querySelector('.wallpaper-dynamic').classList.add('active');
+      saveUserSettings();
+    });
+
+    // #12 Load Firebase wallpaper images
+    const fbGrid = content.querySelector('.wallpaper-firebase-grid');
+    loadFirebaseWallpapers().then(images => {
+      if (images.length === 0) {
+        fbGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,0.3);font-size:0.7rem;padding:0.5rem;">No images found in Firebase Storage</div>';
+        return;
+      }
+      fbGrid.innerHTML = '';
+      images.slice(0, 12).forEach(img => {
+        const imgEl = document.createElement('img');
+        imgEl.className = 'wallpaper-img-option' + (customWallpaper === img.url ? ' active' : '');
+        imgEl.src = img.url;
+        imgEl.alt = img.name;
+        imgEl.title = img.name;
+        imgEl.addEventListener('click', () => {
+          customWallpaper = img.url;
+          const desktop = document.getElementById('desktop');
+          desktop.style.backgroundImage = `url(${img.url})`;
+          desktop.style.backgroundSize = 'cover';
+          desktop.style.backgroundPosition = 'center';
+          content.querySelectorAll('.wallpaper-option, .wallpaper-img-option').forEach(o => o.classList.remove('active'));
+          imgEl.classList.add('active');
+          saveUserSettings();
+        });
+        fbGrid.appendChild(imgEl);
       });
     });
   }
@@ -476,6 +535,33 @@ function buildSystemPreferences(container, win) {
     });
 
     loadUsers();
+  }
+
+  /* #89 Backup & Restore pane */
+  function showBackupPane() {
+    content.innerHTML = `
+      <div class="prefs-panel">
+        <button class="prefs-back"><i class="fas fa-chevron-left"></i> Back</button>
+        <h3>Backup & Restore</h3>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.6);line-height:1.8;margin-bottom:1.5rem;">
+          <p>Export your desktop settings (wallpaper, icon positions, font size) as a JSON file, or import a previously saved backup.</p>
+        </div>
+        <div style="display:flex;gap:0.8rem;flex-wrap:wrap;">
+          <button class="prefs-btn" id="prefsExportBtn"><i class="fas fa-download"></i> Export Settings</button>
+          <button class="prefs-btn secondary" id="prefsImportBtn"><i class="fas fa-upload"></i> Import Settings</button>
+        </div>
+        <div id="prefsBackupStatus" style="margin-top:1rem;font-size:0.7rem;color:rgba(255,255,255,0.4);min-height:1.5em;"></div>
+      </div>
+    `;
+    content.querySelector('.prefs-back').addEventListener('click', showMainGrid);
+    document.getElementById('prefsExportBtn').addEventListener('click', () => {
+      exportSettingsAsFile();
+      document.getElementById('prefsBackupStatus').textContent = 'Exporting settings...';
+    });
+    document.getElementById('prefsImportBtn').addEventListener('click', () => {
+      importSettingsFromFile();
+      document.getElementById('prefsBackupStatus').textContent = 'Select a JSON file to import...';
+    });
   }
 
   showMainGrid();

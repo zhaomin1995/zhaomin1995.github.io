@@ -130,11 +130,10 @@ img.desktop-icon-img { width: 64px; height: 64px; border-radius: 14px; object-fi
   position: absolute;
   background: #1e1e2e; border-radius: 10px; overflow: hidden;
   display: flex; flex-direction: column;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.12);
   transition: box-shadow 0.15s ease;
   resize: both; min-width: 400px; min-height: 300px;
 }
-.window.focused { box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
 .window:not(.focused) .window-titlebar { background: #353545; }
 .window:not(.focused) .window-dot { background: #555 !important; }
 .window:not(.focused) .window-dot::after { display: none; }
@@ -726,3 +725,117 @@ img.desktop-icon-img { width: 64px; height: 64px; border-radius: 14px; object-fi
 /* ── Loading Spinner ── */
 .app-loading-spinner { text-align: center; padding: 3rem; color: rgba(255,255,255,0.3); }
 .app-loading-spinner i { font-size: 2rem; }
+
+/* ── #75 Window shadow improvement ── */
+.window.focused { box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.15), 0 24px 48px rgba(0,0,0,0.25); }
+.window:not(.focused) { box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.12); }
+
+/* ── #76/#77 GPU-accelerated window dragging ── */
+.window { will-change: transform, left, top; }
+
+/* ── #78 Cursor context changes ── */
+.window-body textarea, .window-body input { cursor: text; }
+.window-titlebar { cursor: grab; }
+.window-titlebar:active { cursor: grabbing; }
+.finder-files { cursor: default; }
+.finder-file { cursor: default; }
+.dock-item { cursor: default; }
+a, button, .menu-item, .menu-drop-item, .finder-sb-item { cursor: default; }
+
+/* ── #79 Animated wallpaper transitions ── */
+.desktop { transition: background 1s ease, background-image 1s ease; }
+
+/* ── #80 App icon hover glow ── */
+.desktop-icon:hover .desktop-icon-img {
+  filter: brightness(1.15);
+  transition: filter 0.2s ease;
+}
+
+/* ── #81 Finder column view slide animation ── */
+.finder-column {
+  animation: colSlideIn 0.2s ease-out;
+}
+@keyframes colSlideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ── #82 Tab close animation ── */
+.finder-tab.closing {
+  animation: tabClose 0.2s ease forwards;
+  overflow: hidden;
+}
+@keyframes tabClose {
+  to { width: 0; padding: 0; margin: 0; opacity: 0; }
+}
+
+/* ── #83 Context menu animation ── */
+.desktop-ctx, .context-menu {
+  transform-origin: top left;
+  animation: ctxFadeIn 0.12s ease-out;
+}
+@keyframes ctxFadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ── #84 Desktop icon drop shadow ── */
+.desktop-icon-img {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+/* ── #14 Desktop icon sort submenu ── */
+.desktop-ctx-submenu {
+  position: relative;
+}
+.desktop-ctx-submenu .desktop-ctx-sub {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: 0;
+  background: rgba(40,40,55,0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 8px;
+  padding: 0.3rem 0;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+  min-width: 140px;
+  border: 1px solid rgba(255,255,255,0.08);
+  z-index: 1060;
+}
+.desktop-ctx-submenu:hover .desktop-ctx-sub {
+  display: block;
+}
+
+/* ── #12 Wallpaper image thumbnails in preferences ── */
+.wallpaper-img-option {
+  height: 70px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border 0.15s;
+  object-fit: cover;
+  width: 100%;
+}
+.wallpaper-img-option:hover { border-color: rgba(255,255,255,0.3); }
+.wallpaper-img-option.active { border-color: #3478f6; }
+
+/* ── #89 Backup & Restore pane buttons ── */
+.prefs-btn {
+  padding: 0.5rem 1.2rem;
+  background: #3478f6;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  margin-right: 0.5rem;
+}
+.prefs-btn:hover { background: #2860d0; }
+.prefs-btn.secondary {
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.8);
+}
+.prefs-btn.secondary:hover {
+  background: rgba(255,255,255,0.18);
+}
