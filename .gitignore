@@ -1,5 +1,5 @@
 .travel-cache.json
 img/travel/
 node_modules/
-functions/node_modules/
+firebase/functions/node_modules/
 .idea/

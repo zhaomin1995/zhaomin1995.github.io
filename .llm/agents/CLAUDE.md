@@ -23,8 +23,7 @@ zhaomin1995.github.io/
 ├── index.html              # Main homepage (About, Education, News, Experience, Misc)
 ├── zhaomin_cv.pdf          # CV / resume PDF
 ├── README.md               # Placeholder README
-├── firebase.json           # Firebase deployment config
-├── database.rules.json     # Firebase Realtime Database rules
+├── firebase.json           # Firebase deployment config (must stay in root)
 ├── .gitignore              # Ignores: node_modules/, .idea/, img/travel/, .travel-cache.json
 │
 ├── .llm/agents/
@@ -49,9 +48,11 @@ zhaomin1995.github.io/
 │   └── fontawesome/
 │       └── js/all.min.js   # FontAwesome icons
 │
-├── functions/              # Firebase Cloud Functions
-│   ├── index.js            # processTravelPhoto (onFinalize) + deleteTravelPhoto (onDelete)
-│   └── package.json        # Dependencies: firebase-functions, exif-parser, node-fetch
+├── firebase/               # Firebase configuration and Cloud Functions
+│   ├── database.rules.json # Realtime Database security rules
+│   └── functions/
+│       ├── index.js        # processTravelPhoto (onFinalize) + deleteTravelPhoto (onDelete)
+│       └── package.json    # Dependencies: firebase-functions, exif-parser, node-fetch
 │
 ├── img/
 │   ├── favicon.svg         # ZX monogram favicon

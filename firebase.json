@@ -1,8 +1,8 @@
 {
   "functions": {
-    "source": "functions"
+    "source": "firebase/functions"
   },
   "database": {
-    "rules": "database.rules.json"
+    "rules": "firebase/database.rules.json"
   }
 }
