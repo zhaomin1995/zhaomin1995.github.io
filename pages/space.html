@@ -47,7 +47,7 @@
     .desktop-area { flex: 1; padding: 1.5rem; display: flex; flex-wrap: wrap; gap: 1.5rem; align-content: flex-start; }
     .desktop-icon { width: 80px; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; cursor: pointer; text-decoration: none; transition: transform 0.15s; }
     .desktop-icon:hover { transform: scale(1.08); }
-    .desktop-icon-img { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
+    .desktop-icon-img { width: 78px; height: 78px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
     .desktop-icon-label { font-size: 0.62rem; font-weight: 500; color: rgba(255,255,255,0.85); text-align: center; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
 
     .dock { display: flex; justify-content: center; padding: 0.4rem 0.6rem; background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); border-radius: 14px 14px 0 0; gap: 0.4rem; margin: 0 auto; width: fit-content; }
@@ -141,8 +141,22 @@
 
     <div class="desktop-area">
       <div class="desktop-icon" id="openFinder">
-        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#4a90d9,#357abd);"><i class="fas fa-folder"></i></div>
-        <span class="desktop-icon-label">Files</span>
+        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#4a90d9,#357abd);padding:0;">
+          <svg viewBox="0 0 100 100" width="58" height="58" xmlns="http://www.w3.org/2000/svg">
+            <!-- macOS Finder face -->
+            <rect x="5" y="15" width="90" height="70" rx="8" fill="#4a90d9"/>
+            <rect x="5" y="15" width="90" height="25" rx="8" fill="#357abd"/>
+            <rect x="5" y="32" width="90" height="8" fill="#357abd"/>
+            <!-- Face -->
+            <circle cx="35" cy="52" r="7" fill="#fff"/>
+            <circle cx="65" cy="52" r="7" fill="#fff"/>
+            <circle cx="35" cy="52" r="3.5" fill="#1a1a2e"/>
+            <circle cx="65" cy="52" r="3.5" fill="#1a1a2e"/>
+            <path d="M38 68 Q50 78 62 68" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+            <rect x="48" y="42" width="4" height="20" rx="2" fill="#fff"/>
+          </svg>
+        </div>
+        <span class="desktop-icon-label">Finder</span>
       </div>
     </div>
 
