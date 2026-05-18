@@ -173,28 +173,48 @@
     if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
     if (localStorage.getItem('lang') === 'zh') { document.body.classList.add('zh'); document.documentElement.lang = 'zh'; }
 
-    /*
-     * ── Pet photos config ──
-     * Photos are loaded from img/pets/. Add images there and list them below.
-     * Sort by date (newest first). The gallery shows them gradually.
-     * Supported formats: jpg, png, webp, gif
-     *
-     * To add a photo: drop the file in img/pets/ and add an entry here.
-     */
-    const PET_PHOTOS = [
-      // { file: 'joey_park.jpg', name: 'Joey at the park', date: '2024-06-15' },
-      // { file: 'joey_sleeping.jpg', name: 'Nap time', date: '2024-05-20' },
-      // { file: 'joey_birthday.jpg', name: 'Happy birthday Joey!', date: '2024-03-10' },
-    ];
+    /* ── Firebase config ── */
+    const FB_BUCKET = 'zhaomin-homepage.firebasestorage.app';
+    const FB_STORAGE = `https://firebasestorage.googleapis.com/v0/b/${FB_BUCKET}`;
 
-    // Sort by date (newest first)
-    PET_PHOTOS.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-
+    let PET_PHOTOS = [];
     const BATCH_SIZE = 6;
     let shown = 0;
     const gallery = document.getElementById('gallery');
     const loadMoreBtn = document.getElementById('loadMoreBtn');
     const emptyState = document.getElementById('emptyState');
+
+    /* ── Load pet photos from Firebase Storage /pet/ folder ── */
+    async function loadPetPhotos() {
+      try {
+        const r = await fetch(`${FB_STORAGE}/o?prefix=pet/`);
+        const data = await r.json();
+        const items = (data.items || []).filter(i =>
+          /\.(jpg|jpeg|png|webp|gif)$/i.test(i.name)
+        );
+
+        PET_PHOTOS = items.map(item => {
+          const fileName = item.name.replace('pet/', '');
+          const url = `${FB_STORAGE}/o/${encodeURIComponent(item.name)}?alt=media`;
+          // Use file updated time for sorting
+          const date = item.updated ? item.updated.split('T')[0] : '';
+          return { file: fileName, url: url, name: fileName.replace(/\.[^.]+$/, '').replace(/_/g, ' '), date: date };
+        });
+
+        // Sort by date (newest first)
+        PET_PHOTOS.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+      } catch (e) {
+        console.error('Failed to load pet photos:', e);
+      }
+
+      if (PET_PHOTOS.length === 0) {
+        emptyState.style.display = 'block';
+        loadMoreBtn.classList.add('hidden');
+      } else {
+        loadBatch();
+      }
+    }
 
     function loadBatch() {
       const batch = PET_PHOTOS.slice(shown, shown + BATCH_SIZE);
@@ -205,7 +225,7 @@
         item.className = 'gallery-item';
 
         const img = document.createElement('img');
-        img.src = '../img/pets/' + photo.file;
+        img.src = photo.url;
         img.alt = photo.name || '';
         img.loading = 'lazy';
 
@@ -219,31 +239,23 @@
 
         // Click to open lightbox
         item.addEventListener('click', () => {
-          document.getElementById('lightboxImg').src = '../img/pets/' + photo.file;
+          document.getElementById('lightboxImg').src = photo.url;
           document.getElementById('lightbox').classList.add('show');
         });
 
-        // Staggered fade-in animation (top-to-bottom, left-to-right)
+        // Staggered fade-in animation
         setTimeout(() => { item.classList.add('visible'); }, (shown + i) * 100 + 50);
       });
 
       shown += batch.length;
 
-      // Hide load more if all shown
       if (shown >= PET_PHOTOS.length) {
         loadMoreBtn.classList.add('hidden');
       }
     }
 
-    // Init
-    if (PET_PHOTOS.length === 0) {
-      emptyState.style.display = 'block';
-      loadMoreBtn.classList.add('hidden');
-    } else {
-      loadBatch();
-    }
-
     loadMoreBtn.addEventListener('click', loadBatch);
+    loadPetPhotos();
 
     // Lightbox close
     document.getElementById('lightbox').addEventListener('click', () => {
