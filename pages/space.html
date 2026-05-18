@@ -19,7 +19,7 @@
     .login-screen {
       height: 100vh; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
       transition: opacity 0.5s ease;
     }
     .login-screen.hidden { opacity: 0; pointer-events: none; position: absolute; z-index: -1; }
@@ -115,7 +115,8 @@
     .finder.focused { box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
     .finder:not(.focused) { box-shadow: 0 8px 20px rgba(0,0,0,0.25); }
     .finder:not(.focused) .finder-titlebar { background: #353545; }
-    .finder:not(.focused) .finder-dot { opacity: 0.5; }
+    .finder:not(.focused) .finder-dot { background: #555 !important; }
+    .finder:not(.focused) .finder-dot::after { display: none; }
 
     /* Title bar */
     .finder-titlebar { height: 36px; background: #2a2a3c; display: flex; align-items: center; padding: 0 12px; flex-shrink: 0; cursor: grab; }
@@ -177,6 +178,12 @@
     .context-menu-item:hover { background: rgba(100,100,255,0.2); }
     .context-menu-item.danger { color: #ff6b6b; }
     .context-menu-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 0.2rem 0; }
+
+    /* Quick Look preview (spacebar on selected file) */
+    .quicklook { position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+    .quicklook.show { display: flex; }
+    .quicklook img { max-width: 85vw; max-height: 80vh; border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .quicklook-name { position: absolute; bottom: 2rem; color: #fff; font-size: 0.82rem; font-weight: 500; }
   </style>
 </head>
 
@@ -196,7 +203,19 @@
   <div class="desktop" id="desktop">
     <div class="taskbar">
       <div class="taskbar-left">
-        <span class="taskbar-logo"><i class="fab fa-apple"></i></span>
+        <div class="menu-item" data-menu="apple" style="font-size:0.82rem;"><i class="fab fa-apple"></i>
+          <div class="menu-drop">
+            <div class="menu-drop-item" data-action="about">About This Mac</div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item disabled">System Settings...</div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item disabled">Sleep</div>
+            <div class="menu-drop-item disabled">Restart...</div>
+            <div class="menu-drop-item disabled">Shut Down...</div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item" data-action="logout">Log Out <span class="shortcut">⇧⌘Q</span></div>
+          </div>
+        </div>
         <span style="color:rgba(255,255,255,0.9);font-size:0.68rem;font-weight:600;">Finder</span>
         <div class="menu-item" data-menu="file">File
           <div class="menu-drop">
@@ -247,6 +266,8 @@
         </div>
       </div>
       <div class="taskbar-right">
+        <span class="taskbar-btn" style="cursor:default;"><i class="fas fa-wifi"></i></span>
+        <span class="taskbar-btn" style="cursor:default;"><i class="fas fa-battery-three-quarters"></i></span>
         <span class="taskbar-btn" id="userInfo" style="cursor:default;font-size:0.62rem;"></span>
         <span class="taskbar-time" id="clock"></span>
         <button class="taskbar-btn" id="logoutBtn" title="Sign out"><i class="fas fa-user-circle"></i></button>
@@ -284,6 +305,7 @@
       </div>
       <div class="finder-toolbar">
         <button class="finder-tb-btn" id="btnBack"><i class="fas fa-chevron-left"></i></button>
+        <button class="finder-tb-btn" id="btnForward" disabled style="opacity:0.4;"><i class="fas fa-chevron-right"></i></button>
         <button class="finder-tb-btn" id="btnUpload"><i class="fas fa-upload"></i> Upload</button>
         <button class="finder-tb-btn" id="btnNewFolder"><i class="fas fa-folder-plus"></i> New Folder</button>
         <button class="finder-tb-btn" id="btnDelete" style="display:none;"><i class="fas fa-trash"></i> Delete</button>
@@ -292,9 +314,9 @@
       <div class="finder-body">
         <div class="finder-sidebar">
           <div class="finder-sb-title">Favorites</div>
-          <div class="finder-sb-item active" data-path=""><i class="fas fa-hdd"></i> Root</div>
-          <div class="finder-sb-item" data-path="travel/"><i class="fas fa-plane"></i> Travel</div>
-          <div class="finder-sb-item" data-path="pet/"><i class="fas fa-paw"></i> Pets</div>
+          <div class="finder-sb-item active" data-path=""><i class="fas fa-hdd" style="color:#8e8e93;"></i> Root</div>
+          <div class="finder-sb-item" data-path="travel/"><i class="fas fa-plane" style="color:#32ade6;"></i> Travel</div>
+          <div class="finder-sb-item" data-path="pet/"><i class="fas fa-paw" style="color:#ff9f0a;"></i> Pets</div>
         </div>
         <div class="finder-files" id="finderFiles"></div>
       </div>
@@ -304,6 +326,9 @@
 
   <!-- Hidden file input for uploads -->
   <input type="file" id="fileInput" multiple style="display:none" accept="image/*,application/pdf,text/*">
+
+  <!-- Quick Look preview -->
+  <div class="quicklook" id="quicklook"><img id="qlImage" src=""><div class="quicklook-name" id="qlName"></div></div>
 
   <!-- Context menu -->
   <div class="context-menu" id="contextMenu">
@@ -814,6 +839,12 @@
         if (selectedFile && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); deleteFile(selectedFile); }
       }
       if (e.metaKey && e.key === '[') { e.preventDefault(); document.getElementById('btnBack').click(); }
+      if (e.key === ' ' && selectedFile && selectedFile.contentType && selectedFile.contentType.startsWith('image/')) {
+        e.preventDefault();
+        document.getElementById('qlImage').src = selectedFile.url;
+        document.getElementById('qlName').textContent = selectedFile.name;
+        document.getElementById('quicklook').classList.add('show');
+      }
     });
 
     // Update window list in Window menu
@@ -847,6 +878,18 @@
     // Observe overlay changes to update window list
     new MutationObserver(updateWindowList).observe(finderOverlay, { attributes: true, attributeFilter: ['class'] });
     new MutationObserver(updateWindowList).observe(finderEl, { attributes: true, attributeFilter: ['class'] });
+
+    // Quick Look: close on click or Escape
+    document.getElementById('quicklook').addEventListener('click', () => document.getElementById('quicklook').classList.remove('show'));
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && document.getElementById('quicklook').classList.contains('show')) {
+        document.getElementById('quicklook').classList.remove('show');
+      }
+      if (e.key === ' ' && document.getElementById('quicklook').classList.contains('show')) {
+        e.preventDefault();
+        document.getElementById('quicklook').classList.remove('show');
+      }
+    });
   </script>
 </body>
 </html>
