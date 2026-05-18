@@ -121,6 +121,64 @@
     }
     .cluster-badge.single { display: none; }
 
+    /* ── Photo gallery overlay ── */
+    .gallery-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(12px);
+      display: none; flex-direction: column; align-items: center;
+      opacity: 0; transition: opacity 0.3s ease;
+      overflow-y: auto;
+    }
+    .gallery-overlay.show { display: flex; opacity: 1; }
+
+    .gallery-header {
+      width: 100%; max-width: 800px; padding: 1.5rem 2rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .gallery-title {
+      font-family: 'Playfair Display', serif; font-size: 1.3rem;
+      font-weight: 700; color: #fff;
+    }
+    .gallery-subtitle {
+      font-size: 0.78rem; color: rgba(255,255,255,0.5); margin-top: 0.15rem;
+    }
+    .gallery-close {
+      background: rgba(255,255,255,0.1); border: none; cursor: pointer;
+      color: #fff; width: 36px; height: 36px; border-radius: 50%;
+      font-size: 1rem; display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .gallery-close:hover { background: rgba(255,255,255,0.2); }
+
+    .gallery-grid {
+      width: 100%; max-width: 800px; padding: 0 2rem 2rem;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 8px;
+    }
+    .gallery-img {
+      width: 100%; aspect-ratio: 4/3; object-fit: cover;
+      border-radius: 8px; cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .gallery-img:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    }
+
+    /* Full-size lightbox */
+    .lightbox {
+      position: fixed; inset: 0; z-index: 400;
+      background: rgba(0,0,0,0.9); display: none;
+      align-items: center; justify-content: center;
+      cursor: pointer; opacity: 0; transition: opacity 0.3s ease;
+    }
+    .lightbox.show { display: flex; opacity: 1; }
+    .lightbox img {
+      max-width: 92vw; max-height: 90vh; border-radius: 6px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
     .travel-instructions {
       position: fixed;
       bottom: 2rem;
@@ -172,6 +230,23 @@
   </div>
 
   <div id="globeContainer"></div>
+
+  <!-- Photo gallery overlay (opens on marker click, globe stays in background) -->
+  <div class="gallery-overlay" id="galleryOverlay">
+    <div class="gallery-header">
+      <div>
+        <div class="gallery-title" id="galleryTitle"></div>
+        <div class="gallery-subtitle" id="gallerySubtitle"></div>
+      </div>
+      <button class="gallery-close" id="galleryClose"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+
+  <!-- Full-size lightbox -->
+  <div class="lightbox" id="lightbox">
+    <img id="lightboxImg" src="" alt="">
+  </div>
 
   <div class="travel-instructions">
     <span class="lang-en">Drag to rotate · Scroll to zoom · Hover markers for details</span>
@@ -266,16 +341,31 @@
 
     let currentClusters = [];
     let lastZoom = -1;
+    let clusterTimer = null;
 
+    /* Debounced clustering — waits until zoom/pan settles to avoid
+       destroying and recreating DOM elements on every frame */
     function updateClusters() {
       const pov = globe.pointOfView();
       const alt = pov.altitude || 2.5;
-      // Cluster radius shrinks as user zooms in
-      const radius = Math.max(0.5, alt * 8);
       const newZoom = Math.round(alt * 10);
       if (newZoom === lastZoom) return;
-      lastZoom = newZoom;
 
+      clearTimeout(clusterTimer);
+      clusterTimer = setTimeout(() => {
+        lastZoom = newZoom;
+        const radius = Math.max(0.5, alt * 8);
+        currentClusters = clusterPlaces(places, radius);
+        globe.htmlElementsData(currentClusters);
+      }, 300);
+    }
+
+    /* Immediate version for initial load */
+    function updateClustersNow() {
+      const pov = globe.pointOfView();
+      const alt = pov.altitude || 2.5;
+      lastZoom = Math.round(alt * 10);
+      const radius = Math.max(0.5, alt * 8);
       currentClusters = clusterPlaces(places, radius);
       globe.htmlElementsData(currentClusters);
     }
@@ -348,6 +438,12 @@
           }, 300);
         });
 
+        // Click to open gallery overlay with all photos in this cluster
+        el.addEventListener('click', () => {
+          document.querySelectorAll('.travel-tooltip').forEach(t => t.remove());
+          openGallery(d);
+        });
+
         return el;
       })
       (document.getElementById('globeContainer'));
@@ -356,12 +452,11 @@
     globe.controls().autoRotate = false;
     globe.controls().enableDamping = true;
 
-    // Load photos from Firebase, then cluster (with retry to ensure globe is ready)
+    // Load photos from Firebase, then render clusters
     loadPlaces().then(() => {
-      lastZoom = -1;
-      updateClusters();
-      setTimeout(() => { lastZoom = -1; updateClusters(); }, 1000);
-      setTimeout(() => { lastZoom = -1; updateClusters(); }, 3000);
+      updateClustersNow();
+      setTimeout(updateClustersNow, 1000);
+      setTimeout(updateClustersNow, 3000);
     });
 
     // Re-cluster when user zooms or pans
@@ -371,6 +466,51 @@
     window.addEventListener('resize', () => {
       globe.width(window.innerWidth);
       globe.height(window.innerHeight);
+    });
+
+    /* ── Photo gallery overlay ── */
+    const galleryOverlay = document.getElementById('galleryOverlay');
+    const galleryGrid = document.getElementById('galleryGrid');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+
+    function openGallery(cluster) {
+      document.getElementById('galleryTitle').textContent = cluster.photos[0].name || 'Photos';
+      document.getElementById('gallerySubtitle').textContent =
+        cluster.count + (isZh ? ' 张照片' : (cluster.count === 1 ? ' photo' : ' photos'));
+
+      galleryGrid.innerHTML = '';
+      cluster.photos.forEach(p => {
+        const img = document.createElement('img');
+        img.className = 'gallery-img';
+        img.src = p.img;
+        img.alt = p.name || '';
+        img.loading = 'lazy';
+        img.addEventListener('click', () => {
+          lightboxImg.src = p.img;
+          lightbox.classList.add('show');
+        });
+        galleryGrid.appendChild(img);
+      });
+
+      galleryOverlay.style.display = 'flex';
+      requestAnimationFrame(() => galleryOverlay.classList.add('show'));
+    }
+
+    function closeGallery() {
+      galleryOverlay.classList.remove('show');
+      setTimeout(() => { galleryOverlay.style.display = 'none'; }, 300);
+    }
+
+    document.getElementById('galleryClose').addEventListener('click', closeGallery);
+    galleryOverlay.addEventListener('click', e => { if (e.target === galleryOverlay) closeGallery(); });
+
+    lightbox.addEventListener('click', () => lightbox.classList.remove('show'));
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        if (lightbox.classList.contains('show')) lightbox.classList.remove('show');
+        else if (galleryOverlay.classList.contains('show')) closeGallery();
+      }
     });
   </script>
 
