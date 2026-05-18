@@ -141,19 +141,18 @@
 
     <div class="desktop-area">
       <div class="desktop-icon" id="openFinder">
-        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#4a90d9,#357abd);padding:0;">
-          <svg viewBox="0 0 100 100" width="58" height="58" xmlns="http://www.w3.org/2000/svg">
-            <!-- macOS Finder face -->
-            <rect x="5" y="15" width="90" height="70" rx="8" fill="#4a90d9"/>
-            <rect x="5" y="15" width="90" height="25" rx="8" fill="#357abd"/>
-            <rect x="5" y="32" width="90" height="8" fill="#357abd"/>
-            <!-- Face -->
-            <circle cx="35" cy="52" r="7" fill="#fff"/>
-            <circle cx="65" cy="52" r="7" fill="#fff"/>
-            <circle cx="35" cy="52" r="3.5" fill="#1a1a2e"/>
-            <circle cx="65" cy="52" r="3.5" fill="#1a1a2e"/>
-            <path d="M38 68 Q50 78 62 68" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-            <rect x="48" y="42" width="4" height="20" rx="2" fill="#fff"/>
+        <div class="desktop-icon-img" style="background:linear-gradient(180deg,#6ac4f7 0%,#2196F3 40%,#1565C0 100%);padding:0;overflow:hidden;">
+          <svg viewBox="0 0 120 120" width="62" height="62" xmlns="http://www.w3.org/2000/svg">
+            <!-- Face shape (tilted slightly left like real Finder) -->
+            <path d="M30 20 C30 20 25 22 22 35 C18 52 20 75 25 88 C28 95 35 100 48 100 C60 100 68 95 72 88 C78 75 80 52 76 35 C73 22 68 20 68 20 Z" fill="#fff" transform="rotate(-3, 50, 60)"/>
+            <!-- Left eye -->
+            <ellipse cx="40" cy="52" rx="5" ry="5.5" fill="#333" transform="rotate(-3, 50, 60)"/>
+            <!-- Right eye -->
+            <ellipse cx="58" cy="52" rx="5" ry="5.5" fill="#333" transform="rotate(-3, 50, 60)"/>
+            <!-- Nose line -->
+            <line x1="49" y1="45" x2="49" y2="68" stroke="#ccc" stroke-width="2" stroke-linecap="round" transform="rotate(-3, 50, 60)"/>
+            <!-- Smile -->
+            <path d="M36 72 Q49 85 62 72" stroke="#555" stroke-width="2.5" fill="none" stroke-linecap="round" transform="rotate(-3, 50, 60)"/>
           </svg>
         </div>
         <span class="desktop-icon-label">Finder</span>
