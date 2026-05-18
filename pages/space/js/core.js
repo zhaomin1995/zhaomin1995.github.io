@@ -105,6 +105,11 @@ class WindowManager {
     const el = document.createElement('div');
     el.className = 'window focused opening';
     el.id = id;
+    // Clamp position so window is fully visible
+    const maxY = Math.max(30, window.innerHeight - w.height - 80);
+    const maxX = Math.max(0, window.innerWidth - w.width - 20);
+    w.y = Math.min(w.y, maxY);
+    w.x = Math.min(w.x, maxX);
     el.style.cssText = `left:${w.x}px;top:${w.y}px;width:${w.width}px;height:${w.height}px;z-index:${this.nextZ++};`;
 
     el.innerHTML = `
