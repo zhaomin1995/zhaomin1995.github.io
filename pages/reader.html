@@ -245,9 +245,13 @@
     if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
 
     /* ── Parse book index from URL ── */
+    function canRead(url) {
+      return /gutenberg\.org\/ebooks\/\d+/.test(url) || url.includes('classics.mit.edu');
+    }
+    const readableBooks = BOOKS.filter(b => canRead(b.pdf));
     const params = new URLSearchParams(window.location.search);
     const bookIdx = parseInt(params.get('book') || '0', 10);
-    const book = BOOKS[bookIdx] || BOOKS[0];
+    const book = readableBooks[bookIdx] || readableBooks[0];
 
     document.getElementById('readerTitle').textContent = book.title;
     document.title = book.title + ' — Reader';

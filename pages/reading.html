@@ -379,11 +379,13 @@
     const isZh = document.body.classList.contains('zh');
 
     /* ── Book data ──
-       To add a book: push to the appropriate category array.
-       Fields: title, author, desc (English), color (hex), height (px, 110-160). */
-    /* Book data loaded from ../assets/js/books.js (BOOK_CATEGORIES and BOOKS arrays) */
+       Only include books whose source URL can be fetched and read in-app
+       (Project Gutenberg .txt or MIT Classics HTML). */
+    function canRead(url) {
+      return /gutenberg\.org\/ebooks\/\d+/.test(url) || url.includes('classics.mit.edu');
+    }
     const categories = BOOK_CATEGORIES;
-    const books = BOOKS;
+    const books = BOOKS.filter(b => canRead(b.pdf));
 
     /* ── ── */
     const sidebarEl = document.getElementById('sidebar');
@@ -397,9 +399,10 @@
       sidebarEl.appendChild(title);
 
       categories.forEach(cat => {
+        const count = cat.id === 'all' ? books.length : books.filter(b => b.cat === cat.id).length;
+        if (cat.id !== 'all' && count === 0) return;
         const item = document.createElement('div');
         item.className = 'sidebar-item' + (cat.id === activeCat ? ' active' : '');
-        const count = cat.id === 'all' ? books.length : books.filter(b => b.cat === cat.id).length;
         item.innerHTML = `<i class="${cat.icon}"></i><span>${isZh ? cat.zh : cat.en}</span><span class="sidebar-count">${count}</span>`;
         item.addEventListener('click', () => { activeCat = cat.id; buildSidebar(); renderShelves(); });
         sidebarEl.appendChild(item);
@@ -493,7 +496,7 @@
 
       // Set reader link with transition animation
       const readBtn = document.getElementById('bvReadBtn');
-      const bookIndex = BOOKS.indexOf(book);
+      const bookIndex = books.indexOf(book);
       readBtn.href = '#';
       readBtn.onclick = (e) => {
         e.preventDefault();

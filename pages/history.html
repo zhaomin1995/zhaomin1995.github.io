@@ -213,21 +213,27 @@
     let animFrame;
 
     /* Filter events by continent/era, then limit by zoom level.
-       Default zoom shows at most ~20 major events. Zoom in to see more. */
+       The cap scales with screen area so mobile doesn't get overwhelmed. */
     function getVisibleEvents() {
       let evts = EVENTS;
       if (activeContinent !== 'all') evts = evts.filter(e => e.cont === activeContinent);
       if (activeEra !== 'all') evts = evts.filter(e => e.era === activeEra);
 
-      // Default zoom (1.0): cap at ~20 major events
+      const screenArea = W * H;
+      const baseCap = Math.max(15, Math.floor(screenArea / 25000));
+
       if (zoom < 1.3) {
         const rank1 = evts.filter(e => e.rank === 1);
-        return rank1.length > 20 ? evenlyPick(rank1, 20) : rank1;
+        const cap = baseCap;
+        return rank1.length > cap ? evenlyPick(rank1, cap) : rank1;
       }
-      // Mid zoom (1.3-2.0): show rank 1+2
-      if (zoom < 2.0) return evts.filter(e => e.rank <= 2);
-      // Deep zoom (2.0+): show all events
-      return evts;
+      if (zoom < 2.0) {
+        const filtered = evts.filter(e => e.rank <= 2);
+        const cap = baseCap * 3;
+        return filtered.length > cap ? evenlyPick(filtered, cap) : filtered;
+      }
+      const cap = baseCap * 6;
+      return evts.length > cap ? evenlyPick(evts, cap) : evts;
     }
 
     // Pick n items evenly spaced from an array (keeps chronological spread)
@@ -239,15 +245,17 @@
       return result;
     }
 
-    /* ── computePath: lay out events in a snaking left-right grid with sinusoidal wave offsets ── */
+    /* ── computePath: lay out events in a snaking left-right grid ──
+       Enforces a minimum spacing between dots so they never overlap. */
     function computePath(evts) {
       if (!evts.length) return [];
       const n = evts.length;
       const MARGIN_X = 100, MARGIN_TOP = 120;
       const usableW = W - MARGIN_X * 2;
-      const perRow = Math.max(4, Math.ceil(Math.sqrt(n * 1.5))); // items per row scales with count
+      const MIN_SPACING = 70;
+      const perRow = Math.max(3, Math.min(n, Math.floor(usableW / MIN_SPACING)));
       const rows = Math.ceil(n / perRow);
-      const rowH = Math.max(80, (H - MARGIN_TOP - 60) / Math.max(rows, 1));
+      const rowH = Math.max(100, (H - MARGIN_TOP - 60) / Math.max(rows, 1));
       const pts = [];
 
       for (let i = 0; i < n; i++) {
@@ -255,14 +263,12 @@
         const idxInRow = i % perRow;
         const itemsThisRow = Math.min(perRow, n - rowIdx * perRow);
         const t = itemsThisRow > 1 ? idxInRow / (itemsThisRow - 1) : 0.5;
-        const goRight = rowIdx % 2 === 0; // alternate direction each row (snake pattern)
+        const goRight = rowIdx % 2 === 0;
 
-        // Sinusoidal bends along each row for organic feel
-        const wave1 = Math.sin(t * Math.PI * 2.5 + rowIdx * 1.3) * rowH * 0.12;
-        const wave2 = Math.sin(t * Math.PI * 1.2) * rowH * 0.18;
-        const xJitter = Math.sin(i * 0.7) * 15; // subtle horizontal jitter per event
+        const wave1 = Math.sin(t * Math.PI * 2.5 + rowIdx * 1.3) * rowH * 0.08;
+        const wave2 = Math.sin(t * Math.PI * 1.2) * rowH * 0.12;
 
-        const x = MARGIN_X + (goRight ? t : 1 - t) * usableW + xJitter;
+        const x = MARGIN_X + (goRight ? t : 1 - t) * usableW;
         const y = MARGIN_TOP + rowIdx * rowH + wave1 + wave2;
         pts.push({ x, y, evt: evts[i] });
       }
@@ -404,14 +410,22 @@
         });
       }
 
-      /* Drawing layer 5: event dots with glow, highlight, and labels */
+      /* Drawing layer 5: event dots with glow, highlight, and labels.
+         Labels use a placed-rectangles list to skip any that would overlap. */
+      const placedLabels = [];
+      function labelFits(cx, cy, hw, hh) {
+        for (const lb of placedLabels) {
+          if (Math.abs(cx - lb.cx) < hw + lb.hw && Math.abs(cy - lb.cy) < hh + lb.hh) return false;
+        }
+        return true;
+      }
+
       pts.forEach((p, i) => {
-        const baseR = p.evt.rank === 1 ? 7 : p.evt.rank === 2 ? 5 : 3.5; // dot size by rank
+        const baseR = p.evt.rank === 1 ? 7 : p.evt.rank === 2 ? 5 : 3.5;
         const isHov = hoveredIdx === i;
-        const r = (isHov ? baseR * 1.5 : baseR) / zoom; // enlarge on hover
+        const r = (isHov ? baseR * 1.5 : baseR) / zoom;
         const col = eraColors[p.evt.era] || '#e17055';
 
-        // Pulse ring: visible only on hover for emphasis
         if (isHov) {
           ctx.beginPath();
           ctx.arc(p.x, p.y, r + 8 / zoom, 0, Math.PI * 2);
@@ -419,13 +433,11 @@
           ctx.fill();
         }
 
-        // Outer glow ring around the dot
         ctx.beginPath();
         ctx.arc(p.x, p.y, r + 3 / zoom, 0, Math.PI * 2);
         ctx.fillStyle = col + (isHov ? '40' : '20');
         ctx.fill();
 
-        // Main filled dot with shadow bloom
         ctx.beginPath();
         ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
         ctx.fillStyle = col;
@@ -434,31 +446,44 @@
         ctx.fill();
         ctx.shadowBlur = 0;
 
-        // Inner white highlight for 3D-like appearance
         ctx.beginPath();
         ctx.arc(p.x, p.y, r * 0.4, 0, Math.PI * 2);
         ctx.fillStyle = isDark ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.9)';
         ctx.fill();
 
-        // Year label above the dot
+        // Year label — only draw if it won't overlap a previous label
         const fontSize = Math.max(7, (p.evt.rank === 1 ? 10 : 8) / Math.max(zoom, 0.5));
-        ctx.font = `700 ${fontSize}px Inter, sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-        ctx.fillStyle = isHov ? col : (isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.28)');
         const yearStr = p.evt.year < 0 ? Math.abs(p.evt.year) + ' BC' : p.evt.year + '';
-        ctx.fillText(yearStr, p.x, p.y - r - 5 / zoom);
+        const yearHW = yearStr.length * fontSize * 0.35;
+        const yearHH = fontSize * 0.6;
+        const yearCY = p.y - r - 5 / zoom - yearHH;
 
-        // Event title below the dot (hidden for low-rank events when zoomed out)
-        if (zoom >= 0.7 || p.evt.rank === 1) {
-          const tSize = Math.max(6.5, (p.evt.rank === 1 ? 9 : 7) / Math.max(zoom, 0.5));
-          ctx.font = `500 ${tSize}px Inter, sans-serif`;
-          ctx.textBaseline = 'top';
-          ctx.fillStyle = isHov ? (isDark ? '#fff' : '#1d1d1f') : (isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.2)');
-          const d = isZh ? p.evt.zh : p.evt.en;
-          const maxLen = Math.floor(24 / Math.max(zoom * 0.7, 0.35)); // truncate long titles at zoom
-          const title = d.title.length > maxLen ? d.title.slice(0, maxLen - 1) + '…' : d.title;
-          ctx.fillText(title, p.x, p.y + r + 5 / zoom);
+        if (isHov || labelFits(p.x, yearCY, yearHW, yearHH)) {
+          ctx.font = `700 ${fontSize}px Inter, sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          ctx.fillStyle = isHov ? col : (isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.28)');
+          ctx.fillText(yearStr, p.x, p.y - r - 5 / zoom);
+          placedLabels.push({ cx: p.x, cy: yearCY, hw: yearHW, hh: yearHH });
+
+          // Title label below — only if year was placed and title also fits
+          if (isHov || zoom >= 0.7 || p.evt.rank === 1) {
+            const tSize = Math.max(6.5, (p.evt.rank === 1 ? 9 : 7) / Math.max(zoom, 0.5));
+            const d = isZh ? p.evt.zh : p.evt.en;
+            const maxLen = Math.floor(24 / Math.max(zoom * 0.7, 0.35));
+            const title = d.title.length > maxLen ? d.title.slice(0, maxLen - 1) + '…' : d.title;
+            const titleHW = title.length * tSize * 0.3;
+            const titleHH = tSize * 0.6;
+            const titleCY = p.y + r + 5 / zoom + titleHH;
+
+            if (isHov || labelFits(p.x, titleCY, titleHW, titleHH)) {
+              ctx.font = `500 ${tSize}px Inter, sans-serif`;
+              ctx.textBaseline = 'top';
+              ctx.fillStyle = isHov ? (isDark ? '#fff' : '#1d1d1f') : (isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.2)');
+              ctx.fillText(title, p.x, p.y + r + 5 / zoom);
+              placedLabels.push({ cx: p.x, cy: titleCY, hw: titleHW, hh: titleHH });
+            }
+          }
         }
       });
 
