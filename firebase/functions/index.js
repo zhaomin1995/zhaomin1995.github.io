@@ -94,6 +94,20 @@ async function getImageSummary(bucketName, filePath) {
   }
 }
 
+/** Find a unique filename by appending _2, _3, etc. if the name already exists */
+async function uniquePath(bucket, basePath) {
+  const ext = basePath.match(/\.\w+$/)[0];
+  const stem = basePath.slice(0, -ext.length);
+  let candidate = basePath;
+  let counter = 1;
+  while (true) {
+    const [exists] = await bucket.file(candidate).exists();
+    if (!exists) return candidate;
+    counter++;
+    candidate = `${stem}_${counter}${ext}`;
+  }
+}
+
 /** Rename a file in Storage: copy to new path, delete old, return CDN URL */
 async function renameFile(bucket, oldPath, newPath) {
   const oldFile = bucket.file(oldPath);
@@ -157,10 +171,11 @@ exports.processTravelPhoto = functions.storage.object().onFinalize(async (object
     // 3. Vision API summary
     const summary = await getImageSummary(bucket.name, filePath);
 
-    // 4. New filename
+    // 4. New filename (with unique suffix if collision)
     const ext = fileName.split('.').pop().toLowerCase();
-    const newFileName = `${location.slug}_${summary}_${date}.${ext}`;
-    const newFilePath = `travel/${newFileName}`;
+    const basePath = `travel/${location.slug}_${summary}_${date}.${ext}`;
+    const newFilePath = await uniquePath(bucket, basePath);
+    const newFileName = newFilePath.replace('travel/', '');
 
     console.log(`Renaming: ${fileName} → ${newFileName}`);
 
@@ -216,10 +231,11 @@ exports.processPetPhoto = functions.storage.object().onFinalize(async (object) =
     // 2. Vision API summary
     const summary = await getImageSummary(bucket.name, filePath);
 
-    // 3. New filename
+    // 3. New filename (with unique suffix if collision)
     const ext = fileName.split('.').pop().toLowerCase();
-    const newFileName = `${summary}_${date}.${ext}`;
-    const newFilePath = `pet/${newFileName}`;
+    const basePath = `pet/${summary}_${date}.${ext}`;
+    const newFilePath = await uniquePath(bucket, basePath);
+    const newFileName = newFilePath.replace('pet/', '');
 
     console.log(`Renaming: ${fileName} → ${newFileName}`);
 
