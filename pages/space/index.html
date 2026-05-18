@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Internal Space — Zhaomin Xiao</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script defer src="../../assets/fontawesome/js/all.min.js"></script>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg">
+  <link rel="stylesheet" href="css/desktop.css">
+  <!-- Firebase SDK (compat mode) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+</head>
+
+<body>
+  <!-- Login -->
+  <div class="login-screen" id="loginScreen">
+    <a href="../../index.html" class="login-back"><i class="fas fa-arrow-left"></i> Back</a>
+    <div class="login-avatar"><i class="fas fa-user-astronaut"></i></div>
+    <div class="login-title">Internal Space</div>
+    <div class="login-form">
+      <button class="login-btn" id="googleLoginBtn"><i class="fab fa-google"></i> Sign in with Google</button>
+      <div class="login-error" id="loginError"></div>
+    </div>
+  </div>
+
+  <!-- Desktop -->
+  <div class="desktop" id="desktop">
+    <!-- Menu Bar -->
+    <div class="menu-bar" id="menuBar">
+      <div class="menu-bar-left">
+        <div class="menu-item" data-menu="apple" style="font-size:0.82rem;"><i class="fab fa-apple"></i>
+          <div class="menu-drop">
+            <div class="menu-drop-item" data-action="about">About This Mac</div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item" data-action="sys-prefs">System Preferences...</div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item disabled">Sleep</div>
+            <div class="menu-drop-item disabled">Restart...</div>
+            <div class="menu-drop-item disabled">Shut Down...</div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item" data-action="logout">Log Out <span class="shortcut">&#8679;&#8984;Q</span></div>
+          </div>
+        </div>
+        <span class="menu-app-name" id="menuAppName">Finder</span>
+        <div class="menu-item" data-menu="file">File
+          <div class="menu-drop">
+            <div class="menu-drop-item" data-action="new-window">New Finder Window <span class="shortcut">&#8984;N</span></div>
+            <div class="menu-drop-item" data-action="new-tab">New Tab <span class="shortcut">&#8984;T</span></div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item" data-action="close-window">Close Window <span class="shortcut">&#8984;W</span></div>
+          </div>
+        </div>
+        <div class="menu-item" data-menu="edit">Edit
+          <div class="menu-drop">
+            <div class="menu-drop-item disabled">Undo <span class="shortcut">&#8984;Z</span></div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item" data-action="copy">Copy <span class="shortcut">&#8984;C</span></div>
+            <div class="menu-drop-item" data-action="paste">Paste <span class="shortcut">&#8984;V</span></div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item" data-action="select-all">Select All <span class="shortcut">&#8984;A</span></div>
+          </div>
+        </div>
+        <div class="menu-item" data-menu="view">View
+          <div class="menu-drop">
+            <div class="menu-drop-item" data-action="view-icons"><span class="checkmark">&#10003;</span> as Icons</div>
+            <div class="menu-drop-item" data-action="view-list"><span class="checkmark"> </span> as List</div>
+            <div class="menu-drop-item" data-action="view-columns"><span class="checkmark"> </span> as Columns</div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item" data-action="show-path">Show Path Bar</div>
+          </div>
+        </div>
+        <div class="menu-item" data-menu="go">Go
+          <div class="menu-drop">
+            <div class="menu-drop-item" data-action="go-back">Back <span class="shortcut">&#8984;[</span></div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item" data-action="go-root">Root</div>
+            <div class="menu-drop-item" data-action="go-travel">Travel</div>
+            <div class="menu-drop-item" data-action="go-pets">Pets</div>
+          </div>
+        </div>
+        <div class="menu-item" data-menu="window">Window
+          <div class="menu-drop">
+            <div class="menu-drop-item" data-action="minimize">Minimize <span class="shortcut">&#8984;M</span></div>
+            <div class="menu-drop-item" data-action="zoom">Zoom</div>
+            <div class="menu-drop-divider"></div>
+            <div class="menu-drop-item" id="windowList" style="color:rgba(255,255,255,0.4);font-style:italic;">No windows</div>
+          </div>
+        </div>
+        <div class="menu-item" data-menu="help">Help
+          <div class="menu-drop">
+            <div class="menu-drop-item" data-action="about">About Internal Space</div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-bar-right">
+        <span class="menu-bar-icon" style="cursor:default;"><i class="fas fa-wifi"></i></span>
+        <span class="menu-bar-icon" style="cursor:default;"><i class="fas fa-battery-three-quarters"></i></span>
+        <span class="menu-bar-icon" id="userInfo" style="cursor:default;font-size:0.62rem;"></span>
+        <span class="menu-bar-clock" id="menuBarClock"></span>
+        <button class="menu-bar-icon" id="logoutBtn" title="Sign out"><i class="fas fa-user-circle"></i></button>
+      </div>
+    </div>
+
+    <!-- Desktop Area -->
+    <div class="desktop-area" id="desktopArea">
+      <!-- Desktop icons placed by core.js -->
+      <div class="desktop-icon" id="iconFinder" data-app="finder" style="top:20px;right:20px;left:auto;">
+        <img class="desktop-icon-img" src="../../assets/img/finder-icon.png" alt="Finder" style="background:none;box-shadow:none;">
+        <span class="desktop-icon-label">Finder</span>
+      </div>
+      <div class="desktop-icon" data-app="trash" id="iconTrash" style="bottom:20px;right:20px;left:auto;top:auto;">
+        <div class="desktop-icon-img" style="background:rgba(255,255,255,0.08);"><i class="fas fa-trash"></i></div>
+        <span class="desktop-icon-label">Trash</span>
+      </div>
+
+      <!-- Desktop Clock Widget -->
+      <div class="desktop-clock" id="desktopClock">
+        <div class="desktop-clock-time" id="clockTime"></div>
+        <div class="desktop-clock-date" id="clockDate"></div>
+      </div>
+    </div>
+
+    <!-- Dock -->
+    <div class="dock-wrapper">
+      <div class="dock" id="dock">
+        <div class="dock-item" data-app="finder" title="Finder">
+          <img src="../../assets/img/finder-icon.png" alt="Finder" style="width:100%;height:100%;border-radius:10px;">
+          <div class="dock-dot active"></div>
+        </div>
+        <div class="dock-item" data-app="terminal" title="Terminal">
+          <div class="dock-icon-inner" style="background:linear-gradient(135deg,#1a1a1a,#333);"><i class="fas fa-terminal"></i></div>
+          <div class="dock-dot"></div>
+        </div>
+        <div class="dock-item" data-app="notes" title="Notes">
+          <div class="dock-icon-inner" style="background:linear-gradient(135deg,#f5d020,#f5d020);color:#333;"><i class="fas fa-sticky-note"></i></div>
+          <div class="dock-dot"></div>
+        </div>
+        <div class="dock-item" data-app="activity" title="Activity Monitor">
+          <div class="dock-icon-inner" style="background:linear-gradient(135deg,#28a745,#20c997);"><i class="fas fa-chart-bar"></i></div>
+          <div class="dock-dot"></div>
+        </div>
+        <div class="dock-item" data-app="preferences" title="System Preferences">
+          <div class="dock-icon-inner" style="background:linear-gradient(135deg,#6c757d,#adb5bd);"><i class="fas fa-cog"></i></div>
+          <div class="dock-dot"></div>
+        </div>
+        <div class="dock-item" data-app="chat" title="Chat">
+          <div class="dock-icon-inner" style="background:linear-gradient(135deg,#007bff,#6610f2);"><i class="fas fa-comments"></i></div>
+          <div class="dock-dot"></div>
+        </div>
+        <div class="dock-item" data-app="editor" title="Code Editor">
+          <div class="dock-icon-inner" style="background:linear-gradient(135deg,#0078d4,#005a9e);"><i class="fas fa-code"></i></div>
+          <div class="dock-dot"></div>
+        </div>
+        <div class="dock-separator"></div>
+        <div class="dock-item" data-app="trash" title="Trash">
+          <div class="dock-icon-inner" style="background:rgba(255,255,255,0.08);"><i class="fas fa-trash"></i></div>
+          <div class="dock-dot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Desktop right-click context menu -->
+  <div class="desktop-ctx" id="desktopCtx">
+    <div class="desktop-ctx-item" id="ctxNewFolder"><i class="fas fa-folder-plus"></i> New Folder</div>
+    <div class="desktop-ctx-divider"></div>
+    <div class="desktop-ctx-item" id="ctxGetInfo"><i class="fas fa-info-circle"></i> Get Info</div>
+    <div class="desktop-ctx-divider"></div>
+    <div class="desktop-ctx-item" id="ctxWallpaper"><i class="fas fa-image"></i> Change Wallpaper</div>
+  </div>
+
+  <!-- Hidden file input for uploads -->
+  <input type="file" id="fileInput" multiple style="display:none" accept="image/*,application/pdf,text/*,application/json">
+
+  <!-- Quick Look preview -->
+  <div class="quicklook" id="quicklook">
+    <img id="qlImage" src="">
+    <div class="quicklook-name" id="qlName"></div>
+    <div class="quicklook-close"><i class="fas fa-times"></i></div>
+  </div>
+
+  <!-- Context menu (for files) -->
+  <div class="context-menu" id="contextMenu">
+    <div class="context-menu-item" id="ctxDownload"><i class="fas fa-download"></i> Download</div>
+    <div class="context-menu-item" id="ctxCopyFile"><i class="fas fa-copy"></i> Copy</div>
+    <div class="context-menu-item" id="ctxRename"><i class="fas fa-pen"></i> Rename</div>
+    <div class="context-menu-divider"></div>
+    <div class="context-menu-item danger" id="ctxDelete"><i class="fas fa-trash"></i> Delete</div>
+  </div>
+
+  <!-- Spotlight search overlay -->
+  <div class="spotlight-overlay" id="spotlightOverlay">
+    <div class="spotlight-box">
+      <div class="spotlight-input-wrap">
+        <i class="fas fa-search spotlight-search-icon"></i>
+        <input type="text" class="spotlight-input" id="spotlightInput" placeholder="Spotlight Search" autocomplete="off">
+      </div>
+      <div class="spotlight-results" id="spotlightResults"></div>
+    </div>
+  </div>
+
+  <!-- Launchpad overlay -->
+  <div class="launchpad-overlay" id="launchpadOverlay">
+    <div class="launchpad-grid" id="launchpadGrid"></div>
+  </div>
+
+  <!-- Mission Control overlay -->
+  <div class="mission-control-overlay" id="missionControlOverlay">
+    <div class="mission-control-label">Mission Control</div>
+    <div class="mission-control-windows" id="missionControlWindows"></div>
+  </div>
+
+  <!-- JS modules -->
+  <script src="js/core.js"></script>
+  <script src="js/finder.js"></script>
+  <script src="js/apps.js"></script>
+</body>
+</html>
