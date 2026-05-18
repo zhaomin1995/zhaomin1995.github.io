@@ -394,106 +394,163 @@ a:hover {
   }
 }
 
-/* ---- Hero Pet (CSS-only sitting cat) ---- */
+/* ---- Hero Pet (CSS-only sitting dog) ---- */
 .hero-pet {
   position: absolute;
   bottom: 2.5rem;
   right: 12%;
-  opacity: 0.35;
+  opacity: 0.4;
   transition: opacity 0.5s ease;
   animation: heroFadeIn 2s ease-out 0.8s both;
 }
 
 .hero-pet:hover {
-  opacity: 0.7;
+  opacity: 0.75;
 }
 
-.pet-cat {
+.hero-pet:hover .dog-tail {
+  animation-duration: 0.3s;
+}
+
+.pet-dog {
   position: relative;
-  width: 36px;
-  height: 40px;
+  width: 52px;
+  height: 52px;
 }
 
-.cat-head {
+/* Head */
+.dog-head {
   position: absolute;
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 18px;
-  height: 15px;
+  width: 26px;
+  height: 22px;
   background: var(--text-secondary);
-  border-radius: 50% 50% 45% 45%;
+  border-radius: 50% 50% 40% 40%;
 }
 
-.cat-ear {
+/* Floppy ears */
+.dog-ear {
   position: absolute;
-  top: -5px;
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-bottom: 8px solid var(--text-secondary);
+  top: 4px;
+  width: 10px;
+  height: 16px;
+  background: var(--text-secondary);
+  border-radius: 0 0 50% 50%;
+  filter: brightness(0.82);
 }
 
-.cat-ear-l { left: 6px; transform: rotate(-8deg); }
-.cat-ear-r { right: 6px; transform: rotate(8deg); }
+.dog-ear-l { left: 5px; transform: rotate(12deg); }
+.dog-ear-r { right: 5px; transform: rotate(-12deg); }
 
-.cat-eye {
+/* Eyes */
+.dog-eye {
   position: absolute;
-  top: 6px;
-  width: 3px;
-  height: 3px;
+  top: 8px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
   background: var(--bg-primary);
-  animation: catBlink 4s ease-in-out infinite;
+  animation: dogBlink 5s ease-in-out infinite;
 }
 
-.cat-eye-l { left: 12px; }
-.cat-eye-r { right: 12px; }
+.dog-eye-l { left: 16px; }
+.dog-eye-r { right: 16px; }
 
-@keyframes catBlink {
-  0%, 90%, 100% { transform: scaleY(1); }
-  95% { transform: scaleY(0.1); }
+@keyframes dogBlink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.1); }
 }
 
-.cat-nose {
+/* Snout */
+.dog-snout {
   position: absolute;
-  top: 10px;
+  bottom: -2px;
   left: 50%;
   transform: translateX(-50%);
-  width: 3px;
-  height: 2px;
-  background: var(--accent);
-  border-radius: 50%;
+  width: 14px;
+  height: 9px;
+  background: var(--text-secondary);
+  filter: brightness(1.15);
+  border-radius: 40% 40% 50% 50%;
 }
 
-.cat-body {
+.dog-nose {
+  position: absolute;
+  top: 1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 4px;
+  background: #1d1d1f;
+  border-radius: 50% 50% 40% 40%;
+}
+
+body.dark-mode .dog-nose {
+  background: #444;
+}
+
+/* Tongue — peeks out, bobs gently */
+.dog-tongue {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 5px;
+  background: var(--accent);
+  border-radius: 0 0 50% 50%;
+  animation: tongueBob 2.5s ease-in-out infinite;
+}
+
+@keyframes tongueBob {
+  0%, 100% { height: 5px; }
+  50% { height: 7px; }
+}
+
+/* Body */
+.dog-body {
   position: absolute;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 20px;
-  height: 22px;
+  width: 28px;
+  height: 26px;
   background: var(--text-secondary);
-  border-radius: 40% 40% 50% 50%;
+  border-radius: 35% 35% 45% 45%;
 }
 
-.cat-tail {
+/* Front legs */
+.dog-leg {
   position: absolute;
-  bottom: 2px;
-  right: -6px;
-  width: 18px;
-  height: 6px;
-  border-bottom: 3px solid var(--text-secondary);
-  border-right: 3px solid var(--text-secondary);
-  border-radius: 0 0 12px 0;
-  transform-origin: left center;
-  animation: tailSway 3s ease-in-out infinite;
+  bottom: 0;
+  width: 7px;
+  height: 10px;
+  background: var(--text-secondary);
+  border-radius: 0 0 4px 4px;
+  filter: brightness(0.88);
 }
 
-@keyframes tailSway {
-  0%, 100% { transform: rotate(-5deg); }
-  50% { transform: rotate(10deg); }
+.dog-leg-l { left: 12px; }
+.dog-leg-r { right: 12px; }
+
+/* Tail — wags */
+.dog-tail {
+  position: absolute;
+  bottom: 18px;
+  right: -4px;
+  width: 4px;
+  height: 16px;
+  background: var(--text-secondary);
+  border-radius: 4px 4px 0 0;
+  transform-origin: bottom center;
+  animation: tailWag 0.8s ease-in-out infinite;
+}
+
+@keyframes tailWag {
+  0%, 100% { transform: rotate(-15deg); }
+  50% { transform: rotate(20deg); }
 }
 
 .section-hero {
