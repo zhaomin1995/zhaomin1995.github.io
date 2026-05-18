@@ -244,7 +244,7 @@
     // Check if user's email is in the allowlist
     async function isEmailAllowed(email) {
       try {
-        const key = email.replace(/\./g, '_');
+        const key = email.replace(/[.@]/g, '_');
         const r = await fetch(`${FB_DB}/auth/allowed-emails/${key}.json`);
         const data = await r.json();
         return data === true;
