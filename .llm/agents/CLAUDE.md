@@ -21,7 +21,6 @@ A static personal website hosted on GitHub Pages at [zhaomin1995.github.io](http
 ```
 zhaomin1995.github.io/
 ├── index.html              # Main homepage (About, Education, News, Experience, Misc)
-├── zhaomin_cv.pdf          # CV / resume PDF
 ├── README.md               # Placeholder README
 ├── firebase.json           # Firebase deployment config (must stay in root)
 ├── .gitignore              # Ignores: node_modules/, .idea/, img/travel/, .travel-cache.json
@@ -45,22 +44,21 @@ zhaomin1995.github.io/
 │   │   ├── events.js       # World history events (1971 events, bilingual, continent/era tags)
 │   │   ├── books.js        # Book data (1060+ books, 19 categories, free PDF links)
 │   │   └── places.js       # [DEPRECATED] Was auto-generated, now reads from Firebase
-│   └── fontawesome/
-│       └── js/all.min.js   # FontAwesome icons
+│   ├── fontawesome/
+│   │   └── js/all.min.js   # FontAwesome icons
+│   ├── img/
+│   │   ├── favicon.svg     # ZX monogram favicon
+│   │   ├── zhaomin_photo.jpeg  # Profile photo
+│   │   └── UNT.png         # Legacy icon (unused)
+│   └── files/
+│       ├── zhaomin_cv.pdf  # CV / resume PDF
+│       └── posters/        # Conference poster PDFs
 │
 ├── firebase/               # Firebase configuration and Cloud Functions
 │   ├── database.rules.json # Realtime Database security rules
 │   └── functions/
 │       ├── index.js        # processTravelPhoto (onFinalize) + deleteTravelPhoto (onDelete)
 │       └── package.json    # Dependencies: firebase-functions, exif-parser, node-fetch
-│
-├── img/
-│   ├── favicon.svg         # ZX monogram favicon
-│   ├── zhaomin_photo.jpeg  # Profile photo
-│   └── UNT.png             # Legacy icon (unused)
-│
-└── files/
-    └── posters/            # Conference poster PDFs
 ```
 
 ## Firebase Setup
