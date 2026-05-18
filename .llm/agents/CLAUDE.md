@@ -136,10 +136,14 @@ zhaomin1995.github.io/
 - Recent visitors table (localStorage, last 50 records)
 
 ### `pages/space.html` — Internal Space
-- Login required: username `test`, password `test` (session-based)
-- Desktop-style page with app shortcut icons
-- macOS-style dock at bottom
-- Live clock in taskbar
+- Login checks Firebase DB `/auth/users/` first, falls back to hardcoded test/test
+- To manage allowlist: edit `/auth/users/` in Firebase Console, format: `{ "username": { "password": "pass", "role": "admin" } }`
+- macOS-style desktop with app shortcut icons and dock
+- **File Manager** (Finder-style): browse Firebase Storage folders, upload (button or drag-and-drop), delete, download files
+- Sidebar with folder shortcuts (Root, Travel, Pets)
+- File thumbnails for images, icon view for other files
+- Right-click context menu (Download, Delete)
+- Keyboard: Delete/Backspace to delete, Escape to close
 
 ## Features
 

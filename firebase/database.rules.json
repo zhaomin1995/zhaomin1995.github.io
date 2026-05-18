@@ -7,6 +7,10 @@
     "travel-cache": {
       ".read": true,
       ".write": true
+    },
+    "auth": {
+      ".read": true,
+      ".write": true
     }
   }
 }

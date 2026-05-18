@@ -12,7 +12,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
 
-    /* ── Login screen ── */
+    /* ── Login ── */
     .login-screen {
       height: 100vh; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
@@ -20,117 +20,104 @@
       transition: opacity 0.5s ease;
     }
     .login-screen.hidden { opacity: 0; pointer-events: none; }
-
-    .login-avatar {
-      width: 80px; height: 80px; border-radius: 50%;
-      background: rgba(255,255,255,0.2); display: flex;
-      align-items: center; justify-content: center;
-      margin-bottom: 1rem; font-size: 2rem; color: #fff;
-      backdrop-filter: blur(10px);
-    }
+    .login-avatar { width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; font-size: 2rem; color: #fff; backdrop-filter: blur(10px); }
     .login-title { color: #fff; font-size: 1.2rem; font-weight: 600; margin-bottom: 1.5rem; }
-
     .login-form { display: flex; flex-direction: column; gap: 0.7rem; width: 260px; }
-    .login-input {
-      padding: 0.65rem 1rem; border: none; border-radius: 10px;
-      background: rgba(255,255,255,0.2); color: #fff;
-      font-family: 'Inter', sans-serif; font-size: 0.85rem;
-      backdrop-filter: blur(10px); outline: none;
-      transition: background 0.2s;
-    }
+    .login-input { padding: 0.65rem 1rem; border: none; border-radius: 10px; background: rgba(255,255,255,0.2); color: #fff; font-family: 'Inter', sans-serif; font-size: 0.85rem; backdrop-filter: blur(10px); outline: none; }
     .login-input::placeholder { color: rgba(255,255,255,0.6); }
     .login-input:focus { background: rgba(255,255,255,0.3); }
-
-    .login-btn {
-      padding: 0.65rem; border: none; border-radius: 10px;
-      background: rgba(255,255,255,0.9); color: #5b4a9e;
-      font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 700;
-      cursor: pointer; transition: background 0.2s, transform 0.2s;
-    }
-    .login-btn:hover { background: #fff; transform: translateY(-1px); }
-
-    .login-error {
-      color: #ffb3b3; font-size: 0.75rem; text-align: center;
-      min-height: 1.2em; margin-top: 0.3rem;
-    }
-
-    .login-back {
-      position: absolute; top: 1rem; left: 1.5rem;
-      color: rgba(255,255,255,0.7); text-decoration: none;
-      font-size: 0.82rem; font-weight: 500; transition: color 0.2s;
-    }
+    .login-btn { padding: 0.65rem; border: none; border-radius: 10px; background: rgba(255,255,255,0.9); color: #5b4a9e; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+    .login-btn:hover { background: #fff; }
+    .login-error { color: #ffb3b3; font-size: 0.75rem; text-align: center; min-height: 1.2em; }
+    .login-back { position: absolute; top: 1rem; left: 1.5rem; color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.82rem; font-weight: 500; }
     .login-back:hover { color: #fff; }
 
     /* ── Desktop ── */
-    .desktop {
-      height: 100vh; display: none;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      position: relative; flex-direction: column;
-    }
+    .desktop { height: 100vh; display: none; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); flex-direction: column; }
     .desktop.show { display: flex; }
 
-    /* Taskbar */
-    .taskbar {
-      height: 44px; background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(20px); display: flex;
-      align-items: center; justify-content: space-between;
-      padding: 0 1.5rem; flex-shrink: 0;
-    }
+    .taskbar { height: 28px; background: rgba(0,0,0,0.5); backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; flex-shrink: 0; }
     .taskbar-left { display: flex; align-items: center; gap: 1rem; }
-    .taskbar-logo { color: #fff; font-size: 0.85rem; font-weight: 700; }
-    .taskbar-time { color: rgba(255,255,255,0.7); font-size: 0.75rem; font-weight: 500; }
-    .taskbar-right { display: flex; align-items: center; gap: 1rem; }
-    .taskbar-btn {
-      background: none; border: none; color: rgba(255,255,255,0.6);
-      font-size: 0.8rem; cursor: pointer; font-family: 'Inter', sans-serif;
-      transition: color 0.2s;
-    }
+    .taskbar-logo { color: #fff; font-size: 0.72rem; font-weight: 700; }
+    .taskbar-time { color: rgba(255,255,255,0.7); font-size: 0.68rem; }
+    .taskbar-right { display: flex; align-items: center; gap: 0.8rem; }
+    .taskbar-btn { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 0.68rem; cursor: pointer; font-family: 'Inter', sans-serif; }
     .taskbar-btn:hover { color: #fff; }
 
-    /* Desktop icons */
-    .desktop-area {
-      flex: 1; padding: 2rem; display: flex; flex-wrap: wrap;
-      gap: 2rem; align-content: flex-start;
-    }
-
-    .desktop-icon {
-      width: 90px; display: flex; flex-direction: column;
-      align-items: center; gap: 0.5rem; cursor: pointer;
-      text-decoration: none; transition: transform 0.2s;
-    }
+    .desktop-area { flex: 1; padding: 1.5rem; display: flex; flex-wrap: wrap; gap: 1.5rem; align-content: flex-start; }
+    .desktop-icon { width: 80px; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; cursor: pointer; text-decoration: none; transition: transform 0.15s; }
     .desktop-icon:hover { transform: scale(1.08); }
+    .desktop-icon-img { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
+    .desktop-icon-label { font-size: 0.62rem; font-weight: 500; color: rgba(255,255,255,0.85); text-align: center; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
 
-    .desktop-icon-img {
-      width: 60px; height: 60px; border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem; color: #fff;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    }
-    .desktop-icon-label {
-      font-size: 0.68rem; font-weight: 500; color: rgba(255,255,255,0.85);
-      text-align: center; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-      max-width: 90px; word-wrap: break-word;
-    }
-
-    /* Dock */
-    .dock {
-      display: flex; justify-content: center; padding: 0.6rem;
-      background: rgba(255,255,255,0.08); backdrop-filter: blur(20px);
-      border-radius: 18px 18px 0 0; gap: 0.5rem;
-      margin: 0 auto; width: fit-content; min-width: 300px;
-    }
-    .dock-item {
-      width: 48px; height: 48px; border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem; color: #fff; cursor: pointer;
-      transition: transform 0.2s; text-decoration: none;
-    }
+    .dock { display: flex; justify-content: center; padding: 0.4rem 0.6rem; background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); border-radius: 14px 14px 0 0; gap: 0.4rem; margin: 0 auto; width: fit-content; }
+    .dock-item { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #fff; cursor: pointer; transition: transform 0.2s; text-decoration: none; }
     .dock-item:hover { transform: scale(1.2) translateY(-4px); }
+
+    /* ── Finder Window ── */
+    .finder-overlay { position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); }
+    .finder-overlay.show { display: flex; }
+
+    .finder { width: 850px; max-width: 95vw; height: 550px; max-height: 85vh; background: #1e1e2e; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+
+    /* Title bar */
+    .finder-titlebar { height: 36px; background: #2a2a3c; display: flex; align-items: center; padding: 0 12px; flex-shrink: 0; }
+    .finder-dots { display: flex; gap: 6px; }
+    .finder-dot { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; }
+    .finder-dot.red { background: #ff5f57; }
+    .finder-dot.yellow { background: #febc2e; }
+    .finder-dot.green { background: #28c840; }
+    .finder-title { flex: 1; text-align: center; color: rgba(255,255,255,0.7); font-size: 0.75rem; font-weight: 600; }
+
+    /* Toolbar */
+    .finder-toolbar { height: 38px; background: #252535; display: flex; align-items: center; padding: 0 12px; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .finder-tb-btn { background: rgba(255,255,255,0.08); border: none; color: rgba(255,255,255,0.7); font-size: 0.72rem; font-family: 'Inter', sans-serif; padding: 0.3em 0.7em; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .finder-tb-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    .finder-path { flex: 1; color: rgba(255,255,255,0.5); font-size: 0.7rem; display: flex; align-items: center; gap: 4px; }
+    .finder-path span { cursor: pointer; }
+    .finder-path span:hover { color: #fff; }
+
+    /* Content area */
+    .finder-body { display: flex; flex: 1; overflow: hidden; }
+
+    /* Sidebar */
+    .finder-sidebar { width: 160px; background: #1a1a28; padding: 0.8rem 0; overflow-y: auto; border-right: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; }
+    .finder-sb-title { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); padding: 0.4rem 0.8rem; }
+    .finder-sb-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.8rem; font-size: 0.72rem; color: rgba(255,255,255,0.6); cursor: pointer; transition: background 0.15s; }
+    .finder-sb-item:hover { background: rgba(255,255,255,0.06); }
+    .finder-sb-item.active { background: rgba(100,100,255,0.15); color: #7c83ff; }
+    .finder-sb-item i { width: 14px; text-align: center; font-size: 0.7rem; }
+
+    /* File grid */
+    .finder-files { flex: 1; padding: 1rem; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 0.5rem; align-content: flex-start; }
+    .finder-file { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; padding: 0.5rem; border-radius: 8px; cursor: pointer; transition: background 0.15s; }
+    .finder-file:hover { background: rgba(255,255,255,0.06); }
+    .finder-file.selected { background: rgba(100,100,255,0.2); }
+    .finder-file-icon { font-size: 2rem; }
+    .finder-file-name { font-size: 0.6rem; color: rgba(255,255,255,0.8); text-align: center; word-break: break-all; max-width: 80px; line-height: 1.3; }
+    .finder-file-thumb { width: 60px; height: 45px; border-radius: 6px; object-fit: cover; }
+
+    .finder-empty { grid-column: 1 / -1; text-align: center; color: rgba(255,255,255,0.3); font-size: 0.8rem; padding: 3rem; }
+
+    /* Status bar */
+    .finder-status { height: 24px; background: #252535; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; padding: 0 12px; flex-shrink: 0; }
+    .finder-status span { font-size: 0.62rem; color: rgba(255,255,255,0.4); }
+
+    /* Upload drop zone */
+    .finder-files.dragover { outline: 2px dashed #7c83ff; outline-offset: -8px; background: rgba(100,100,255,0.05); }
+
+    /* Context menu */
+    .context-menu { position: fixed; z-index: 300; background: #2a2a3c; border-radius: 8px; padding: 0.3rem 0; box-shadow: 0 8px 30px rgba(0,0,0,0.5); min-width: 160px; display: none; }
+    .context-menu.show { display: block; }
+    .context-menu-item { padding: 0.4rem 1rem; font-size: 0.72rem; color: rgba(255,255,255,0.8); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+    .context-menu-item:hover { background: rgba(100,100,255,0.2); }
+    .context-menu-item.danger { color: #ff6b6b; }
+    .context-menu-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 0.2rem 0; }
   </style>
 </head>
 
 <body>
-  <!-- Login Screen -->
+  <!-- Login -->
   <div class="login-screen" id="loginScreen">
     <a href="../index.html" class="login-back"><i class="fas fa-arrow-left"></i> Back</a>
     <div class="login-avatar"><i class="fas fa-user-astronaut"></i></div>
@@ -146,9 +133,7 @@
   <!-- Desktop -->
   <div class="desktop" id="desktop">
     <div class="taskbar">
-      <div class="taskbar-left">
-        <span class="taskbar-logo"><i class="fas fa-cube"></i> ZX Space</span>
-      </div>
+      <div class="taskbar-left"><span class="taskbar-logo"><i class="fas fa-cube"></i> ZX Space</span></div>
       <div class="taskbar-right">
         <span class="taskbar-time" id="clock"></span>
         <button class="taskbar-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -156,70 +141,126 @@
     </div>
 
     <div class="desktop-area">
+      <!-- Finder icon opens file manager -->
+      <div class="desktop-icon" id="openFinder">
+        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#4a90d9,#357abd);"><i class="fas fa-folder"></i></div>
+        <span class="desktop-icon-label">Files</span>
+      </div>
       <a class="desktop-icon" href="../index.html">
-        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#e17055,#d35400);">
-          <i class="fas fa-home"></i>
-        </div>
+        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#e17055,#d35400);"><i class="fas fa-home"></i></div>
         <span class="desktop-icon-label">Homepage</span>
       </a>
       <a class="desktop-icon" href="reading.html">
-        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#6b3f20,#8b5e3c);">
-          <i class="fas fa-book"></i>
-        </div>
+        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#6b3f20,#8b5e3c);"><i class="fas fa-book"></i></div>
         <span class="desktop-icon-label">Bookshelf</span>
       </a>
       <a class="desktop-icon" href="history.html">
-        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);">
-          <i class="fas fa-landmark"></i>
-        </div>
+        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);"><i class="fas fa-landmark"></i></div>
         <span class="desktop-icon-label">History</span>
       </a>
       <a class="desktop-icon" href="travel.html">
-        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#0c2461,#1e3799);">
-          <i class="fas fa-globe-americas"></i>
-        </div>
+        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#0c2461,#1e3799);"><i class="fas fa-globe-americas"></i></div>
         <span class="desktop-icon-label">Travel</span>
       </a>
       <a class="desktop-icon" href="pets.html">
-        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#e17055,#fdcb6e);">
-          <i class="fas fa-paw"></i>
-        </div>
+        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#e17055,#fdcb6e);"><i class="fas fa-paw"></i></div>
         <span class="desktop-icon-label">Pets</span>
       </a>
       <a class="desktop-icon" href="visitors.html">
-        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#00b894,#55efc4);">
-          <i class="fas fa-chart-bar"></i>
-        </div>
-        <span class="desktop-icon-label">Visitor Stats</span>
-      </a>
-      <a class="desktop-icon" href="https://github.com/zhaomin1995" target="_blank">
-        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#2d3436,#636e72);">
-          <i class="fab fa-github"></i>
-        </div>
-        <span class="desktop-icon-label">GitHub</span>
-      </a>
-      <a class="desktop-icon" href="https://www.linkedin.com/in/zhaomin-xiao-635078221/" target="_blank">
-        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#0077b5,#00a0dc);">
-          <i class="fab fa-linkedin"></i>
-        </div>
-        <span class="desktop-icon-label">LinkedIn</span>
+        <div class="desktop-icon-img" style="background:linear-gradient(135deg,#00b894,#55efc4);"><i class="fas fa-chart-bar"></i></div>
+        <span class="desktop-icon-label">Stats</span>
       </a>
     </div>
 
     <div class="dock">
+      <div class="dock-item" id="dockFinder" style="background:linear-gradient(135deg,#4a90d9,#357abd);"><i class="fas fa-folder"></i></div>
       <a class="dock-item" href="../index.html" style="background:linear-gradient(135deg,#e17055,#d35400);"><i class="fas fa-home"></i></a>
-      <a class="dock-item" href="reading.html" style="background:linear-gradient(135deg,#6b3f20,#8b5e3c);"><i class="fas fa-book"></i></a>
-      <a class="dock-item" href="history.html" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);"><i class="fas fa-landmark"></i></a>
       <a class="dock-item" href="travel.html" style="background:linear-gradient(135deg,#0c2461,#1e3799);"><i class="fas fa-globe-americas"></i></a>
       <a class="dock-item" href="pets.html" style="background:linear-gradient(135deg,#e17055,#fdcb6e);"><i class="fas fa-paw"></i></a>
     </div>
   </div>
 
-  <script>
-    /* ── Auth: simple client-side check (test/test) ── */
-    const ALLOWED = [{ u: 'test', p: 'test' }];
+  <!-- Finder Window -->
+  <div class="finder-overlay" id="finderOverlay">
+    <div class="finder">
+      <div class="finder-titlebar">
+        <div class="finder-dots">
+          <div class="finder-dot red" id="finderClose"></div>
+          <div class="finder-dot yellow"></div>
+          <div class="finder-dot green"></div>
+        </div>
+        <div class="finder-title" id="finderTitle">Firebase Storage</div>
+      </div>
+      <div class="finder-toolbar">
+        <button class="finder-tb-btn" id="btnBack"><i class="fas fa-chevron-left"></i></button>
+        <button class="finder-tb-btn" id="btnUpload"><i class="fas fa-upload"></i> Upload</button>
+        <button class="finder-tb-btn" id="btnNewFolder"><i class="fas fa-folder-plus"></i> New Folder</button>
+        <button class="finder-tb-btn" id="btnDelete" style="display:none;"><i class="fas fa-trash"></i> Delete</button>
+        <div class="finder-path" id="finderPath"></div>
+      </div>
+      <div class="finder-body">
+        <div class="finder-sidebar">
+          <div class="finder-sb-title">Locations</div>
+          <div class="finder-sb-item active" data-path=""><i class="fas fa-hdd"></i> Root</div>
+          <div class="finder-sb-item" data-path="travel/"><i class="fas fa-plane"></i> Travel</div>
+          <div class="finder-sb-item" data-path="pet/"><i class="fas fa-paw"></i> Pets</div>
+        </div>
+        <div class="finder-files" id="finderFiles"></div>
+      </div>
+      <div class="finder-status"><span id="finderStatus">Loading...</span></div>
+    </div>
+  </div>
 
-    // Check if already logged in this session
+  <!-- Hidden file input for uploads -->
+  <input type="file" id="fileInput" multiple style="display:none" accept="image/*,application/pdf,text/*">
+
+  <!-- Context menu -->
+  <div class="context-menu" id="contextMenu">
+    <div class="context-menu-item" id="ctxDownload"><i class="fas fa-download"></i> Download</div>
+    <div class="context-menu-divider"></div>
+    <div class="context-menu-item danger" id="ctxDelete"><i class="fas fa-trash"></i> Delete</div>
+  </div>
+
+  <script>
+    /* ── Firebase config ── */
+    const FB_DB = 'https://zhaomin-homepage-default-rtdb.firebaseio.com';
+    const FB_BUCKET = 'zhaomin-homepage.firebasestorage.app';
+    const FB_STORAGE = `https://firebasestorage.googleapis.com/v0/b/${FB_BUCKET}`;
+
+    /* ── Auth: check Firebase DB first, fallback to hardcoded ──
+       To manage the allowlist, edit /auth/users/ in Firebase Console:
+       https://console.firebase.google.com/project/zhaomin-homepage/database
+       Format: { "username": { "password": "pass", "role": "admin" } } */
+    const FALLBACK_USERS = [{ u: 'test', p: 'test' }];
+
+    // Initialize the DB allowlist if it doesn't exist yet
+    async function initAllowlist() {
+      try {
+        const r = await fetch(`${FB_DB}/auth/users.json`);
+        const data = await r.json();
+        if (!data) {
+          await fetch(`${FB_DB}/auth/users.json`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ test: { password: 'test', role: 'admin' } }),
+          });
+        }
+      } catch {}
+    }
+    initAllowlist();
+
+    async function authenticate(username, password) {
+      // Try Firebase DB first
+      try {
+        const r = await fetch(`${FB_DB}/auth/users/${username}.json`);
+        const user = await r.json();
+        if (user && user.password === password) return true;
+      } catch {}
+      // Fallback to hardcoded
+      return FALLBACK_USERS.some(a => a.u === username && a.p === password);
+    }
+
+    // Session check
     if (sessionStorage.getItem('spaceAuth') === '1') {
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('desktop').classList.add('show');
@@ -228,22 +269,20 @@
     document.getElementById('loginBtn').addEventListener('click', tryLogin);
     document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
 
-    function tryLogin() {
+    async function tryLogin() {
       const u = document.getElementById('username').value.trim();
       const p = document.getElementById('password').value;
-      const match = ALLOWED.find(a => a.u === u && a.p === p);
-
-      if (match) {
+      const ok = await authenticate(u, p);
+      if (ok) {
         sessionStorage.setItem('spaceAuth', '1');
         document.getElementById('loginScreen').classList.add('hidden');
-        setTimeout(() => { document.getElementById('desktop').classList.add('show'); }, 300);
+        setTimeout(() => document.getElementById('desktop').classList.add('show'), 300);
       } else {
         document.getElementById('loginError').textContent = 'Invalid username or password';
         document.getElementById('password').value = '';
       }
     }
 
-    // Logout
     document.getElementById('logoutBtn').addEventListener('click', () => {
       sessionStorage.removeItem('spaceAuth');
       location.reload();
@@ -251,11 +290,225 @@
 
     // Clock
     function updateClock() {
-      const now = new Date();
-      document.getElementById('clock').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('clock').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
     updateClock();
     setInterval(updateClock, 30000);
+
+    /* ── Finder: macOS-style file manager for Firebase Storage ── */
+    const finderOverlay = document.getElementById('finderOverlay');
+    const finderFiles = document.getElementById('finderFiles');
+    const finderStatus = document.getElementById('finderStatus');
+    const finderPath = document.getElementById('finderPath');
+    const finderTitle = document.getElementById('finderTitle');
+    const contextMenu = document.getElementById('contextMenu');
+    let currentPath = '';
+    let selectedFile = null;
+    let fileList = [];
+
+    // Open/close Finder
+    document.getElementById('openFinder').addEventListener('click', () => openFinder());
+    document.getElementById('dockFinder').addEventListener('click', () => openFinder());
+    document.getElementById('finderClose').addEventListener('click', () => finderOverlay.classList.remove('show'));
+    finderOverlay.addEventListener('click', e => { if (e.target === finderOverlay) finderOverlay.classList.remove('show'); });
+
+    function openFinder() {
+      finderOverlay.classList.add('show');
+      navigateTo('');
+    }
+
+    // Sidebar navigation
+    document.querySelectorAll('.finder-sb-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.finder-sb-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        navigateTo(item.dataset.path);
+      });
+    });
+
+    // Back button
+    document.getElementById('btnBack').addEventListener('click', () => {
+      if (currentPath) {
+        const parts = currentPath.replace(/\/$/, '').split('/');
+        parts.pop();
+        navigateTo(parts.length ? parts.join('/') + '/' : '');
+      }
+    });
+
+    /* ── List files from Firebase Storage ── */
+    async function navigateTo(path) {
+      currentPath = path;
+      selectedFile = null;
+      document.getElementById('btnDelete').style.display = 'none';
+      finderFiles.innerHTML = '<div class="finder-empty"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+
+      // Update path breadcrumb
+      const parts = path ? path.replace(/\/$/, '').split('/') : [];
+      finderPath.innerHTML = '<span data-p="">Root</span>' +
+        parts.map((p, i) => ` / <span data-p="${parts.slice(0, i+1).join('/')}/">${p}</span>`).join('');
+      finderPath.querySelectorAll('span').forEach(s => {
+        s.addEventListener('click', () => navigateTo(s.dataset.p));
+      });
+
+      finderTitle.textContent = path ? path.replace(/\/$/, '').split('/').pop() : 'Firebase Storage';
+
+      // Update sidebar active
+      document.querySelectorAll('.finder-sb-item').forEach(i => {
+        i.classList.toggle('active', i.dataset.path === path);
+      });
+
+      try {
+        const r = await fetch(`${FB_STORAGE}/o?prefix=${path}&delimiter=/`);
+        const data = await r.json();
+
+        const folders = (data.prefixes || []).map(p => ({ type: 'folder', name: p.replace(path, '').replace(/\/$/, ''), path: p }));
+        const files = (data.items || []).filter(i => i.name !== path).map(i => ({
+          type: 'file', name: i.name.replace(path, ''),
+          path: i.name, size: parseInt(i.size || 0),
+          contentType: i.contentType || '',
+          url: `${FB_STORAGE}/o/${encodeURIComponent(i.name)}?alt=media`,
+        }));
+
+        fileList = [...folders, ...files];
+        renderFiles();
+      } catch (e) {
+        finderFiles.innerHTML = `<div class="finder-empty">Failed to load: ${e.message}</div>`;
+      }
+    }
+
+    function renderFiles() {
+      if (fileList.length === 0) {
+        finderFiles.innerHTML = '<div class="finder-empty"><i class="fas fa-folder-open"></i><br>Empty folder</div>';
+        finderStatus.textContent = '0 items';
+        return;
+      }
+
+      finderFiles.innerHTML = '';
+      fileList.forEach(f => {
+        const el = document.createElement('div');
+        el.className = 'finder-file';
+
+        if (f.type === 'folder') {
+          el.innerHTML = `<div class="finder-file-icon" style="color:#4a90d9;"><i class="fas fa-folder"></i></div><div class="finder-file-name">${f.name}</div>`;
+          el.addEventListener('dblclick', () => navigateTo(f.path));
+        } else {
+          const isImage = f.contentType.startsWith('image/');
+          if (isImage) {
+            el.innerHTML = `<img class="finder-file-thumb" src="${f.url}" alt="${f.name}"><div class="finder-file-name">${f.name}</div>`;
+          } else {
+            const icon = f.contentType.includes('pdf') ? 'fa-file-pdf' : 'fa-file';
+            el.innerHTML = `<div class="finder-file-icon" style="color:#aaa;"><i class="fas ${icon}"></i></div><div class="finder-file-name">${f.name}</div>`;
+          }
+
+          // Select on click
+          el.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.querySelectorAll('.finder-file.selected').forEach(s => s.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedFile = f;
+            document.getElementById('btnDelete').style.display = '';
+          });
+
+          // Context menu on right-click
+          el.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            selectedFile = f;
+            contextMenu.style.left = e.clientX + 'px';
+            contextMenu.style.top = e.clientY + 'px';
+            contextMenu.classList.add('show');
+          });
+        }
+
+        finderFiles.appendChild(el);
+      });
+
+      const fileCount = fileList.filter(f => f.type === 'file').length;
+      const folderCount = fileList.filter(f => f.type === 'folder').length;
+      finderStatus.textContent = `${folderCount ? folderCount + ' folder' + (folderCount > 1 ? 's' : '') + ', ' : ''}${fileCount} file${fileCount !== 1 ? 's' : ''}`;
+    }
+
+    // Deselect on empty area click
+    finderFiles.addEventListener('click', () => {
+      document.querySelectorAll('.finder-file.selected').forEach(s => s.classList.remove('selected'));
+      selectedFile = null;
+      document.getElementById('btnDelete').style.display = 'none';
+    });
+
+    // Hide context menu
+    document.addEventListener('click', () => contextMenu.classList.remove('show'));
+
+    /* ── Upload files ── */
+    const fileInput = document.getElementById('fileInput');
+    document.getElementById('btnUpload').addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', async () => {
+      for (const file of fileInput.files) {
+        const uploadPath = currentPath + file.name;
+        finderStatus.textContent = `Uploading ${file.name}...`;
+        try {
+          await fetch(`${FB_STORAGE}/o?uploadType=media&name=${uploadPath}`, {
+            method: 'POST',
+            headers: { 'Content-Type': file.type },
+            body: file,
+          });
+        } catch (e) {
+          finderStatus.textContent = `Upload failed: ${e.message}`;
+        }
+      }
+      fileInput.value = '';
+      navigateTo(currentPath);
+    });
+
+    // Drag and drop upload
+    finderFiles.addEventListener('dragover', e => { e.preventDefault(); finderFiles.classList.add('dragover'); });
+    finderFiles.addEventListener('dragleave', () => finderFiles.classList.remove('dragover'));
+    finderFiles.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      finderFiles.classList.remove('dragover');
+      for (const file of e.dataTransfer.files) {
+        const uploadPath = currentPath + file.name;
+        finderStatus.textContent = `Uploading ${file.name}...`;
+        await fetch(`${FB_STORAGE}/o?uploadType=media&name=${uploadPath}`, {
+          method: 'POST', headers: { 'Content-Type': file.type }, body: file,
+        });
+      }
+      navigateTo(currentPath);
+    });
+
+    /* ── Delete file ── */
+    async function deleteFile(file) {
+      if (!confirm(`Delete "${file.name}"?`)) return;
+      finderStatus.textContent = `Deleting ${file.name}...`;
+      try {
+        await fetch(`${FB_STORAGE}/o/${encodeURIComponent(file.path)}`, { method: 'DELETE' });
+        navigateTo(currentPath);
+      } catch (e) {
+        finderStatus.textContent = `Delete failed: ${e.message}`;
+      }
+    }
+
+    document.getElementById('btnDelete').addEventListener('click', () => { if (selectedFile) deleteFile(selectedFile); });
+    document.getElementById('ctxDelete').addEventListener('click', () => { if (selectedFile) deleteFile(selectedFile); });
+
+    /* ── Download file ── */
+    document.getElementById('ctxDownload').addEventListener('click', () => {
+      if (selectedFile && selectedFile.url) {
+        const a = document.createElement('a');
+        a.href = selectedFile.url;
+        a.download = selectedFile.name;
+        a.target = '_blank';
+        a.click();
+      }
+    });
+
+    /* ── Keyboard shortcuts ── */
+    document.addEventListener('keydown', e => {
+      if (!finderOverlay.classList.contains('show')) return;
+      if (e.key === 'Escape') finderOverlay.classList.remove('show');
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selectedFile && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); deleteFile(selectedFile); }
+      }
+    });
   </script>
 </body>
 </html>
