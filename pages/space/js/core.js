@@ -422,9 +422,9 @@ function initDock() {
   const dock = document.getElementById('dock');
   const items = dock.querySelectorAll('.dock-item');
 
-  // Double-click to open/focus app
+  // Single-click to open/focus app (macOS dock uses single click)
   items.forEach(item => {
-    item.addEventListener('dblclick', () => {
+    item.addEventListener('click', () => {
       const app = item.dataset.app;
       const existing = wm.getWindowsByApp(app);
       if (existing.length > 0) {
