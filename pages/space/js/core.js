@@ -583,14 +583,14 @@ function initMenuBar() {
         }
         case 'go-travel': {
           const fw = wm.getFocusedWindow();
-          if (fw && fw.app === 'finder' && fw.navigateTo) fw.navigateTo('travel/');
-          else { openFinderWindow('travel/'); }
+          if (fw && fw.app === 'finder' && fw.navigateTo) fw.navigateTo('images/travel/');
+          else { openFinderWindow('images/travel/'); }
           break;
         }
         case 'go-pets': {
           const fw = wm.getFocusedWindow();
-          if (fw && fw.app === 'finder' && fw.navigateTo) fw.navigateTo('pet/');
-          else { openFinderWindow('pet/'); }
+          if (fw && fw.app === 'finder' && fw.navigateTo) fw.navigateTo('images/pet/');
+          else { openFinderWindow('images/pet/'); }
           break;
         }
         case 'view-icons': {

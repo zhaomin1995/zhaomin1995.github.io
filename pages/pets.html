@@ -210,17 +210,17 @@
     const loadMoreBtn = document.getElementById('loadMoreBtn');
     const emptyState = document.getElementById('emptyState');
 
-    /* ── Load pet photos from Firebase Storage /pet/ folder ── */
+    /* ── Load pet photos from Firebase Storage /images/pet/ folder ── */
     async function loadPetPhotos() {
       try {
-        const r = await fetch(`${FB_STORAGE}/o?prefix=pet/`);
+        const r = await fetch(`${FB_STORAGE}/o?prefix=images/pet/`);
         const data = await r.json();
         const items = (data.items || []).filter(i =>
           /\.(jpg|jpeg|png|webp|gif)$/i.test(i.name)
         );
 
         PET_PHOTOS = items.map(item => {
-          const fileName = item.name.replace('pet/', '');
+          const fileName = item.name.replace('images/pet/', '');
           const url = `${FB_STORAGE}/o/${encodeURIComponent(item.name)}?alt=media`;
           // Use file updated time for sorting
           const date = item.updated ? item.updated.split('T')[0] : '';

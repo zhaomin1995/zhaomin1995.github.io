@@ -127,10 +127,10 @@ exports.processTravelPhoto = functions.storage.object().onFinalize(async (object
   const filePath = object.name;
   const contentType = object.contentType;
 
-  if (!filePath.startsWith('travel/')) return null;
+  if (!filePath.startsWith('images/travel/')) return null;
   if (!contentType || !contentType.startsWith('image/')) return null;
 
-  const fileName = filePath.replace('travel/', '');
+  const fileName = filePath.replace('images/travel/', '');
 
   // Prevent infinite loop: skip files already following the convention
   if (isAlreadyRenamed(fileName)) {
@@ -173,9 +173,9 @@ exports.processTravelPhoto = functions.storage.object().onFinalize(async (object
 
     // 4. New filename (with unique suffix if collision)
     const ext = fileName.split('.').pop().toLowerCase();
-    const basePath = `travel/${location.slug}_${summary}_${date}.${ext}`;
+    const basePath = `images/travel/${location.slug}_${summary}_${date}.${ext}`;
     const newFilePath = await uniquePath(bucket, basePath);
-    const newFileName = newFilePath.replace('travel/', '');
+    const newFileName = newFilePath.replace('images/travel/', '');
 
     console.log(`Renaming: ${fileName} → ${newFileName}`);
 
@@ -208,10 +208,10 @@ exports.processPetPhoto = functions.storage.object().onFinalize(async (object) =
   const filePath = object.name;
   const contentType = object.contentType;
 
-  if (!filePath.startsWith('pet/')) return null;
+  if (!filePath.startsWith('images/pet/')) return null;
   if (!contentType || !contentType.startsWith('image/')) return null;
 
-  const fileName = filePath.replace('pet/', '');
+  const fileName = filePath.replace('images/pet/', '');
 
   if (isAlreadyRenamed(fileName)) {
     console.log(`Already renamed: ${fileName}, skipping`);
@@ -233,9 +233,9 @@ exports.processPetPhoto = functions.storage.object().onFinalize(async (object) =
 
     // 3. New filename (with unique suffix if collision)
     const ext = fileName.split('.').pop().toLowerCase();
-    const basePath = `pet/${summary}_${date}.${ext}`;
+    const basePath = `images/pet/${summary}_${date}.${ext}`;
     const newFilePath = await uniquePath(bucket, basePath);
-    const newFileName = newFilePath.replace('pet/', '');
+    const newFileName = newFilePath.replace('images/pet/', '');
 
     console.log(`Renaming: ${fileName} → ${newFileName}`);
 
@@ -255,15 +255,15 @@ exports.processPetPhoto = functions.storage.object().onFinalize(async (object) =
  * ── Delete handlers ──
  */
 exports.deleteTravelPhoto = functions.storage.object().onDelete(async (object) => {
-  if (!object.name.startsWith('travel/')) return null;
-  const fileName = object.name.replace('travel/', '');
+  if (!object.name.startsWith('images/travel/')) return null;
+  const fileName = object.name.replace('images/travel/', '');
   await db.ref(`travel-photos/${sanitizeKey(fileName)}`).remove();
   console.log(`Removed travel: ${fileName}`);
   return null;
 });
 
 exports.deletePetPhoto = functions.storage.object().onDelete(async (object) => {
-  if (!object.name.startsWith('pet/')) return null;
-  console.log(`Removed pet: ${object.name.replace('pet/', '')}`);
+  if (!object.name.startsWith('images/pet/')) return null;
+  console.log(`Removed pet: ${object.name.replace('images/pet/', '')}`);
   return null;
 });

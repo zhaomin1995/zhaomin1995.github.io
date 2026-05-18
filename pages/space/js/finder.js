@@ -57,8 +57,8 @@ function buildFinderUI(container, win, initialPath) {
       <div class="finder-sidebar">
         <div class="finder-sb-title">Favorites</div>
         <div class="finder-sb-item active" data-path=""><i class="fas fa-hdd" style="color:#8e8e93;"></i> Root</div>
-        <div class="finder-sb-item" data-path="travel/"><i class="fas fa-plane" style="color:#32ade6;"></i> Travel</div>
-        <div class="finder-sb-item" data-path="pet/"><i class="fas fa-paw" style="color:#ff9f0a;"></i> Pets</div>
+        <div class="finder-sb-item" data-path="images/travel/"><i class="fas fa-plane" style="color:#32ade6;"></i> Travel</div>
+        <div class="finder-sb-item" data-path="images/pet/"><i class="fas fa-paw" style="color:#ff9f0a;"></i> Pets</div>
       </div>
       <div class="finder-main-area" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
         <div class="finder-files"></div>
