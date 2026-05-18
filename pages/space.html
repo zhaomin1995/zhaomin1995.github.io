@@ -69,6 +69,8 @@
 
     /* ── Finder Window ── */
     .finder-overlay { position: fixed; inset: 0; z-index: 200; display: none; pointer-events: none; }
+    .finder-overlay .finder { transform: translateX(-50%) scale(0.95); opacity: 0; }
+    .finder-overlay.show .finder { transform: translateX(-50%) scale(1); opacity: 1; }
     .finder-overlay.show { display: block; pointer-events: none; }
 
     .finder {
@@ -77,6 +79,7 @@
       background: #1e1e2e; border-radius: 10px; overflow: hidden;
       display: flex; flex-direction: column;
       box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      transition: transform 0.2s ease, opacity 0.2s ease;
       resize: both; min-width: 400px; min-height: 300px; pointer-events: auto;
     }
     .finder.maximized { top: 28px !important; left: 0 !important; transform: none !important; width: 100vw !important; height: calc(100vh - 28px) !important; border-radius: 0; }
@@ -159,16 +162,22 @@
   <!-- Desktop -->
   <div class="desktop" id="desktop">
     <div class="taskbar">
-      <div class="taskbar-left"><span class="taskbar-logo"><i class="fab fa-apple"></i></span><span style="color:rgba(255,255,255,0.7);font-size:0.68rem;font-weight:600;">Finder</span></div>
+      <div class="taskbar-left"><span class="taskbar-logo"><i class="fab fa-apple"></i></span><span style="color:rgba(255,255,255,0.9);font-size:0.68rem;font-weight:600;">Finder</span>
+        <span class="taskbar-btn" style="font-size:0.65rem;">File</span>
+        <span class="taskbar-btn" style="font-size:0.65rem;">Edit</span>
+        <span class="taskbar-btn" style="font-size:0.65rem;">View</span>
+        <span class="taskbar-btn" style="font-size:0.65rem;">Go</span>
+        <span class="taskbar-btn" style="font-size:0.65rem;">Window</span>
+        <span class="taskbar-btn" style="font-size:0.65rem;">Help</span></div>
       <div class="taskbar-right">
         <span class="taskbar-btn" id="userInfo" style="cursor:default;font-size:0.62rem;"></span>
         <span class="taskbar-time" id="clock"></span>
-        <button class="taskbar-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        <button class="taskbar-btn" id="logoutBtn" title="Sign out"><i class="fas fa-user-circle"></i></button>
       </div>
     </div>
 
     <div class="desktop-area" id="desktopArea">
-      <div class="desktop-icon" id="openFinder" data-app="finder" style="top:20px;left:20px;">
+      <div class="desktop-icon" id="openFinder" data-app="finder" style="top:20px;right:20px;left:auto;">
         <img class="desktop-icon-img" src="../assets/img/finder-icon.png" alt="Finder" style="background:none;box-shadow:none;">
         <span class="desktop-icon-label">Finder</span>
       </div>
@@ -514,6 +523,13 @@
 
         if (f.type === 'folder') {
           el.innerHTML = `<div class="finder-file-icon" style="color:#4a90d9;"><i class="fas fa-folder"></i></div><div class="finder-file-name">${f.name}</div>`;
+          el.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.querySelectorAll('.finder-file.selected').forEach(s => s.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedFile = null;
+            document.getElementById('btnDelete').style.display = 'none';
+          });
           el.addEventListener('dblclick', () => navigateTo(f.path));
         } else {
           const isImage = f.contentType.startsWith('image/');
@@ -628,7 +644,7 @@
     /* ── Keyboard shortcuts ── */
     document.addEventListener('keydown', e => {
       if (!finderOverlay.classList.contains('show')) return;
-      if (e.key === 'Escape') finderOverlay.classList.remove('show');
+      if (e.key === 'Escape' || (e.metaKey && e.key === 'w')) { e.preventDefault(); finderOverlay.classList.remove('show'); }
       if (e.key === 'Delete' || e.key === 'Backspace') {
         if (selectedFile && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); deleteFile(selectedFile); }
       }
