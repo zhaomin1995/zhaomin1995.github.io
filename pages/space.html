@@ -44,24 +44,46 @@
     .taskbar-btn { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 0.68rem; cursor: pointer; font-family: 'Inter', sans-serif; }
     .taskbar-btn:hover { color: #fff; }
 
-    .desktop-area { flex: 1; padding: 1.5rem; display: flex; flex-wrap: wrap; gap: 1.5rem; align-content: flex-start; }
-    .desktop-icon { width: 80px; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; cursor: pointer; text-decoration: none; transition: transform 0.15s; }
-    .desktop-icon:hover { transform: scale(1.08); }
-    .desktop-icon-img { width: 78px; height: 78px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
-    .desktop-icon-label { font-size: 0.62rem; font-weight: 500; color: rgba(255,255,255,0.85); text-align: center; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+    .desktop-area { flex: 1; position: relative; overflow: hidden; }
+
+    /* Desktop icon: draggable, single-click selects, double-click opens */
+    .desktop-icon {
+      position: absolute; width: 90px; display: flex; flex-direction: column;
+      align-items: center; gap: 0.4rem; cursor: default; text-decoration: none;
+      padding: 0.4rem; border-radius: 8px; user-select: none;
+    }
+    .desktop-icon.selected { background: rgba(255,255,255,0.1); }
+    .desktop-icon-img { width: 78px; height: 78px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #fff; pointer-events: none; }
+    .desktop-icon-label { font-size: 0.62rem; font-weight: 500; color: rgba(255,255,255,0.85); text-align: center; text-shadow: 0 1px 3px rgba(0,0,0,0.5); pointer-events: none; }
+
+    /* Desktop right-click context menu */
+    .desktop-ctx { position: fixed; z-index: 150; background: rgba(40,40,55,0.95); backdrop-filter: blur(20px); border-radius: 8px; padding: 0.3rem 0; box-shadow: 0 8px 30px rgba(0,0,0,0.5); min-width: 180px; display: none; border: 1px solid rgba(255,255,255,0.08); }
+    .desktop-ctx.show { display: block; }
+    .desktop-ctx-item { padding: 0.35rem 1rem; font-size: 0.72rem; color: rgba(255,255,255,0.8); cursor: default; display: flex; align-items: center; gap: 0.5rem; }
+    .desktop-ctx-item:hover { background: #3478f6; color: #fff; }
+    .desktop-ctx-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 0.2rem 0; }
 
     .dock { display: flex; justify-content: center; padding: 0.4rem 0.6rem; background: rgba(255,255,255,0.08); backdrop-filter: blur(20px); border-radius: 14px 14px 0 0; gap: 0.4rem; margin: 0 auto; width: fit-content; }
     .dock-item { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #fff; cursor: pointer; transition: transform 0.2s; text-decoration: none; }
     .dock-item:hover { transform: scale(1.2) translateY(-4px); }
 
     /* ── Finder Window ── */
-    .finder-overlay { position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); }
-    .finder-overlay.show { display: flex; }
+    .finder-overlay { position: fixed; inset: 0; z-index: 200; display: none; }
+    .finder-overlay.show { display: block; }
 
-    .finder { width: 850px; max-width: 95vw; height: 550px; max-height: 85vh; background: #1e1e2e; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .finder {
+      position: absolute; top: 50px; left: 50%; transform: translateX(-50%);
+      width: 850px; max-width: 95vw; height: 550px;
+      background: #1e1e2e; border-radius: 10px; overflow: hidden;
+      display: flex; flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      resize: both; min-width: 400px; min-height: 300px;
+    }
+    .finder.maximized { top: 28px !important; left: 0 !important; transform: none !important; width: 100vw !important; height: calc(100vh - 28px) !important; border-radius: 0; }
 
     /* Title bar */
-    .finder-titlebar { height: 36px; background: #2a2a3c; display: flex; align-items: center; padding: 0 12px; flex-shrink: 0; }
+    .finder-titlebar { height: 36px; background: #2a2a3c; display: flex; align-items: center; padding: 0 12px; flex-shrink: 0; cursor: grab; }
+    .finder-titlebar:active { cursor: grabbing; }
     .finder-dots { display: flex; gap: 6px; }
     .finder-dot { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; }
     .finder-dot.red { background: #ff5f57; }
@@ -139,11 +161,20 @@
       </div>
     </div>
 
-    <div class="desktop-area">
-      <div class="desktop-icon" id="openFinder">
+    <div class="desktop-area" id="desktopArea">
+      <div class="desktop-icon" id="openFinder" data-app="finder" style="top:20px;left:20px;">
         <img class="desktop-icon-img" src="../assets/img/finder-icon.png" alt="Finder" style="background:none;box-shadow:none;">
         <span class="desktop-icon-label">Finder</span>
       </div>
+    </div>
+
+    <!-- Desktop right-click context menu -->
+    <div class="desktop-ctx" id="desktopCtx">
+      <div class="desktop-ctx-item" id="ctxNewFolder"><i class="fas fa-folder-plus"></i> New Folder</div>
+      <div class="desktop-ctx-divider"></div>
+      <div class="desktop-ctx-item" id="ctxGetInfo"><i class="fas fa-info-circle"></i> Get Info</div>
+      <div class="desktop-ctx-divider"></div>
+      <div class="desktop-ctx-item" id="ctxWallpaper"><i class="fas fa-image"></i> Change Wallpaper</div>
     </div>
 
   </div>
@@ -276,8 +307,85 @@
     updateClock();
     setInterval(updateClock, 30000);
 
-    /* ── Finder: macOS-style file manager for Firebase Storage ── */
+    /* ── Desktop interactions: select, double-click, drag icons ── */
+    const desktopArea = document.getElementById('desktopArea');
+    const desktopCtx = document.getElementById('desktopCtx');
+
+    // Single-click selects icon, deselects others
+    desktopArea.addEventListener('click', (e) => {
+      document.querySelectorAll('.desktop-icon.selected').forEach(i => i.classList.remove('selected'));
+      desktopCtx.classList.remove('show');
+    });
+
+    document.querySelectorAll('.desktop-icon').forEach(icon => {
+      // Single click: select
+      icon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.querySelectorAll('.desktop-icon.selected').forEach(i => i.classList.remove('selected'));
+        icon.classList.add('selected');
+      });
+
+      // Double click: open app
+      icon.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        const app = icon.dataset.app;
+        if (app === 'finder') openFinder();
+      });
+
+      // Drag to reposition
+      let dragOffX, dragOffY, isDragging = false;
+      icon.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
+        isDragging = false;
+        dragOffX = e.clientX - icon.offsetLeft;
+        dragOffY = e.clientY - icon.offsetTop;
+        const onMove = (ev) => {
+          isDragging = true;
+          const areaRect = desktopArea.getBoundingClientRect();
+          let x = ev.clientX - dragOffX;
+          let y = ev.clientY - dragOffY;
+          // Clamp to desktop area
+          x = Math.max(0, Math.min(x, areaRect.width - icon.offsetWidth));
+          y = Math.max(0, Math.min(y, areaRect.height - icon.offsetHeight));
+          icon.style.left = x + 'px';
+          icon.style.top = y + 'px';
+        };
+        const onUp = () => {
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+        };
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+      });
+    });
+
+    // Desktop right-click context menu
+    desktopArea.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      desktopCtx.style.left = e.clientX + 'px';
+      desktopCtx.style.top = e.clientY + 'px';
+      desktopCtx.classList.add('show');
+    });
+    document.addEventListener('click', () => desktopCtx.classList.remove('show'));
+
+    // Wallpaper changer
+    const wallpapers = [
+      'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+      'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
+      'linear-gradient(135deg, #2c3e50 0%, #3498db 100%)',
+      'linear-gradient(135deg, #000428 0%, #004e92 100%)',
+      'linear-gradient(135deg, #141e30 0%, #243b55 100%)',
+      'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+    ];
+    let wallIdx = 0;
+    document.getElementById('ctxWallpaper').addEventListener('click', () => {
+      wallIdx = (wallIdx + 1) % wallpapers.length;
+      document.getElementById('desktop').style.background = wallpapers[wallIdx];
+    });
+
+    /* ── Finder: macOS-style file manager ── */
     const finderOverlay = document.getElementById('finderOverlay');
+    const finderEl = document.querySelector('.finder');
     const finderFiles = document.getElementById('finderFiles');
     const finderStatus = document.getElementById('finderStatus');
     const finderPath = document.getElementById('finderPath');
@@ -286,12 +394,44 @@
     let currentPath = '';
     let selectedFile = null;
     let fileList = [];
+    let isMaximized = false;
 
-    // Open/close Finder
-    document.getElementById('openFinder').addEventListener('click', () => openFinder());
-    document.getElementById('dockFinder').addEventListener('click', () => openFinder());
+    // Open Finder (only via double-click now)
+    function openFinder() {
+      finderOverlay.classList.add('show');
+      navigateTo('');
+    }
+
+    // Close (red dot)
     document.getElementById('finderClose').addEventListener('click', () => finderOverlay.classList.remove('show'));
-    finderOverlay.addEventListener('click', e => { if (e.target === finderOverlay) finderOverlay.classList.remove('show'); });
+
+    // Minimize (yellow dot) — hide the window
+    document.querySelector('.finder-dot.yellow').addEventListener('click', () => finderOverlay.classList.remove('show'));
+
+    // Maximize (green dot) — toggle fullscreen
+    document.querySelector('.finder-dot.green').addEventListener('click', () => {
+      isMaximized = !isMaximized;
+      finderEl.classList.toggle('maximized', isMaximized);
+    });
+
+    /* ── Drag Finder window by title bar ── */
+    const titlebar = document.querySelector('.finder-titlebar');
+    let winDragX, winDragY, winDragging = false;
+    titlebar.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.finder-dots')) return; // don't drag when clicking dots
+      if (isMaximized) return;
+      winDragging = true;
+      const rect = finderEl.getBoundingClientRect();
+      winDragX = e.clientX - rect.left;
+      winDragY = e.clientY - rect.top;
+      finderEl.style.transform = 'none'; // remove centering transform
+    });
+    document.addEventListener('mousemove', (e) => {
+      if (!winDragging) return;
+      finderEl.style.left = (e.clientX - winDragX) + 'px';
+      finderEl.style.top = (e.clientY - winDragY) + 'px';
+    });
+    document.addEventListener('mouseup', () => { winDragging = false; });
 
     function openFinder() {
       finderOverlay.classList.add('show');
