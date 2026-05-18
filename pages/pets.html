@@ -229,12 +229,7 @@
         img.alt = photo.name || '';
         img.loading = 'lazy';
 
-        const info = document.createElement('div');
-        info.className = 'gallery-item-info';
-        info.innerHTML = `<div class="gallery-item-name">${photo.name || ''}</div><div class="gallery-item-date">${photo.date || ''}</div>`;
-
         item.appendChild(img);
-        item.appendChild(info);
         gallery.appendChild(item);
 
         // Click to open lightbox
