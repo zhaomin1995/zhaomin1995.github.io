@@ -152,10 +152,14 @@ function buildFinderUI(container, win, initialPath) {
       const r = await fetch(`${FB_STORAGE}/o?prefix=${path}&delimiter=/`);
       const data = await r.json();
 
-      const folders = (data.prefixes || []).map(p => ({
-        type: 'folder', name: p.replace(path, '').replace(/\/$/, ''),
-        path: p,
-      }));
+      // Filter out ghost prefixes (empty folders left after moving files)
+      const ghostPrefixes = ['pet/', 'travel/'];
+      const folders = (data.prefixes || [])
+        .filter(p => !ghostPrefixes.includes(p))
+        .map(p => ({
+          type: 'folder', name: p.replace(path, '').replace(/\/$/, ''),
+          path: p,
+        }));
       const files = (data.items || []).filter(i => i.name !== path).map(i => ({
         type: 'file', name: i.name.replace(path, ''),
         path: i.name, size: parseInt(i.size || 0),
@@ -375,7 +379,8 @@ function buildFinderUI(container, win, initialPath) {
       fetch(`${FB_STORAGE}/o?prefix=${path}&delimiter=/`)
         .then(r => r.json())
         .then(data => {
-          const folders = (data.prefixes || []).map(p => ({
+          const ghostPrefixes = ['pet/', 'travel/'];
+          const folders = (data.prefixes || []).filter(p => !ghostPrefixes.includes(p)).map(p => ({
             type: 'folder', name: p.replace(path, '').replace(/\/$/, ''), path: p,
           }));
           const files = (data.items || []).filter(i => i.name !== path).map(i => ({
