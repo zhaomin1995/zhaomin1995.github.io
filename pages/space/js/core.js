@@ -824,6 +824,12 @@ function initLaunchpad() {
     { name: 'System Preferences', icon: 'fas fa-cog', bg: 'linear-gradient(135deg,#6c757d,#adb5bd)', app: 'preferences' },
     { name: 'Chat', icon: 'fas fa-comments', bg: 'linear-gradient(135deg,#007bff,#6610f2)', app: 'chat' },
     { name: 'Code Editor', icon: 'fas fa-code', bg: 'linear-gradient(135deg,#0078d4,#005a9e)', app: 'editor' },
+    { name: 'Calculator', icon: 'fas fa-calculator', bg: 'linear-gradient(135deg,#333,#555)', app: 'calculator' },
+    { name: 'Photos', icon: 'fas fa-images', bg: 'linear-gradient(135deg,#e44d26,#f16529)', app: 'gallery' },
+    { name: 'Markdown', icon: 'fas fa-file-alt', bg: 'linear-gradient(135deg,#2b5876,#4e4376)', app: 'markdown' },
+    { name: 'JSON Viewer', icon: 'fas fa-code', bg: 'linear-gradient(135deg,#f7971e,#ffd200)', color: '#333', app: 'json' },
+    { name: 'Log Viewer', icon: 'fas fa-scroll', bg: 'linear-gradient(135deg,#0d1117,#161b22)', app: 'logs' },
+    { name: 'Clipboard', icon: 'fas fa-clipboard-list', bg: 'linear-gradient(135deg,#11998e,#38ef7d)', app: 'clipboard' },
   ];
 
   apps.forEach(a => {
