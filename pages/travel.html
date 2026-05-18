@@ -108,7 +108,7 @@
       width: 64px; height: 64px; border-radius: 12px;
       object-fit: cover; border: 2px solid rgba(255,255,255,0.85);
       box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-      display: block;
+      display: block; pointer-events: auto; cursor: pointer;
     }
     .cluster-badge {
       position: absolute; top: -6px; right: -6px;
@@ -387,11 +387,16 @@
         el.className = 'travel-marker';
         el.style.pointerEvents = 'auto';
 
-        // Thumbnail image
+        // Thumbnail image (clickable — opens gallery)
         const img = document.createElement('img');
         img.className = 'cluster-thumb';
         img.src = d.thumb;
         img.alt = d.count + ' photos';
+        img.addEventListener('click', (e) => {
+          e.stopPropagation();
+          document.querySelectorAll('.travel-tooltip').forEach(t => t.remove());
+          openGallery(d);
+        });
         el.appendChild(img);
 
         // Count badge (hidden if single photo)
