@@ -6,7 +6,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <script defer src="../assets/fontawesome/js/all.min.js"></script>
+  <link rel="stylesheet" href="../assets/fontawesome/css/fontawesome.min.css">
+  <link rel="stylesheet" href="../assets/fontawesome/css/solid.min.css">
   <link rel="icon" type="image/png" href="../assets/img/favicon.png">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -105,6 +106,38 @@
     .load-more-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
     .load-more-btn.hidden { display: none; }
 
+    /* Skeleton loading */
+    .skeleton-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.2rem;
+    }
+    .skeleton-card {
+      border-radius: 14px; overflow: hidden;
+      background: var(--card-bg);
+      box-shadow: 0 2px 12px var(--card-shadow);
+    }
+    .skeleton-card-img {
+      width: 100%; aspect-ratio: 4/3;
+      background: linear-gradient(90deg, var(--card-bg) 25%, rgba(128,128,128,0.08) 50%, var(--card-bg) 75%);
+      background-size: 200% 100%;
+      animation: skeletonShimmer 1.5s ease-in-out infinite;
+    }
+    .skeleton-card-bar {
+      height: 10px; border-radius: 5px; margin: 0.8rem 1rem 0.6rem;
+      background: rgba(128,128,128,0.08);
+      animation: skeletonShimmer 1.5s ease-in-out infinite;
+    }
+    .skeleton-card-bar.short { width: 50%; margin-top: 0; margin-bottom: 1rem; }
+    @keyframes skeletonShimmer {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+    .skeleton-grid.hidden { display: none; }
+
+    @media (max-width: 640px) {
+      .skeleton-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+    }
+
     /* Empty state */
     .empty-state {
       text-align: center; padding: 4rem 2rem; color: var(--text-sec);
@@ -170,6 +203,15 @@
       <p><span class="lang-en">Our little family of furry and feathered friends</span><span class="lang-zh">我们毛茸茸的小家庭</span></p>
     </div>
 
+    <div class="skeleton-grid" id="skeletonGrid">
+      <div class="skeleton-card"><div class="skeleton-card-img"></div><div class="skeleton-card-bar"></div><div class="skeleton-card-bar short"></div></div>
+      <div class="skeleton-card"><div class="skeleton-card-img"></div><div class="skeleton-card-bar"></div><div class="skeleton-card-bar short"></div></div>
+      <div class="skeleton-card"><div class="skeleton-card-img"></div><div class="skeleton-card-bar"></div><div class="skeleton-card-bar short"></div></div>
+      <div class="skeleton-card"><div class="skeleton-card-img"></div><div class="skeleton-card-bar"></div><div class="skeleton-card-bar short"></div></div>
+      <div class="skeleton-card"><div class="skeleton-card-img"></div><div class="skeleton-card-bar"></div><div class="skeleton-card-bar short"></div></div>
+      <div class="skeleton-card"><div class="skeleton-card-img"></div><div class="skeleton-card-bar"></div><div class="skeleton-card-bar short"></div></div>
+    </div>
+
     <div class="gallery" id="gallery"></div>
 
     <div class="load-more-wrap">
@@ -233,6 +275,8 @@
       } catch (e) {
         console.error('Failed to load pet photos:', e);
       }
+
+      document.getElementById('skeletonGrid').classList.add('hidden');
 
       if (PET_PHOTOS.length === 0) {
         emptyState.style.display = 'block';

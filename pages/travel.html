@@ -6,7 +6,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <script defer src="../assets/fontawesome/js/all.min.js"></script>
+  <link rel="stylesheet" href="../assets/fontawesome/css/fontawesome.min.css">
+  <link rel="stylesheet" href="../assets/fontawesome/css/solid.min.css">
   <link rel="stylesheet" href="../assets/css/apple.css">
   <link rel="icon" type="image/png" href="../assets/img/favicon.png">
   <script src="https://unpkg.com/globe.gl@2.32.0/dist/globe.gl.min.js"></script>
@@ -200,6 +201,35 @@
     }
     .lb-close:hover { background: rgba(255,255,255,0.3); }
 
+    /* Skeleton loading overlay */
+    .travel-skeleton {
+      position: fixed; inset: 0; z-index: 50;
+      background: #0a0a1a;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 1.5rem;
+      transition: opacity 0.6s ease;
+    }
+    .travel-skeleton.hidden {
+      opacity: 0; pointer-events: none;
+    }
+    .skeleton-globe {
+      width: 200px; height: 200px; border-radius: 50%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 100%);
+      background-size: 200% 200%;
+      animation: skeletonPulse 1.5s ease-in-out infinite;
+    }
+    .skeleton-bar {
+      height: 10px; border-radius: 5px;
+      background: rgba(255,255,255,0.06);
+      background-size: 200% 100%;
+      animation: skeletonPulse 1.5s ease-in-out infinite;
+    }
+    @keyframes skeletonPulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
     .travel-instructions {
       position: fixed;
       bottom: 2rem;
@@ -248,6 +278,12 @@
     <a href="../index.html"><i class="fas fa-arrow-left"></i> <span class="lang-en">Back</span><span class="lang-zh">返回</span></a>
     <span class="travel-title"><span class="lang-en">Travel</span><span class="lang-zh">旅行</span></span>
     <div></div>
+  </div>
+
+  <div class="travel-skeleton" id="travelSkeleton">
+    <div class="skeleton-globe"></div>
+    <div class="skeleton-bar" style="width:160px;"></div>
+    <div class="skeleton-bar" style="width:120px; animation-delay:0.2s;"></div>
   </div>
 
   <div id="globeContainer"></div>
@@ -486,6 +522,7 @@
       updateClustersNow();
       setTimeout(updateClustersNow, 1000);
       setTimeout(updateClustersNow, 3000);
+      document.getElementById('travelSkeleton').classList.add('hidden');
     });
 
     // Re-cluster when user zooms or pans

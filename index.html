@@ -7,7 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Zhaomin Xiao — Research Scientist at Meta. NLP and deep learning researcher.">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <script defer src="assets/fontawesome/js/all.min.js"></script>
+  <link rel="stylesheet" href="assets/fontawesome/css/fontawesome.min.css">
+  <link rel="stylesheet" href="assets/fontawesome/css/solid.min.css">
+  <link rel="stylesheet" href="assets/fontawesome/css/brands.min.css">
   <link rel="stylesheet" href="assets/css/apple.css">
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
 </head>
@@ -18,7 +20,10 @@
   <nav class="nav">
     <div class="nav-inner">
       <a href="#hero" class="nav-name">ZX</a>
-      <div class="nav-links">
+      <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-links" id="navLinks">
         <a href="#about"><span class="lang-en">About</span><span class="lang-zh">关于</span></a>
         <a href="#experience"><span class="lang-en">Experience</span><span class="lang-zh">经历</span></a>
         <a href="#misc"><span class="lang-en">Misc</span><span class="lang-zh">其他</span></a>
@@ -213,22 +218,22 @@
     <div class="container">
       <h2 class="section-title"><span class="lang-en">Miscellaneous</span><span class="lang-zh">其他</span></h2>
       <div class="misc-grid fade-in">
-        <div class="misc-card misc-card-link" id="travelCard">
+        <div class="misc-card misc-card-link" id="travelCard" tabindex="0" role="button" aria-label="Travel">
           <i class="fas fa-plane-departure misc-icon"></i>
           <h3 class="misc-label"><span class="lang-en">Travel</span><span class="lang-zh">旅行</span></h3>
           <p class="misc-desc"><span class="lang-en">What did I see?</span><span class="lang-zh">我看到了什么？</span></p>
         </div>
-        <div class="misc-card misc-card-link" id="petsCard">
+        <div class="misc-card misc-card-link" id="petsCard" tabindex="0" role="button" aria-label="Pets">
           <i class="fas fa-paw misc-icon"></i>
           <h3 class="misc-label"><span class="lang-en">Pets</span><span class="lang-zh">宠物</span></h3>
           <p class="misc-desc"><span class="lang-en">Meet Joey and his friends!</span><span class="lang-zh">来认识 Joey 和他的朋友们！</span></p>
         </div>
-        <div class="misc-card misc-card-link" id="readingCard">
+        <div class="misc-card misc-card-link" id="readingCard" tabindex="0" role="button" aria-label="Reading">
           <i class="fas fa-book-open misc-icon"></i>
           <h3 class="misc-label"><span class="lang-en">Reading</span><span class="lang-zh">阅读</span></h3>
           <p class="misc-desc"><span class="lang-en">Reading is always fun. Always.</span><span class="lang-zh">阅读总是有趣的。永远是。</span></p>
         </div>
-        <div class="misc-card misc-card-link" id="historyCard">
+        <div class="misc-card misc-card-link" id="historyCard" tabindex="0" role="button" aria-label="History">
           <i class="fas fa-landmark misc-icon"></i>
           <h3 class="misc-label"><span class="lang-en">History</span><span class="lang-zh">历史</span></h3>
           <p class="misc-desc"><span class="lang-en">What happened in the past?</span><span class="lang-zh">过去发生了什么？</span></p>
@@ -254,7 +259,7 @@
   </footer>
 
   <!-- Back to Top -->
-  <button class="scroll-top" id="goTopBtn" aria-label="Scroll to top" style="opacity:1;pointer-events:auto;transform:none;">
+  <button class="scroll-top" id="goTopBtn" aria-label="Scroll to top">
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
       <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
@@ -465,6 +470,46 @@
       });
 
       setTimeout(() => { window.location.href = 'pages/reading.html'; }, 1000);
+    });
+
+    /* ── Active nav highlighting ──
+       Uses IntersectionObserver to highlight the nav link for the
+       section currently in the viewport. */
+    const navAnchors = document.querySelectorAll('.nav-links a[href^="#"]');
+    const sections = document.querySelectorAll('section[id]');
+    const navObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navAnchors.forEach(a => a.classList.remove('active'));
+          const match = document.querySelector('.nav-links a[href="#' + entry.target.id + '"]');
+          if (match) match.classList.add('active');
+        }
+      });
+    }, { threshold: 0.3, rootMargin: '-48px 0px 0px 0px' });
+    sections.forEach(s => navObserver.observe(s));
+
+    /* ── Mobile hamburger menu ── */
+    const hamburger = document.getElementById('navHamburger');
+    const navLinksEl = document.getElementById('navLinks');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      navLinksEl.classList.toggle('open');
+    });
+    navLinksEl.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        navLinksEl.classList.remove('open');
+      });
+    });
+
+    /* ── Keyboard support for misc cards ── */
+    document.querySelectorAll('.misc-card-link').forEach(card => {
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          card.click();
+        }
+      });
     });
 
     /* ── Language toggle (EN ↔ 中文) ──

@@ -6,7 +6,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <script defer src="../assets/fontawesome/js/all.min.js"></script>
+  <link rel="stylesheet" href="../assets/fontawesome/css/fontawesome.min.css">
+  <link rel="stylesheet" href="../assets/fontawesome/css/solid.min.css">
   <link rel="stylesheet" href="../assets/css/apple.css">
   <link rel="icon" type="image/png" href="../assets/img/favicon.png">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -217,6 +218,13 @@
       }
     }
 
+    /* ===== IP masking: hide last octet for visitor privacy ===== */
+    function maskIP(ip) {
+      if (!ip || ip === '—') return ip;
+      if (ip.includes(':')) return ip.replace(/:[\da-f]+$/i, ':***');
+      return ip.replace(/\.\d+$/, '.***');
+    }
+
     /* ===== User-agent parsing: extract browser name and version ===== */
     function getBrowser() {
       const ua = navigator.userAgent;
@@ -277,8 +285,8 @@
 
         // Populate all visitor detail fields in the DOM
         document.getElementById('yourLocation').textContent = city + ', ' + country;
-        document.getElementById('yourIP').textContent = ip;
-        document.getElementById('detailIP').textContent = ip;
+        document.getElementById('yourIP').textContent = maskIP(ip);
+        document.getElementById('detailIP').textContent = maskIP(ip);
         document.getElementById('detailCity').textContent = city;
         document.getElementById('detailRegion').textContent = region;
         document.getElementById('detailCountry').textContent = country;
@@ -331,7 +339,7 @@
         return `<tr>
           <td>${i + 1}</td>
           <td>${timeStr}</td>
-          <td>${v.ip}</td>
+          <td>${maskIP(v.ip)}</td>
           <td>${v.location}</td>
           <td>${v.browser}</td>
         </tr>`;
