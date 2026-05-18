@@ -10,7 +10,6 @@
  * Sources: Project Gutenberg (gutenberg.org), MIT Classics, Standard Ebooks,
  *          authors' websites, and open textbook initiatives.
  */
-
 const BOOK_CATEGORIES = [
   { id: 'all', en: 'All Books', zh: '全部书籍', icon: 'fas fa-book' },
   { id: 'adventure', en: 'Adventure', zh: '冒险', icon: 'fas fa-hiking' },
@@ -32,7 +31,6 @@ const BOOK_CATEGORIES = [
   { id: 'russian-lit', en: 'Russian Literature', zh: '俄罗斯文学', icon: 'fas fa-snowflake' },
   { id: 'sci-fi', en: 'Science Fiction', zh: '科幻小说', icon: 'fas fa-rocket' },
 ];
-
 const BOOKS = [
 // ══════════════════════════════════════
 // AI & MACHINE LEARNING
@@ -45,29 +43,24 @@ const BOOKS = [
 { title: 'Information Theory & Learning', author: 'David MacKay', desc: 'Connecting information theory, inference, and machine learning with clarity and rigor.', cat: 'cs', color: '#2e4053', height: 152, pdf: 'https://www.inference.org.uk/itila/book.html' },
 { title: 'Bayesian Reasoning & ML', author: 'David Barber', desc: 'Probabilistic graphical models, inference, and learning from a Bayesian perspective.', cat: 'cs', color: '#7d3c98', height: 145, pdf: 'http://web4.cs.ucl.ac.uk/staff/D.Barber/pmwiki/pmwiki.php?n=Brml.HomePage' },
 { title: 'Math for Machine Learning', author: 'Deisenroth, Faisal, Ong', desc: 'Linear algebra, calculus, probability, and optimization — the mathematical foundations of ML.', cat: 'cs', color: '#1f618d', height: 142, pdf: 'https://mml-book.github.io/' },
-
 // ══════════════════════════════════════
 // NLP & LANGUAGE
 // ══════════════════════════════════════
 { title: 'Speech & Language Processing', author: 'Jurafsky & Martin', desc: 'The standard NLP textbook — tokenization, transformers, NER, QA, and dialogue systems. Free draft chapters.', cat: 'cs', color: '#16a085', height: 145, pdf: 'https://web.stanford.edu/~jurafsky/slp3/' },
 { title: 'NLP with Python (NLTK)', author: 'Bird, Klein, Loper', desc: 'Practical NLP with Python and the NLTK toolkit — text classification, parsing, and semantic analysis.', cat: 'cs', color: '#1e8449', height: 138, pdf: 'https://www.nltk.org/book/' },
-
 // ══════════════════════════════════════
 // ALGORITHMS & DATA
 // ══════════════════════════════════════
 { title: 'Mining Massive Datasets', author: 'Leskovec, Rajaraman, Ullman', desc: 'MapReduce, similarity search, link analysis, recommendation systems. Free from the authors at Stanford.', cat: 'cs', color: '#d35400', height: 135, pdf: 'http://www.mmds.org/' },
 { title: 'Algorithms', author: 'Jeff Erickson', desc: 'A comprehensive algorithms textbook covering recursion, dynamic programming, graphs, and NP-hardness. Free.', cat: 'cs', color: '#2874a6', height: 148, pdf: 'http://jeffe.cs.illinois.edu/teaching/algorithms/' },
 { title: 'Open Data Structures', author: 'Pat Morin', desc: 'An open textbook on data structures — arrays, lists, trees, hash tables, and graphs with implementations.', cat: 'cs', color: '#6c3483', height: 132, pdf: 'https://opendatastructures.org/' },
-
 // ══════════════════════════════════════
 // MATHEMATICS
 // ══════════════════════════════════════
-{ title: 'Calculus Made Easy', author: 'Silvanus Thompson', desc: 'The classic intuitive introduction to calculus. "What one fool can do, another can." Public domain.', cat: 'math', color: '#b7950b', height: 125, pdf: 'https://www.gutenberg.org/ebooks/33283' },
 { title: 'Linear Algebra Done Right', author: 'Sheldon Axler', desc: 'A proof-based approach to linear algebra focusing on vector spaces and linear maps. Free from Springer.', cat: 'math', color: '#1a5276', height: 135, pdf: 'https://linear.axler.net/' },
 { title: 'Book of Proof', author: 'Richard Hammack', desc: 'An introduction to mathematical proof techniques — logic, sets, functions, relations, and cardinality.', cat: 'math', color: '#7d6608', height: 130, pdf: 'https://www.people.vcu.edu/~rhammack/BookOfProof/' },
 { title: 'Abstract Algebra', author: 'Thomas Judson', desc: 'Groups, rings, fields, and Galois theory. A free, open-source textbook.', cat: 'math', color: '#5b2c6f', height: 140, pdf: 'http://abstract.ups.edu/' },
 { title: 'Probability & Statistics', author: 'DeGroot & Schervish', desc: 'Probability theory, Bayesian inference, and classical statistics.', cat: 'math', color: '#1e8449', height: 142, pdf: 'https://www.statlect.com/' },
-
 // ══════════════════════════════════════
 // PROGRAMMING
 // ══════════════════════════════════════
@@ -79,23 +72,18 @@ const BOOKS = [
 { title: 'The Linux Command Line', author: 'William Shotts', desc: 'A complete introduction to Linux command line — shell scripting, file management, and system administration.', cat: 'programming', color: '#2c3e50', height: 140, pdf: 'https://linuxcommand.org/tlcl.php' },
 { title: 'Structure & Interpretation', author: 'Abelson & Sussman', desc: 'The legendary MIT textbook on programming and computer science using Scheme. SICP.', cat: 'programming', color: '#8b0000', height: 145, pdf: 'https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/index.html' },
 { title: 'Eloquent JavaScript', author: 'Marijn Haverbeke', desc: 'A modern introduction to JavaScript — the language, the browser, and Node.js.', cat: 'programming', color: '#f1c40f', height: 138, pdf: 'https://eloquentjavascript.net/' },
-
 // ══════════════════════════════════════
 // PHYSICS & COSMOLOGY
 // ══════════════════════════════════════
-{ title: 'Relativity', author: 'Albert Einstein', desc: 'Einstein explains special and general relativity in his own words, for a general audience. Public domain.', cat: 'physics', color: '#1a1a2e', height: 120, pdf: 'https://www.gutenberg.org/ebooks/5001' },
 { title: 'The Feynman Lectures', author: 'Richard Feynman', desc: 'The legendary Caltech physics lectures — mechanics, electromagnetism, quantum mechanics. Free online.', cat: 'physics', color: '#c0392b', height: 150, pdf: 'https://www.feynmanlectures.caltech.edu/' },
 { title: 'Principia Mathematica', author: 'Isaac Newton', desc: 'The foundational work of classical mechanics — laws of motion and universal gravitation. Public domain.', cat: 'physics', color: '#5b2c6f', height: 155, pdf: 'https://www.gutenberg.org/ebooks/28233' },
 { title: 'Motion Mountain Physics', author: 'Christoph Schiller', desc: 'A free, entertaining physics textbook covering mechanics to quantum gravity in six volumes.', cat: 'physics', color: '#0c2461', height: 142, pdf: 'https://www.motionmountain.net/' },
-
 // ══════════════════════════════════════
 // BIOLOGY & NATURE
 // ══════════════════════════════════════
 { title: 'On the Origin of Species', author: 'Charles Darwin', desc: 'The book that introduced evolution by natural selection and transformed biology forever. Public domain.', cat: 'biology', color: '#1e8449', height: 140, pdf: 'https://www.gutenberg.org/ebooks/1228' },
-{ title: 'The Descent of Man', author: 'Charles Darwin', desc: 'Darwin applies evolutionary theory to human origins, sexual selection, and the expression of emotions.', cat: 'biology', color: '#196f3d', height: 145, pdf: 'https://www.gutenberg.org/ebooks/2300' },
 { title: 'The Voyage of the Beagle', author: 'Charles Darwin', desc: 'Darwin\'s journal of his five-year voyage — the observations that seeded evolutionary theory.', cat: 'biology', color: '#117a65', height: 138, pdf: 'https://www.gutenberg.org/ebooks/944' },
 { title: 'Walden', author: 'Henry David Thoreau', desc: 'Living deliberately in nature — Thoreau\'s experiment in simple living at Walden Pond. Public domain.', cat: 'biology', color: '#2d5a27', height: 125, pdf: 'https://www.gutenberg.org/ebooks/205' },
-
 // ══════════════════════════════════════
 // PHILOSOPHY
 // ══════════════════════════════════════
@@ -108,13 +96,10 @@ const BOOKS = [
 { title: 'The Art of War', author: 'Sun Tzu', desc: 'Strategy and the philosophy of conflict — essential reading for leaders since 500 BC.', cat: 'philosophy', color: '#c0392b', height: 115, pdf: 'http://classics.mit.edu/Tzu/artwar.html' },
 { title: 'The Analects', author: 'Confucius', desc: 'Sayings and ideas of Confucius on ethics, governance, and education. Foundation of East Asian thought.', cat: 'philosophy', color: '#b7950b', height: 120, pdf: 'http://classics.mit.edu/Confucius/analects.html' },
 { title: 'Beyond Good and Evil', author: 'Nietzsche', desc: 'A critique of traditional morality and the pursuit of truth beyond conventional values.', cat: 'philosophy', color: '#2c2c54', height: 128, pdf: 'https://www.gutenberg.org/ebooks/4363' },
-{ title: 'Thus Spoke Zarathustra', author: 'Nietzsche', desc: 'The Übermensch, eternal recurrence, and the death of God — Nietzsche\'s philosophical novel.', cat: 'philosophy', color: '#1a1a2e', height: 140, pdf: 'https://www.gutenberg.org/ebooks/1998' },
 { title: 'The Prince', author: 'Niccolò Machiavelli', desc: 'The art of acquiring and maintaining political power. Ruthlessly practical political philosophy.', cat: 'philosophy', color: '#6b3f20', height: 118, pdf: 'https://www.gutenberg.org/ebooks/1232' },
-{ title: 'Discourse on Method', author: 'René Descartes', desc: '"I think, therefore I am." Descartes\' foundation of modern philosophy and rationalist inquiry.', cat: 'philosophy', color: '#1a5276', height: 115, pdf: 'https://www.gutenberg.org/ebooks/59' },
 { title: 'Leviathan', author: 'Thomas Hobbes', desc: 'The social contract and the necessity of a strong sovereign to prevent life being "nasty, brutish, and short."', cat: 'philosophy', color: '#2e4053', height: 150, pdf: 'https://www.gutenberg.org/ebooks/3207' },
 { title: 'On Liberty', author: 'John Stuart Mill', desc: 'The classic defense of individual freedom — the harm principle and the tyranny of the majority.', cat: 'philosophy', color: '#1e8449', height: 122, pdf: 'https://www.gutenberg.org/ebooks/34901' },
 { title: 'Utilitarianism', author: 'John Stuart Mill', desc: 'The greatest happiness for the greatest number — Mill\'s refined defense of utilitarian ethics.', cat: 'philosophy', color: '#117864', height: 112, pdf: 'https://www.gutenberg.org/ebooks/11224' },
-
 // ══════════════════════════════════════
 // POLITICS & ECONOMICS
 // ══════════════════════════════════════
@@ -122,10 +107,7 @@ const BOOKS = [
 { title: 'Common Sense', author: 'Thomas Paine', desc: 'The pamphlet that ignited the American Revolution — a fiery case for independence from Britain.', cat: 'politics', color: '#c0392b', height: 112, pdf: 'https://www.gutenberg.org/ebooks/147' },
 { title: 'Two Treatises of Government', author: 'John Locke', desc: 'Natural rights, consent of the governed, and the right to revolution. The philosophical basis of democracy.', cat: 'politics', color: '#2c3e50', height: 135, pdf: 'https://www.gutenberg.org/ebooks/7370' },
 { title: 'The Social Contract', author: 'Jean-Jacques Rousseau', desc: '"Man is born free, and everywhere he is in chains." The foundation of republican political theory.', cat: 'politics', color: '#1a5276', height: 122, pdf: 'https://www.gutenberg.org/ebooks/46333' },
-{ title: 'The Communist Manifesto', author: 'Marx & Engels', desc: 'Class struggle, the critique of capitalism, and the call for workers to unite. Public domain.', cat: 'politics', color: '#922b21', height: 110, pdf: 'https://www.gutenberg.org/ebooks/61' },
-{ title: 'Democracy in America', author: 'Alexis de Tocqueville', desc: 'A French observer\'s brilliant analysis of American democracy, society, and culture in the 1830s.', cat: 'politics', color: '#2874a6', height: 148, pdf: 'https://www.gutenberg.org/ebooks/815' },
 { title: 'The Federalist Papers', author: 'Hamilton, Madison, Jay', desc: 'The arguments for ratifying the US Constitution — the blueprint of American governance.', cat: 'politics', color: '#1e8449', height: 145, pdf: 'https://www.gutenberg.org/ebooks/1404' },
-
 // ══════════════════════════════════════
 // HISTORY
 // ══════════════════════════════════════
@@ -134,14 +116,11 @@ const BOOKS = [
 { title: 'The Gallic Wars', author: 'Julius Caesar', desc: 'Caesar\'s own account of conquering Gaul — military strategy and political propaganda combined.', cat: 'history', color: '#7b241c', height: 132, pdf: 'http://classics.mit.edu/Caesar/gallic.html' },
 { title: 'Decline and Fall of the Roman Empire', author: 'Edward Gibbon', desc: 'The monumental history of Rome\'s collapse — from the height of empire to the fall of Constantinople.', cat: 'history', color: '#6b3f20', height: 155, pdf: 'https://www.gutenberg.org/ebooks/25717' },
 { title: 'The Autobiography of Benjamin Franklin', author: 'Benjamin Franklin', desc: 'From printer\'s apprentice to founding father — Franklin\'s witty and instructive memoir.', cat: 'history', color: '#1e8449', height: 128, pdf: 'https://www.gutenberg.org/ebooks/20203' },
-{ title: 'Narrative of Frederick Douglass', author: 'Frederick Douglass', desc: 'A powerful firsthand account of slavery in America — one of the most important American autobiographies.', cat: 'history', color: '#2c3e50', height: 122, pdf: 'https://www.gutenberg.org/ebooks/23' },
-
 // ══════════════════════════════════════
 // PSYCHOLOGY
 // ══════════════════════════════════════
 { title: 'The Interpretation of Dreams', author: 'Sigmund Freud', desc: 'Freud\'s groundbreaking work on dream analysis, the unconscious mind, and the foundations of psychoanalysis.', cat: 'psychology', color: '#6c5ce7', height: 142, pdf: 'https://www.gutenberg.org/ebooks/38219' },
 { title: 'Psychology: OpenStax', author: 'OpenStax', desc: 'A comprehensive, peer-reviewed introductory psychology textbook. Completely free.', cat: 'psychology', color: '#2980b9', height: 148, pdf: 'https://openstax.org/details/books/psychology-2e' },
-
 // ══════════════════════════════════════
 // CLASSIC FICTION
 // ══════════════════════════════════════
@@ -149,11 +128,7 @@ const BOOKS = [
 { title: 'Sense and Sensibility', author: 'Jane Austen', desc: 'Two sisters — one guided by sense, the other by sensibility — navigate love and loss.', cat: 'classic-fiction', color: '#d4a574', height: 128, pdf: 'https://www.gutenberg.org/ebooks/161' },
 { title: 'Emma', author: 'Jane Austen', desc: 'A comedy of matchmaking gone wrong in the English countryside.', cat: 'classic-fiction', color: '#d4a574', height: 132, pdf: 'https://www.gutenberg.org/ebooks/158' },
 { title: 'Jane Eyre', author: 'Charlotte Brontë', desc: 'An orphan governess finds love and independence in Victorian England. A feminist classic.', cat: 'classic-fiction', color: '#5b2c6f', height: 140, pdf: 'https://www.gutenberg.org/ebooks/1260' },
-{ title: 'Wuthering Heights', author: 'Emily Brontë', desc: 'The wild, passionate, and destructive love of Heathcliff and Catherine on the Yorkshire moors.', cat: 'classic-fiction', color: '#4a235a', height: 135, pdf: 'https://www.gutenberg.org/ebooks/768' },
 { title: 'Great Expectations', author: 'Charles Dickens', desc: 'Pip\'s journey from humble origins to gentleman — a masterwork on class, ambition, and identity.', cat: 'classic-fiction', color: '#6b3f20', height: 142, pdf: 'https://www.gutenberg.org/ebooks/1400' },
-{ title: 'A Tale of Two Cities', author: 'Charles Dickens', desc: '"It was the best of times, it was the worst of times." Love and sacrifice during the French Revolution.', cat: 'classic-fiction', color: '#7b241c', height: 138, pdf: 'https://www.gutenberg.org/ebooks/98' },
-{ title: 'Oliver Twist', author: 'Charles Dickens', desc: 'An orphan in Victorian London navigates the criminal underworld — "Please, sir, I want some more."', cat: 'classic-fiction', color: '#5d6d7e', height: 135, pdf: 'https://www.gutenberg.org/ebooks/730' },
-{ title: 'David Copperfield', author: 'Charles Dickens', desc: 'Dickens\' most autobiographical novel — a young man\'s journey from hardship to literary success.', cat: 'classic-fiction', color: '#6b3f20', height: 148, pdf: 'https://www.gutenberg.org/ebooks/766' },
 { title: 'Moby Dick', author: 'Herman Melville', desc: 'Captain Ahab\'s obsessive hunt for the white whale — an epic of ambition, nature, and fate.', cat: 'classic-fiction', color: '#1a5276', height: 150, pdf: 'https://www.gutenberg.org/ebooks/2701' },
 { title: 'The Picture of Dorian Gray', author: 'Oscar Wilde', desc: 'A portrait ages while its subject stays young — a gothic tale of beauty, corruption, and morality.', cat: 'classic-fiction', color: '#2c2c54', height: 128, pdf: 'https://www.gutenberg.org/ebooks/174' },
 { title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', desc: 'The American Dream and its discontents in the Jazz Age — wealth, love, and disillusion on Long Island.', cat: 'classic-fiction', color: '#b7950b', height: 118, pdf: 'https://www.gutenberg.org/ebooks/64317' },
@@ -166,200 +141,131 @@ const BOOKS = [
 { title: 'Don Quixote', author: 'Miguel de Cervantes', desc: 'The delusional knight and his faithful squire Sancho Panza — the first modern novel.', cat: 'classic-fiction', color: '#b7950b', height: 155, pdf: 'https://www.gutenberg.org/ebooks/996' },
 { title: 'Faust', author: 'Johann Wolfgang von Goethe', desc: 'A scholar sells his soul to the devil in pursuit of knowledge and experience. German literature\'s masterpiece.', cat: 'classic-fiction', color: '#922b21', height: 140, pdf: 'https://www.gutenberg.org/ebooks/14591' },
 { title: 'Siddhartha', author: 'Hermann Hesse', desc: 'A young man\'s spiritual journey in ancient India — seeking enlightenment through experience.', cat: 'classic-fiction', color: '#e67e22', height: 118, pdf: 'https://www.gutenberg.org/ebooks/2500' },
-
 // ══════════════════════════════════════
 // SCIENCE FICTION
 // ══════════════════════════════════════
-{ title: 'The Time Machine', author: 'H.G. Wells', desc: 'A Victorian inventor travels to 802,701 AD and discovers humanity\'s dark evolutionary future.', cat: 'sci-fi', color: '#2e4053', height: 118, pdf: 'https://www.gutenberg.org/ebooks/35' },
-{ title: 'The War of the Worlds', author: 'H.G. Wells', desc: 'Martians invade England with devastating heat rays — the original alien invasion story.', cat: 'sci-fi', color: '#922b21', height: 125, pdf: 'https://www.gutenberg.org/ebooks/36' },
 { title: 'The Invisible Man', author: 'H.G. Wells', desc: 'A scientist discovers invisibility but descends into madness and violence. A cautionary tale.', cat: 'sci-fi', color: '#5d6d7e', height: 120, pdf: 'https://www.gutenberg.org/ebooks/5230' },
 { title: 'The Island of Doctor Moreau', author: 'H.G. Wells', desc: 'A shipwrecked man finds an island of human-animal hybrids created by a mad scientist.', cat: 'sci-fi', color: '#1e8449', height: 118, pdf: 'https://www.gutenberg.org/ebooks/159' },
 { title: '20,000 Leagues Under the Sea', author: 'Jules Verne', desc: 'Captain Nemo\'s submarine voyage through the world\'s oceans in the amazing Nautilus.', cat: 'sci-fi', color: '#1a5276', height: 135, pdf: 'https://www.gutenberg.org/ebooks/164' },
-{ title: 'Around the World in 80 Days', author: 'Jules Verne', desc: 'Phileas Fogg bets he can circumnavigate the globe in 80 days — adventure and suspense ensue.', cat: 'sci-fi', color: '#b7950b', height: 128, pdf: 'https://www.gutenberg.org/ebooks/103' },
 { title: 'Journey to the Center of the Earth', author: 'Jules Verne', desc: 'A professor and his nephew descend into an Icelandic volcano and find a subterranean world.', cat: 'sci-fi', color: '#6b3f20', height: 130, pdf: 'https://www.gutenberg.org/ebooks/18857' },
-
 // ══════════════════════════════════════
 // MYSTERY & GOTHIC
 // ══════════════════════════════════════
-{ title: 'Frankenstein', author: 'Mary Shelley', desc: 'A scientist creates life and recoils from his creation — the birth of science fiction and gothic horror.', cat: 'mystery', color: '#1c2833', height: 130, pdf: 'https://www.gutenberg.org/ebooks/84' },
 { title: 'Dracula', author: 'Bram Stoker', desc: 'The Transylvanian count comes to England — the definitive vampire novel, told through letters and diaries.', cat: 'mystery', color: '#922b21', height: 140, pdf: 'https://www.gutenberg.org/ebooks/345' },
 { title: 'Sherlock Holmes', author: 'Arthur Conan Doyle', desc: 'The adventures of the world\'s greatest detective and his companion Dr. Watson on Baker Street.', cat: 'mystery', color: '#2c3e50', height: 135, pdf: 'https://www.gutenberg.org/ebooks/1661' },
-{ title: 'Dr. Jekyll and Mr. Hyde', author: 'Robert Louis Stevenson', desc: 'A respectable doctor and his murderous alter ego — the duality of human nature.', cat: 'mystery', color: '#4a235a', height: 112, pdf: 'https://www.gutenberg.org/ebooks/43' },
 { title: 'The Phantom of the Opera', author: 'Gaston Leroux', desc: 'A masked genius haunts the Paris Opera House, obsessed with a young soprano.', cat: 'mystery', color: '#1c2833', height: 128, pdf: 'https://www.gutenberg.org/ebooks/175' },
 { title: 'The Hound of the Baskervilles', author: 'Arthur Conan Doyle', desc: 'Holmes investigates a supernatural hound on the misty moors of Dartmoor.', cat: 'mystery', color: '#5d6d7e', height: 125, pdf: 'https://www.gutenberg.org/ebooks/2852' },
 { title: 'The Turn of the Screw', author: 'Henry James', desc: 'A governess sees ghosts — or does she? A masterpiece of psychological ambiguity.', cat: 'mystery', color: '#6c5ce7', height: 112, pdf: 'https://www.gutenberg.org/ebooks/209' },
-{ title: 'Tales of Edgar Allan Poe', author: 'Edgar Allan Poe', desc: 'The Raven, The Tell-Tale Heart, The Fall of the House of Usher — master of the macabre.', cat: 'mystery', color: '#2c2c54', height: 132, pdf: 'https://www.gutenberg.org/ebooks/2147' },
-
 // ══════════════════════════════════════
 // ADVENTURE
 // ══════════════════════════════════════
-{ title: 'The Adventures of Tom Sawyer', author: 'Mark Twain', desc: 'A mischievous boy growing up along the Mississippi — treasure hunts, whitewashed fences, and first love.', cat: 'adventure', color: '#e67e22', height: 125, pdf: 'https://www.gutenberg.org/ebooks/74' },
-{ title: 'Adventures of Huckleberry Finn', author: 'Mark Twain', desc: 'Huck and Jim raft down the Mississippi, confronting slavery, society, and conscience.', cat: 'adventure', color: '#d35400', height: 132, pdf: 'https://www.gutenberg.org/ebooks/76' },
-{ title: 'Treasure Island', author: 'Robert Louis Stevenson', desc: 'Young Jim Hawkins, a treasure map, pirates, and the unforgettable Long John Silver.', cat: 'adventure', color: '#b7950b', height: 128, pdf: 'https://www.gutenberg.org/ebooks/120' },
 { title: 'The Call of the Wild', author: 'Jack London', desc: 'A domesticated dog is thrust into the Yukon wilderness and answers the primal call of nature.', cat: 'adventure', color: '#1e8449', height: 118, pdf: 'https://www.gutenberg.org/ebooks/215' },
 { title: 'White Fang', author: 'Jack London', desc: 'A wild wolf-dog is gradually domesticated — the reverse journey of The Call of the Wild.', cat: 'adventure', color: '#5d6d7e', height: 122, pdf: 'https://www.gutenberg.org/ebooks/910' },
 { title: 'The Count of Monte Cristo', author: 'Alexandre Dumas', desc: 'Wrongly imprisoned, Edmond Dantès escapes and enacts an elaborate revenge. The ultimate adventure.', cat: 'adventure', color: '#1a5276', height: 155, pdf: 'https://www.gutenberg.org/ebooks/1184' },
 { title: 'The Three Musketeers', author: 'Alexandre Dumas', desc: 'All for one and one for all! D\'Artagnan joins the legendary musketeers in swashbuckling 17th-century France.', cat: 'adventure', color: '#c0392b', height: 148, pdf: 'https://www.gutenberg.org/ebooks/1257' },
-{ title: 'Robinson Crusoe', author: 'Daniel Defoe', desc: 'Shipwrecked on a desert island for 28 years — the original survival story.', cat: 'adventure', color: '#6b3f20', height: 135, pdf: 'https://www.gutenberg.org/ebooks/521' },
-{ title: 'Gulliver\'s Travels', author: 'Jonathan Swift', desc: 'Lilliputians, giants, and talking horses — a savage satire of human nature disguised as adventure.', cat: 'adventure', color: '#2874a6', height: 130, pdf: 'https://www.gutenberg.org/ebooks/829' },
 { title: 'The Odyssey', author: 'Homer', desc: 'Odysseus\' epic ten-year journey home from Troy — monsters, magic, and the longing for home.', cat: 'adventure', color: '#b7950b', height: 140, pdf: 'https://www.gutenberg.org/ebooks/1727' },
 { title: 'The Iliad', author: 'Homer', desc: 'The wrath of Achilles and the siege of Troy — the foundational epic of Western literature.', cat: 'adventure', color: '#922b21', height: 145, pdf: 'https://www.gutenberg.org/ebooks/6130' },
-
 // ══════════════════════════════════════
 // RUSSIAN LITERATURE
 // ══════════════════════════════════════
 { title: 'Crime and Punishment', author: 'Fyodor Dostoevsky', desc: 'A student murders a pawnbroker and descends into guilt and paranoia. A psychological masterpiece.', cat: 'russian-lit', color: '#2c2c54', height: 142, pdf: 'https://www.gutenberg.org/ebooks/2554' },
 { title: 'The Brothers Karamazov', author: 'Fyodor Dostoevsky', desc: 'Three brothers, a murdered father, and the deepest questions of faith, free will, and morality.', cat: 'russian-lit', color: '#1c2833', height: 155, pdf: 'https://www.gutenberg.org/ebooks/28054' },
-{ title: 'Notes from Underground', author: 'Fyodor Dostoevsky', desc: 'The bitter confessions of an alienated man — a precursor to existentialism and modernism.', cat: 'russian-lit', color: '#5d6d7e', height: 115, pdf: 'https://www.gutenberg.org/ebooks/600' },
 { title: 'The Idiot', author: 'Fyodor Dostoevsky', desc: 'A truly good man in a corrupt society — Prince Myshkin\'s tragic attempt to live with pure compassion.', cat: 'russian-lit', color: '#6c5ce7', height: 148, pdf: 'https://www.gutenberg.org/ebooks/2638' },
 { title: 'War and Peace', author: 'Leo Tolstoy', desc: 'Five aristocratic families during the Napoleonic Wars. The greatest novel ever written, many say.', cat: 'russian-lit', color: '#7b241c', height: 160, pdf: 'https://www.gutenberg.org/ebooks/2600' },
 { title: 'Anna Karenina', author: 'Leo Tolstoy', desc: '"Happy families are all alike; every unhappy family is unhappy in its own way." Love, betrayal, and society.', cat: 'russian-lit', color: '#922b21', height: 155, pdf: 'https://www.gutenberg.org/ebooks/1399' },
 { title: 'Dead Souls', author: 'Nikolai Gogol', desc: 'Chichikov buys dead serfs to defraud the government — a satirical epic of Russian bureaucracy.', cat: 'russian-lit', color: '#5b2c6f', height: 140, pdf: 'https://www.gutenberg.org/ebooks/1081' },
 { title: 'Fathers and Sons', author: 'Ivan Turgenev', desc: 'Generational conflict between reformist fathers and nihilist sons in 1860s Russia.', cat: 'russian-lit', color: '#2e4053', height: 125, pdf: 'https://www.gutenberg.org/ebooks/30723' },
-
 // ══════════════════════════════════════
 // FRENCH LITERATURE
 // ══════════════════════════════════════
-{ title: 'Les Misérables', author: 'Victor Hugo', desc: 'Jean Valjean\'s redemption, Inspector Javert\'s pursuit, and revolution in 19th-century Paris.', cat: 'french-lit', color: '#7b241c', height: 160, pdf: 'https://www.gutenberg.org/ebooks/135' },
 { title: 'The Hunchback of Notre-Dame', author: 'Victor Hugo', desc: 'Quasimodo, Esmeralda, and the great cathedral — beauty, cruelty, and obsession in medieval Paris.', cat: 'french-lit', color: '#5d6d7e', height: 148, pdf: 'https://www.gutenberg.org/ebooks/2610' },
-{ title: 'Madame Bovary', author: 'Gustave Flaubert', desc: 'A doctor\'s wife seeks passion beyond her provincial life — the novel that defined literary realism.', cat: 'french-lit', color: '#d4a574', height: 132, pdf: 'https://www.gutenberg.org/ebooks/2413' },
 { title: 'The Red and the Black', author: 'Stendhal', desc: 'Julien Sorel\'s ambitious rise through post-Napoleonic French society — politics, love, and hypocrisy.', cat: 'french-lit', color: '#922b21', height: 140, pdf: 'https://www.gutenberg.org/ebooks/44747' },
 { title: 'Germinal', author: 'Émile Zola', desc: 'A coal miners\' strike in northern France — a powerful naturalist depiction of poverty and class struggle.', cat: 'french-lit', color: '#1c2833', height: 138, pdf: 'https://www.gutenberg.org/ebooks/5711' },
 { title: 'Candide', author: 'Voltaire', desc: '"We must cultivate our garden." A devastating satire of optimism through a young man\'s misadventures.', cat: 'french-lit', color: '#b7950b', height: 115, pdf: 'https://www.gutenberg.org/ebooks/19942' },
 { title: 'The Phantom of the Opera', author: 'Gaston Leroux', desc: 'A masked genius haunts the Paris Opera — romance, mystery, and obsession beneath the chandelier.', cat: 'french-lit', color: '#2c2c54', height: 128, pdf: 'https://www.gutenberg.org/ebooks/175' },
-
 // ══════════════════════════════════════
 // POETRY & DRAMA
 // ══════════════════════════════════════
-{ title: 'Complete Works of Shakespeare', author: 'William Shakespeare', desc: 'Hamlet, Macbeth, Romeo and Juliet, King Lear, Othello, The Tempest — the entire canon.', cat: 'poetry', color: '#6b3f20', height: 160, pdf: 'https://www.gutenberg.org/ebooks/100' },
 { title: 'Leaves of Grass', author: 'Walt Whitman', desc: '"I contain multitudes." The great democratic epic of American poetry — celebrating the self and nature.', cat: 'poetry', color: '#1e8449', height: 140, pdf: 'https://www.gutenberg.org/ebooks/1322' },
 { title: 'The Divine Comedy', author: 'Dante Alighieri', desc: 'Inferno, Purgatorio, Paradiso — a soul\'s journey through the afterlife. The pinnacle of Italian literature.', cat: 'poetry', color: '#922b21', height: 148, pdf: 'https://www.gutenberg.org/ebooks/8800' },
-{ title: 'Paradise Lost', author: 'John Milton', desc: 'The fall of Satan and the expulsion from Eden — the greatest epic poem in English.', cat: 'poetry', color: '#1c2833', height: 142, pdf: 'https://www.gutenberg.org/ebooks/26' },
-{ title: 'The Importance of Being Earnest', author: 'Oscar Wilde', desc: 'A comedy of mistaken identity, double lives, and Victorian hypocrisy. Wilde\'s wittiest play.', cat: 'poetry', color: '#b7950b', height: 112, pdf: 'https://www.gutenberg.org/ebooks/844' },
 { title: 'The Raven and Other Poems', author: 'Edgar Allan Poe', desc: '"Nevermore." Poe\'s haunting poems of loss, death, and the supernatural.', cat: 'poetry', color: '#2c2c54', height: 115, pdf: 'https://www.gutenberg.org/ebooks/17192' },
 { title: 'Metamorphoses', author: 'Ovid', desc: '250 myths of transformation — from chaos to Caesar. The source of classical mythology.', cat: 'poetry', color: '#b7950b', height: 145, pdf: 'http://classics.mit.edu/Ovid/metam.html' },
-
 // ══════════════════════════════════════
 // RELIGION & SPIRITUALITY
 // ══════════════════════════════════════
-{ title: 'The Bhagavad Gita', author: 'Vyasa (tr. Edwin Arnold)', desc: 'Krishna counsels Arjuna on duty, action, and devotion — the heart of Hindu philosophy.', cat: 'religion', color: '#e67e22', height: 118, pdf: 'https://www.gutenberg.org/ebooks/2388' },
-{ title: 'The King James Bible', author: 'Various', desc: 'The foundational English translation of the Bible — literature, history, and faith in one volume.', cat: 'religion', color: '#6b3f20', height: 160, pdf: 'https://www.gutenberg.org/ebooks/10' },
-{ title: 'The Dhammapada', author: 'Buddha (tr. Müller)', desc: 'Verses of the Dharma — the Buddha\'s essential teachings on the path to enlightenment.', cat: 'religion', color: '#b7950b', height: 112, pdf: 'https://www.gutenberg.org/ebooks/2017' },
 { title: 'Confessions', author: 'Saint Augustine', desc: 'One of the first autobiographies — Augustine\'s spiritual journey from sin to faith.', cat: 'religion', color: '#795548', height: 135, pdf: 'https://www.gutenberg.org/ebooks/3296' },
-
 // ══════════════════════════════════════
 // CHILDREN & FANTASY
 // ══════════════════════════════════════
-{ title: 'Alice in Wonderland', author: 'Lewis Carroll', desc: 'Down the rabbit hole into a world of nonsense, wordplay, and wonderfully mad characters.', cat: 'children', color: '#2980b9', height: 118, pdf: 'https://www.gutenberg.org/ebooks/11' },
-{ title: 'Through the Looking-Glass', author: 'Lewis Carroll', desc: 'Alice steps through a mirror into a chess-board world. Jabberwocky, Tweedledee, and more.', cat: 'children', color: '#6c5ce7', height: 115, pdf: 'https://www.gutenberg.org/ebooks/12' },
 { title: 'The Jungle Book', author: 'Rudyard Kipling', desc: 'Mowgli, raised by wolves in the Indian jungle, learns the law of the wild from Baloo and Bagheera.', cat: 'children', color: '#1e8449', height: 122, pdf: 'https://www.gutenberg.org/ebooks/236' },
-{ title: 'Peter Pan', author: 'J.M. Barrie', desc: 'The boy who never grows up takes the Darling children to Neverland — pirates, fairies, and adventure.', cat: 'children', color: '#27ae60', height: 125, pdf: 'https://www.gutenberg.org/ebooks/16' },
-{ title: 'The Wonderful Wizard of Oz', author: 'L. Frank Baum', desc: 'Dorothy, Toto, and the yellow brick road — a Kansas girl\'s magical journey to the Emerald City.', cat: 'children', color: '#27ae60', height: 120, pdf: 'https://www.gutenberg.org/ebooks/55' },
 { title: 'Grimm\'s Fairy Tales', author: 'Brothers Grimm', desc: 'Cinderella, Rapunzel, Hansel and Gretel, Snow White — the stories that shaped childhood.', cat: 'children', color: '#8e44ad', height: 135, pdf: 'https://www.gutenberg.org/ebooks/2591' },
 { title: 'Aesop\'s Fables', author: 'Aesop', desc: 'The tortoise and the hare, the fox and the grapes — timeless moral tales from ancient Greece.', cat: 'children', color: '#b7950b', height: 118, pdf: 'https://www.gutenberg.org/ebooks/11339' },
 { title: 'The Wind in the Willows', author: 'Kenneth Grahame', desc: 'Mole, Ratty, Badger, and the irrepressible Mr. Toad — a gentle classic of the English countryside.', cat: 'children', color: '#1e8449', height: 122, pdf: 'https://www.gutenberg.org/ebooks/289' },
-{ title: 'Anne of Green Gables', author: 'L.M. Montgomery', desc: 'An imaginative orphan girl transforms the lives of everyone on Prince Edward Island.', cat: 'children', color: '#d35400', height: 130, pdf: 'https://www.gutenberg.org/ebooks/45' },
 ];
-
 // ══════════════════════════════════════
 // ADDITIONAL BOOKS TO REACH 200+
 // ══════════════════════════════════════
 BOOKS.push(
 // More Classic Fiction
-{ title: 'Middlemarch', author: 'George Eliot', desc: 'Provincial life in Victorian England — idealism, marriage, politics, and reform in a small town.', cat: 'classic-fiction', color: '#5b2c6f', height: 152, pdf: 'https://www.gutenberg.org/ebooks/145' },
-{ title: 'Tess of the d\'Urbervilles', author: 'Thomas Hardy', desc: 'A young woman is destroyed by fate, society, and the men who claim to love her.', cat: 'classic-fiction', color: '#7b241c', height: 138, pdf: 'https://www.gutenberg.org/ebooks/110' },
 { title: 'The Scarlet Letter', author: 'Nathaniel Hawthorne', desc: 'Hester Prynne wears the mark of shame in Puritan New England — sin, guilt, and redemption.', cat: 'classic-fiction', color: '#922b21', height: 125, pdf: 'https://www.gutenberg.org/ebooks/25344' },
 { title: 'Little Women', author: 'Louisa May Alcott', desc: 'The four March sisters growing up during the Civil War — Jo, Meg, Beth, and Amy.', cat: 'classic-fiction', color: '#d4a574', height: 135, pdf: 'https://www.gutenberg.org/ebooks/514' },
-{ title: 'The Adventures of Tom Sawyer', author: 'Mark Twain', desc: 'A mischievous boy on the Mississippi — treasure, caves, and whitewashed fences.', cat: 'classic-fiction', color: '#e67e22', height: 122, pdf: 'https://www.gutenberg.org/ebooks/74' },
-{ title: 'The Age of Innocence', author: 'Edith Wharton', desc: 'Love and convention in 1870s New York high society. Wharton won the Pulitzer Prize.', cat: 'classic-fiction', color: '#d4a574', height: 128, pdf: 'https://www.gutenberg.org/ebooks/541' },
-{ title: 'Northanger Abbey', author: 'Jane Austen', desc: 'A young gothic novel enthusiast visits Bath and discovers that real life is stranger than fiction.', cat: 'classic-fiction', color: '#d4a574', height: 122, pdf: 'https://www.gutenberg.org/ebooks/121' },
-{ title: 'Persuasion', author: 'Jane Austen', desc: 'Anne Elliot gets a second chance at love eight years after being persuaded to reject Captain Wentworth.', cat: 'classic-fiction', color: '#d4a574', height: 120, pdf: 'https://www.gutenberg.org/ebooks/105' },
-
 // More Adventure
-{ title: 'The Scarlet Pimpernel', author: 'Baroness Orczy', desc: 'A seemingly foppish English lord secretly rescues French aristocrats from the guillotine.', cat: 'adventure', color: '#c0392b', height: 125, pdf: 'https://www.gutenberg.org/ebooks/60' },
-{ title: 'King Solomon\'s Mines', author: 'H. Rider Haggard', desc: 'Allan Quatermain leads an expedition into uncharted Africa in search of legendary diamond mines.', cat: 'adventure', color: '#b7950b', height: 130, pdf: 'https://www.gutenberg.org/ebooks/2166' },
 { title: 'The Last of the Mohicans', author: 'James Fenimore Cooper', desc: 'Frontier adventure during the French and Indian War — Hawkeye and the Mohican warriors.', cat: 'adventure', color: '#1e8449', height: 135, pdf: 'https://www.gutenberg.org/ebooks/27681' },
 { title: 'Kidnapped', author: 'Robert Louis Stevenson', desc: 'David Balfour is kidnapped and shipwrecked in the Scottish Highlands — a tale of loyalty and adventure.', cat: 'adventure', color: '#2874a6', height: 125, pdf: 'https://www.gutenberg.org/ebooks/421' },
-
 // More Sci-Fi
 { title: 'The First Men in the Moon', author: 'H.G. Wells', desc: 'Two men travel to the Moon and discover an underground civilization of insectoid Selenites.', cat: 'sci-fi', color: '#5d6d7e', height: 122, pdf: 'https://www.gutenberg.org/ebooks/1013' },
-{ title: 'From the Earth to the Moon', author: 'Jules Verne', desc: 'Post-Civil War Americans build a giant cannon to shoot a projectile to the Moon.', cat: 'sci-fi', color: '#2c3e50', height: 125, pdf: 'https://www.gutenberg.org/ebooks/83' },
 { title: 'The Sleeper Awakes', author: 'H.G. Wells', desc: 'A man wakes after 200 years to find himself ruler of a dystopian future world.', cat: 'sci-fi', color: '#1c2833', height: 128, pdf: 'https://www.gutenberg.org/ebooks/12163' },
-
 // More Philosophy
 { title: 'Apology', author: 'Plato', desc: 'Socrates defends himself at trial — the examined life, the duty of a philosopher, and choosing death over silence.', cat: 'philosophy', color: '#4a6fa5', height: 110, pdf: 'http://classics.mit.edu/Plato/apology.html' },
 { title: 'Phaedo', author: 'Plato', desc: 'Socrates\' final hours — arguments for the immortality of the soul, told by those who watched him die.', cat: 'philosophy', color: '#4a6fa5', height: 118, pdf: 'http://classics.mit.edu/Plato/phaedo.html' },
 { title: 'Symposium', author: 'Plato', desc: 'A dinner party debate on the nature of love — featuring speeches by Aristophanes, Socrates, and Alcibiades.', cat: 'philosophy', color: '#4a6fa5', height: 115, pdf: 'http://classics.mit.edu/Plato/symposium.html' },
 { title: 'Enchiridion', author: 'Epictetus', desc: 'A Stoic handbook on what is and isn\'t within our control. Practical philosophy for daily life.', cat: 'philosophy', color: '#795548', height: 110, pdf: 'http://classics.mit.edu/Epictetus/epicench.html' },
 { title: 'On the Shortness of Life', author: 'Seneca', desc: 'Life is long enough if you know how to use it. Seneca\'s Stoic wisdom on time and priorities.', cat: 'philosophy', color: '#795548', height: 112, pdf: 'https://www.gutenberg.org/ebooks/56075' },
-
 // More Russian Lit
 { title: 'The Overcoat', author: 'Nikolai Gogol', desc: 'A poor clerk\'s new overcoat briefly transforms his life — then tragedy strikes. Russian realism\'s origin.', cat: 'russian-lit', color: '#5d6d7e', height: 110, pdf: 'https://www.gutenberg.org/ebooks/36238' },
 { title: 'A Hero of Our Time', author: 'Mikhail Lermontov', desc: 'The cynical, magnetic Pechorin drifts through the Caucasus — Russia\'s first psychological novel.', cat: 'russian-lit', color: '#2e4053', height: 125, pdf: 'https://www.gutenberg.org/ebooks/913' },
 { title: 'Eugene Onegin', author: 'Alexander Pushkin', desc: 'A bored aristocrat rejects love and lives to regret it — Russia\'s greatest verse novel.', cat: 'russian-lit', color: '#6c5ce7', height: 130, pdf: 'https://www.gutenberg.org/ebooks/23997' },
-
 // More History
 { title: 'The Prince', author: 'Niccolò Machiavelli', desc: 'How to acquire and maintain power — ruthlessly practical political philosophy from Renaissance Florence.', cat: 'history', color: '#6b3f20', height: 118, pdf: 'https://www.gutenberg.org/ebooks/1232' },
 { title: 'The Annals', author: 'Tacitus', desc: 'Imperial Rome from Tiberius to Nero — political corruption, palace intrigue, and Tacitean prose.', cat: 'history', color: '#7b241c', height: 145, pdf: 'http://classics.mit.edu/Tacitus/annals.html' },
-
 // More Poetry
-{ title: 'Songs of Innocence and Experience', author: 'William Blake', desc: 'The Lamb and the Tyger — Blake\'s visionary poems on childhood, nature, and the human condition.', cat: 'poetry', color: '#b7950b', height: 115, pdf: 'https://www.gutenberg.org/ebooks/1934' },
 { title: 'Sonnets', author: 'William Shakespeare', desc: '154 sonnets on love, beauty, mortality, and time — "Shall I compare thee to a summer\'s day?"', cat: 'poetry', color: '#6b3f20', height: 120, pdf: 'https://www.gutenberg.org/ebooks/1041' },
 { title: 'The Rime of the Ancient Mariner', author: 'Samuel Taylor Coleridge', desc: 'An albatross, a cursed voyage, and the price of killing nature — Romantic poetry at its most haunting.', cat: 'poetry', color: '#1a5276', height: 112, pdf: 'https://www.gutenberg.org/ebooks/151' },
-
 // More Children & Fantasy
-{ title: 'The Secret Garden', author: 'Frances Hodgson Burnett', desc: 'A spoiled orphan discovers a hidden garden and transforms her life — and the lives around her.', cat: 'children', color: '#1e8449', height: 125, pdf: 'https://www.gutenberg.org/ebooks/113' },
 { title: 'A Little Princess', author: 'Frances Hodgson Burnett', desc: 'Sara Crewe goes from riches to rags in a London boarding school — imagination conquers adversity.', cat: 'children', color: '#d4a574', height: 120, pdf: 'https://www.gutenberg.org/ebooks/146' },
 { title: 'Black Beauty', author: 'Anna Sewell', desc: 'A horse\'s life story — from gentle country lanes to harsh London streets. A plea for animal welfare.', cat: 'children', color: '#1c2833', height: 122, pdf: 'https://www.gutenberg.org/ebooks/271' },
 { title: 'The Adventures of Pinocchio', author: 'Carlo Collodi', desc: 'A wooden puppet dreams of becoming a real boy — lies, donkeys, and a whale along the way.', cat: 'children', color: '#e67e22', height: 125, pdf: 'https://www.gutenberg.org/ebooks/500' },
-
 // More Biology
-{ title: 'The Autobiography of Darwin', author: 'Charles Darwin', desc: 'Darwin\'s own account of his life — from beetle-collecting schoolboy to revolutionary scientist.', cat: 'biology', color: '#117a65', height: 122, pdf: 'https://www.gutenberg.org/ebooks/2010' },
-
 // More Programming
 { title: 'How to Think Like a CS', author: 'Allen Downey', desc: 'Programming concepts taught through Python — loops, functions, data structures, and algorithmic thinking.', cat: 'programming', color: '#2980b9', height: 128, pdf: 'https://greenteapress.com/wp/think-python-2e/' },
-
 // More Economics
 { title: 'The Theory of Moral Sentiments', author: 'Adam Smith', desc: 'Before The Wealth of Nations, Smith wrote on sympathy, justice, and the moral foundations of society.', cat: 'politics', color: '#8B4513', height: 142, pdf: 'https://www.gutenberg.org/ebooks/58559' },
 );
-
 BOOKS.push(
-{ title: 'Mansfield Park', author: 'Jane Austen', desc: 'A poor relation raised by wealthy relatives navigates love, morality, and her place in society.', cat: 'classic-fiction', color: '#d4a574', height: 135, pdf: 'https://www.gutenberg.org/ebooks/141' },
-{ title: 'The Woman in White', author: 'Wilkie Collins', desc: 'A mysterious woman, a sinister count, and a conspiracy — the first great mystery novel.', cat: 'mystery', color: '#5d6d7e', height: 145, pdf: 'https://www.gutenberg.org/ebooks/583' },
 { title: 'The Moonstone', author: 'Wilkie Collins', desc: 'A stolen Indian diamond and its curse — the first English detective novel.', cat: 'mystery', color: '#b7950b', height: 140, pdf: 'https://www.gutenberg.org/ebooks/155' },
 { title: 'Erewhon', author: 'Samuel Butler', desc: 'A satirical utopia where machines are banned and illness is a crime. Victorian social commentary.', cat: 'sci-fi', color: '#2e4053', height: 122, pdf: 'https://www.gutenberg.org/ebooks/1906' },
-{ title: 'Looking Backward', author: 'Edward Bellamy', desc: 'A man wakes in the year 2000 to find a socialist utopia — hugely influential in its time.', cat: 'sci-fi', color: '#1a5276', height: 125, pdf: 'https://www.gutenberg.org/ebooks/624' },
 { title: 'Nana', author: 'Émile Zola', desc: 'A courtesan rises and falls in Second Empire Paris — naturalism and social critique.', cat: 'french-lit', color: '#922b21', height: 135, pdf: 'https://www.gutenberg.org/ebooks/5250' },
 { title: 'Thérèse Raquin', author: 'Émile Zola', desc: 'Adultery, murder, and guilt destroy two lovers — a dark naturalist psychological study.', cat: 'french-lit', color: '#1c2833', height: 125, pdf: 'https://www.gutenberg.org/ebooks/6626' },
-{ title: 'Resurrection', author: 'Leo Tolstoy', desc: 'A nobleman seeks redemption after recognizing a woman he wronged years ago. Tolstoy\'s final novel.', cat: 'russian-lit', color: '#7b241c', height: 142, pdf: 'https://www.gutenberg.org/ebooks/1938' },
 { title: 'Flatland', author: 'Edwin Abbott', desc: 'A square living in a 2D world discovers the third dimension — mathematics, satire, and perception.', cat: 'sci-fi', color: '#6c5ce7', height: 110, pdf: 'https://www.gutenberg.org/ebooks/201' },
 { title: 'The Aeneid', author: 'Virgil', desc: 'Aeneas flees Troy and founds Rome — the Roman national epic, bridging Homer and empire.', cat: 'poetry', color: '#922b21', height: 142, pdf: 'https://www.gutenberg.org/ebooks/228' },
 { title: 'Beowulf', author: 'Anonymous', desc: 'A warrior battles monsters and a dragon in Anglo-Saxon England — the oldest English epic poem.', cat: 'poetry', color: '#5d6d7e', height: 130, pdf: 'https://www.gutenberg.org/ebooks/16328' },
-{ title: 'Canterbury Tales', author: 'Geoffrey Chaucer', desc: 'Pilgrims swap stories on the road to Canterbury — bawdy, funny, and profoundly human.', cat: 'poetry', color: '#6b3f20', height: 148, pdf: 'https://www.gutenberg.org/ebooks/2383' },
 { title: 'Oedipus Rex', author: 'Sophocles', desc: 'A king discovers he has killed his father and married his mother — the ultimate Greek tragedy.', cat: 'poetry', color: '#7b241c', height: 112, pdf: 'http://classics.mit.edu/Sophocles/oedipus.html' },
 { title: 'Antigone', author: 'Sophocles', desc: 'A woman defies the king to bury her brother — duty to family vs. duty to the state.', cat: 'poetry', color: '#7b241c', height: 110, pdf: 'http://classics.mit.edu/Sophocles/antigone.html' },
 { title: 'The Pillow Book', author: 'Sei Shōnagon', desc: 'A Japanese court lady\'s observations, lists, and musings from Heian-era Japan. World literature\'s first blog.', cat: 'classic-fiction', color: '#b7950b', height: 128, pdf: 'https://www.gutenberg.org/ebooks/56051' },
-{ title: 'Dao De Jing (Legge)', author: 'Laozi (tr. Legge)', desc: 'James Legge\'s scholarly translation of the Tao Te Ching with extensive commentary.', cat: 'philosophy', color: '#2d5a27', height: 115, pdf: 'https://www.gutenberg.org/ebooks/49965' },
 { title: 'Think DSP', author: 'Allen Downey', desc: 'Digital signal processing in Python — spectral analysis, filtering, and audio processing.', cat: 'programming', color: '#8e44ad', height: 125, pdf: 'https://greenteapress.com/wp/think-dsp/' },
 { title: 'Think Complexity', author: 'Allen Downey', desc: 'Complexity science — cellular automata, agent-based models, networks, and evolution.', cat: 'programming', color: '#d35400', height: 128, pdf: 'https://greenteapress.com/wp/think-complexity-2e/' },
 { title: 'Intro to Probability', author: 'Grinstead & Snell', desc: 'A clear, example-driven introduction to probability theory. Free from the AMS.', cat: 'math', color: '#2874a6', height: 140, pdf: 'https://math.dartmouth.edu/~prob/prob/prob.pdf' },
 { title: 'Convex Optimization', author: 'Boyd & Vandenberghe', desc: 'The standard reference on convex optimization — theory, algorithms, and applications. Free from Stanford.', cat: 'math', color: '#1a5276', height: 148, pdf: 'https://web.stanford.edu/~boyd/cvxbook/' },
 );
-
 // ══════════════════════════════════════════════════════════════
 // EXPANDED LIBRARY — 400+ additional books across all categories
 // ══════════════════════════════════════════════════════════════
 BOOKS.push(
-
 // ──────────────────────────────────────
 // CLASSIC FICTION (~80 books)
 // ──────────────────────────────────────
-{ title: 'Far from the Madding Crowd', author: 'Thomas Hardy', desc: 'Bathsheba Everdene navigates three suitors in rural Wessex — passion, loyalty, and independence.', cat: 'classic-fiction', color: '#6b3f20', height: 135, pdf: 'https://www.gutenberg.org/ebooks/107' },
-{ title: 'The Mayor of Casterbridge', author: 'Thomas Hardy', desc: 'A man sells his wife at a fair and spends a lifetime atoning — fate and character in Wessex.', cat: 'classic-fiction', color: '#7b241c', height: 138, pdf: 'https://www.gutenberg.org/ebooks/143' },
 { title: 'Jude the Obscure', author: 'Thomas Hardy', desc: 'A stonemason dreams of Oxford but is crushed by rigid social conventions and tragic love.', cat: 'classic-fiction', color: '#4a235a', height: 140, pdf: 'https://www.gutenberg.org/ebooks/153' },
-{ title: 'The Return of the Native', author: 'Thomas Hardy', desc: 'Eustacia Vye yearns to escape Egdon Heath — passion and restlessness against an indifferent landscape.', cat: 'classic-fiction', color: '#5b2c6f', height: 136, pdf: 'https://www.gutenberg.org/ebooks/122' },
 { title: 'The Woodlanders', author: 'Thomas Hardy', desc: 'Love triangles among the apple orchards and timber woods of rural Dorset.', cat: 'classic-fiction', color: '#2d5a27', height: 132, pdf: 'https://www.gutenberg.org/ebooks/482' },
-{ title: 'Silas Marner', author: 'George Eliot', desc: 'A miserly weaver finds redemption through a golden-haired orphan child.', cat: 'classic-fiction', color: '#795548', height: 118, pdf: 'https://www.gutenberg.org/ebooks/550' },
 { title: 'The Mill on the Floss', author: 'George Eliot', desc: 'Maggie Tulliver struggles between duty to family and her own passionate nature beside the river Floss.', cat: 'classic-fiction', color: '#5b2c6f', height: 145, pdf: 'https://www.gutenberg.org/ebooks/6688' },
 { title: 'Adam Bede', author: 'George Eliot', desc: 'A carpenter, a dairymaid, and a preacher entangled in love and tragedy in rural England.', cat: 'classic-fiction', color: '#6b3f20', height: 142, pdf: 'https://www.gutenberg.org/ebooks/507' },
 { title: 'Daniel Deronda', author: 'George Eliot', desc: 'A young Englishman discovers his Jewish heritage while a brilliant woman struggles in a loveless marriage.', cat: 'classic-fiction', color: '#4a6fa5', height: 150, pdf: 'https://www.gutenberg.org/ebooks/7469' },
@@ -371,68 +277,45 @@ BOOKS.push(
 { title: 'The House of Mirth', author: 'Edith Wharton', desc: 'Lily Bart descends through New York society as she fails to secure a wealthy husband.', cat: 'classic-fiction', color: '#922b21', height: 135, pdf: 'https://www.gutenberg.org/ebooks/284' },
 { title: 'Ethan Frome', author: 'Edith Wharton', desc: 'A bleak love triangle in wintry rural Massachusetts ends in devastating irony.', cat: 'classic-fiction', color: '#5d6d7e', height: 115, pdf: 'https://www.gutenberg.org/ebooks/4517' },
 { title: 'The Custom of the Country', author: 'Edith Wharton', desc: 'Undine Spragg climbs the social ladder through serial marriages in New York and Paris.', cat: 'classic-fiction', color: '#b7950b', height: 140, pdf: 'https://www.gutenberg.org/ebooks/8467' },
-{ title: 'Summer', author: 'Edith Wharton', desc: 'A young woman in a small New England town awakens to desire with tragic consequences.', cat: 'classic-fiction', color: '#d35400', height: 118, pdf: 'https://www.gutenberg.org/ebooks/2189' },
 { title: 'Lord Jim', author: 'Joseph Conrad', desc: 'A disgraced seaman seeks redemption in the remote jungles of Southeast Asia.', cat: 'classic-fiction', color: '#1c2833', height: 135, pdf: 'https://www.gutenberg.org/ebooks/5658' },
-{ title: 'Nostromo', author: 'Joseph Conrad', desc: 'Revolution, silver, and corruption in a fictional South American republic.', cat: 'classic-fiction', color: '#2e4053', height: 148, pdf: 'https://www.gutenberg.org/ebooks/2021' },
 { title: 'The Secret Agent', author: 'Joseph Conrad', desc: 'A spy and anarchist provocateur in Victorian London plots a bombing at Greenwich Observatory.', cat: 'classic-fiction', color: '#1c2833', height: 128, pdf: 'https://www.gutenberg.org/ebooks/974' },
 { title: 'Mrs Dalloway', author: 'Virginia Woolf', desc: 'One day in the life of Clarissa Dalloway as she prepares for a party in post-war London.', cat: 'classic-fiction', color: '#6c5ce7', height: 125, pdf: 'https://www.gutenberg.org/ebooks/63107' },
 { title: 'To the Lighthouse', author: 'Virginia Woolf', desc: 'The Ramsay family visits their summer home — memory, art, and the passage of time.', cat: 'classic-fiction', color: '#2980b9', height: 128, pdf: 'https://www.gutenberg.org/ebooks/64960' },
 { title: 'Sons and Lovers', author: 'D.H. Lawrence', desc: 'Paul Morel struggles between his mother\'s possessive love and his own romantic desires.', cat: 'classic-fiction', color: '#922b21', height: 140, pdf: 'https://www.gutenberg.org/ebooks/5150' },
 { title: 'Women in Love', author: 'D.H. Lawrence', desc: 'Two sisters pursue love and self-fulfillment in the English Midlands — passion versus intellect.', cat: 'classic-fiction', color: '#7b241c', height: 145, pdf: 'https://www.gutenberg.org/ebooks/4240' },
-{ title: 'The Rainbow', author: 'D.H. Lawrence', desc: 'Three generations of the Brangwen family struggle for fulfillment in an industrializing England.', cat: 'classic-fiction', color: '#e67e22', height: 148, pdf: 'https://www.gutenberg.org/ebooks/3514' },
 { title: 'A Room with a View', author: 'E.M. Forster', desc: 'Lucy Honeychurch must choose between convention and passion after a kiss in Florence.', cat: 'classic-fiction', color: '#27ae60', height: 122, pdf: 'https://www.gutenberg.org/ebooks/2641' },
 { title: 'Howards End', author: 'E.M. Forster', desc: '"Only connect." Three families represent different facets of Edwardian England — intellect, business, and poverty.', cat: 'classic-fiction', color: '#1e8449', height: 135, pdf: 'https://www.gutenberg.org/ebooks/2946' },
 { title: 'A Passage to India', author: 'E.M. Forster', desc: 'A visit to the Marabar Caves exposes the fault lines between British colonizers and Indians.', cat: 'classic-fiction', color: '#b7950b', height: 138, pdf: 'https://www.gutenberg.org/ebooks/61156' },
 { title: 'Barchester Towers', author: 'Anthony Trollope', desc: 'Clerical intrigue and social comedy in the fictional cathedral city of Barchester.', cat: 'classic-fiction', color: '#795548', height: 142, pdf: 'https://www.gutenberg.org/ebooks/3409' },
-{ title: 'The Warden', author: 'Anthony Trollope', desc: 'A gentle clergyman faces public scandal over his comfortable sinecure — conscience vs. comfort.', cat: 'classic-fiction', color: '#6b3f20', height: 120, pdf: 'https://www.gutenberg.org/ebooks/619' },
 { title: 'The Way We Live Now', author: 'Anthony Trollope', desc: 'A panoramic satire of Victorian greed centered on a mysterious foreign financier.', cat: 'classic-fiction', color: '#2c3e50', height: 155, pdf: 'https://www.gutenberg.org/ebooks/5231' },
 { title: 'North and South', author: 'Elizabeth Gaskell', desc: 'A southern gentlewoman moves to an industrial northern town and clashes with a mill owner.', cat: 'classic-fiction', color: '#5b2c6f', height: 138, pdf: 'https://www.gutenberg.org/ebooks/4276' },
 { title: 'Cranford', author: 'Elizabeth Gaskell', desc: 'Gentle comedy of manners in a small English town dominated by elderly ladies.', cat: 'classic-fiction', color: '#d4a574', height: 118, pdf: 'https://www.gutenberg.org/ebooks/394' },
 { title: 'Wives and Daughters', author: 'Elizabeth Gaskell', desc: 'Molly Gibson navigates family tensions when her widowed father remarries — Gaskell\'s final masterpiece.', cat: 'classic-fiction', color: '#8e44ad', height: 150, pdf: 'https://www.gutenberg.org/ebooks/4274' },
-{ title: 'Vanity Fair', author: 'William Makepeace Thackeray', desc: 'Becky Sharp schemes her way through Regency society — a novel without a hero.', cat: 'classic-fiction', color: '#b7950b', height: 155, pdf: 'https://www.gutenberg.org/ebooks/599' },
 { title: 'The History of Henry Esmond', author: 'William Makepeace Thackeray', desc: 'A young man navigates love, war, and politics in early 18th-century England.', cat: 'classic-fiction', color: '#6b3f20', height: 142, pdf: 'https://www.gutenberg.org/ebooks/2511' },
 { title: 'Clarissa', author: 'Samuel Richardson', desc: 'The longest novel in English — a virtuous woman trapped between a scheming rake and her tyrannical family.', cat: 'classic-fiction', color: '#922b21', height: 160, pdf: 'https://www.gutenberg.org/ebooks/9296' },
 { title: 'Pamela', author: 'Samuel Richardson', desc: 'A servant girl resists her master\'s advances — the novel that launched the epistolary form.', cat: 'classic-fiction', color: '#d4a574', height: 140, pdf: 'https://www.gutenberg.org/ebooks/6124' },
 { title: 'Tom Jones', author: 'Henry Fielding', desc: 'A foundling\'s picaresque adventures through 18th-century England — bawdy, comic, and humane.', cat: 'classic-fiction', color: '#e67e22', height: 155, pdf: 'https://www.gutenberg.org/ebooks/6593' },
 { title: 'Joseph Andrews', author: 'Henry Fielding', desc: 'A virtuous footman and his friend Parson Adams encounter rogues and hypocrites on the road.', cat: 'classic-fiction', color: '#d35400', height: 130, pdf: 'https://www.gutenberg.org/ebooks/9611' },
 { title: 'Tristram Shandy', author: 'Laurence Sterne', desc: 'The most eccentric novel in English — digressions, blank pages, and a narrator who can\'t get born.', cat: 'classic-fiction', color: '#2980b9', height: 148, pdf: 'https://www.gutenberg.org/ebooks/1079' },
-{ title: 'A Sentimental Journey', author: 'Laurence Sterne', desc: 'A whimsical tour through France celebrating feeling and sensibility over reason.', cat: 'classic-fiction', color: '#27ae60', height: 115, pdf: 'https://www.gutenberg.org/ebooks/804' },
 { title: 'Moll Flanders', author: 'Daniel Defoe', desc: 'A resourceful woman survives by her wits through crime, marriage, and transportation to Virginia.', cat: 'classic-fiction', color: '#6b3f20', height: 135, pdf: 'https://www.gutenberg.org/ebooks/370' },
 { title: 'A Journal of the Plague Year', author: 'Daniel Defoe', desc: 'A vivid fictional account of the Great Plague of London in 1665.', cat: 'classic-fiction', color: '#1c2833', height: 130, pdf: 'https://www.gutenberg.org/ebooks/376' },
-{ title: 'The Importance of Being Earnest', author: 'Oscar Wilde', desc: 'A trivial comedy for serious people — mistaken identity and Victorian hypocrisy.', cat: 'classic-fiction', color: '#b7950b', height: 112, pdf: 'https://www.gutenberg.org/ebooks/844' },
 { title: 'An Ideal Husband', author: 'Oscar Wilde', desc: 'A politician\'s past comes back to haunt him — Wilde\'s witty comedy of blackmail and morality.', cat: 'classic-fiction', color: '#8e44ad', height: 118, pdf: 'https://www.gutenberg.org/ebooks/885' },
-{ title: 'Lady Windermere\'s Fan', author: 'Oscar Wilde', desc: 'A society woman suspects her husband of infidelity — a comedy of manners with a surprising twist.', cat: 'classic-fiction', color: '#6c5ce7', height: 115, pdf: 'https://www.gutenberg.org/ebooks/790' },
-{ title: 'A Connecticut Yankee', author: 'Mark Twain', desc: 'A 19th-century American is transported to King Arthur\'s court — satire meets time travel.', cat: 'classic-fiction', color: '#e67e22', height: 132, pdf: 'https://www.gutenberg.org/ebooks/86' },
 { title: 'The Prince and the Pauper', author: 'Mark Twain', desc: 'A prince and a beggar boy switch places in Tudor England — a tale of identity and justice.', cat: 'classic-fiction', color: '#d35400', height: 125, pdf: 'https://www.gutenberg.org/ebooks/1837' },
-{ title: 'Pudd\'nhead Wilson', author: 'Mark Twain', desc: 'A switched-at-birth mystery in a Missouri slave town — race, identity, and fingerprinting.', cat: 'classic-fiction', color: '#795548', height: 120, pdf: 'https://www.gutenberg.org/ebooks/102' },
-{ title: 'The House of the Seven Gables', author: 'Nathaniel Hawthorne', desc: 'A cursed New England family lives in the shadow of ancestral sin and a crumbling mansion.', cat: 'classic-fiction', color: '#4a235a', height: 132, pdf: 'https://www.gutenberg.org/ebooks/77' },
-{ title: 'The Blithedale Romance', author: 'Nathaniel Hawthorne', desc: 'Idealists at a utopian commune discover that human nature resists perfection.', cat: 'classic-fiction', color: '#5b2c6f', height: 125, pdf: 'https://www.gutenberg.org/ebooks/2081' },
 { title: 'Billy Budd', author: 'Herman Melville', desc: 'An innocent sailor is condemned to death aboard a warship — justice, law, and moral ambiguity.', cat: 'classic-fiction', color: '#1a5276', height: 118, pdf: 'https://www.gutenberg.org/ebooks/12367' },
 { title: 'Bartleby, the Scrivener', author: 'Herman Melville', desc: '"I would prefer not to." A Wall Street copyist\'s passive resistance baffles his employer.', cat: 'classic-fiction', color: '#5d6d7e', height: 110, pdf: 'https://www.gutenberg.org/ebooks/11231' },
 { title: 'The Awakening', author: 'Kate Chopin', desc: 'A married woman in New Orleans discovers her own desires — a landmark of feminist fiction.', cat: 'classic-fiction', color: '#2980b9', height: 118, pdf: 'https://www.gutenberg.org/ebooks/160' },
-{ title: 'The Red Badge of Courage', author: 'Stephen Crane', desc: 'A young soldier confronts fear and cowardice during the Civil War — impressionistic war fiction.', cat: 'classic-fiction', color: '#c0392b', height: 118, pdf: 'https://www.gutenberg.org/ebooks/73' },
 { title: 'Maggie: A Girl of the Streets', author: 'Stephen Crane', desc: 'A young woman is destroyed by poverty and environment in New York\'s Bowery slums.', cat: 'classic-fiction', color: '#5d6d7e', height: 112, pdf: 'https://www.gutenberg.org/ebooks/447' },
 { title: 'Sister Carrie', author: 'Theodore Dreiser', desc: 'A small-town girl rises in Chicago and New York while her lover declines — naturalism at its peak.', cat: 'classic-fiction', color: '#2c3e50', height: 140, pdf: 'https://www.gutenberg.org/ebooks/5267' },
-{ title: 'An American Tragedy', author: 'Theodore Dreiser', desc: 'A young man\'s ambition leads to murder — Dreiser\'s epic indictment of the American Dream.', cat: 'classic-fiction', color: '#1c2833', height: 155, pdf: 'https://www.gutenberg.org/ebooks/140' },
-{ title: 'The Jungle', author: 'Upton Sinclair', desc: 'An immigrant family is crushed by the Chicago meatpacking industry — the novel that changed food safety.', cat: 'classic-fiction', color: '#922b21', height: 138, pdf: 'https://www.gutenberg.org/ebooks/140' },
 { title: 'Martin Eden', author: 'Jack London', desc: 'A working-class sailor educates himself to become a writer but is disillusioned by success.', cat: 'classic-fiction', color: '#1e8449', height: 135, pdf: 'https://www.gutenberg.org/ebooks/1056' },
 { title: 'The Sea-Wolf', author: 'Jack London', desc: 'A literary critic is captured by the brutal captain Wolf Larsen on a seal-hunting schooner.', cat: 'classic-fiction', color: '#1a5276', height: 132, pdf: 'https://www.gutenberg.org/ebooks/1074' },
 { title: 'The Iron Heel', author: 'Jack London', desc: 'A prophetic dystopian novel about the rise of a fascist oligarchy in America.', cat: 'classic-fiction', color: '#7b241c', height: 128, pdf: 'https://www.gutenberg.org/ebooks/1164' },
 { title: 'My Ántonia', author: 'Willa Cather', desc: 'A Bohemian immigrant girl grows up on the Nebraska prairie — memory, landscape, and endurance.', cat: 'classic-fiction', color: '#b7950b', height: 125, pdf: 'https://www.gutenberg.org/ebooks/242' },
-{ title: 'O Pioneers!', author: 'Willa Cather', desc: 'A Swedish immigrant woman tames the Nebraska plains through sheer determination and love of the land.', cat: 'classic-fiction', color: '#d35400', height: 120, pdf: 'https://www.gutenberg.org/ebooks/24' },
-{ title: 'The Song of the Lark', author: 'Willa Cather', desc: 'A small-town girl in Colorado becomes a great opera singer through talent and sacrifice.', cat: 'classic-fiction', color: '#e67e22', height: 140, pdf: 'https://www.gutenberg.org/ebooks/44' },
-{ title: 'This Side of Paradise', author: 'F. Scott Fitzgerald', desc: 'A young Princeton man searches for love and identity in post-World War I America.', cat: 'classic-fiction', color: '#2874a6', height: 128, pdf: 'https://www.gutenberg.org/ebooks/805' },
 { title: 'The Beautiful and Damned', author: 'F. Scott Fitzgerald', desc: 'A young couple dissipate their lives waiting for an inheritance — Fitzgerald\'s second novel.', cat: 'classic-fiction', color: '#6c5ce7', height: 135, pdf: 'https://www.gutenberg.org/ebooks/9830' },
-{ title: 'Main Street', author: 'Sinclair Lewis', desc: 'A young bride tries to reform a smug small-town in Minnesota — satire of American provincialism.', cat: 'classic-fiction', color: '#795548', height: 142, pdf: 'https://www.gutenberg.org/ebooks/543' },
-{ title: 'Babbitt', author: 'Sinclair Lewis', desc: 'A conformist businessman in a midwestern city briefly rebels against middle-class emptiness.', cat: 'classic-fiction', color: '#2c3e50', height: 135, pdf: 'https://www.gutenberg.org/ebooks/1156' },
 { title: 'Arrowsmith', author: 'Sinclair Lewis', desc: 'A young doctor battles commercialism and compromise in his pursuit of medical research.', cat: 'classic-fiction', color: '#1e8449', height: 140, pdf: 'https://www.gutenberg.org/ebooks/42585' },
 { title: 'Bleak House', author: 'Charles Dickens', desc: 'A devastating satire of the English legal system and its victims — Dickens at his most ambitious.', cat: 'classic-fiction', color: '#5d6d7e', height: 155, pdf: 'https://www.gutenberg.org/ebooks/1023' },
 { title: 'Our Mutual Friend', author: 'Charles Dickens', desc: 'Dickens\' last completed novel — dust heaps, the Thames, and the corrupting power of money.', cat: 'classic-fiction', color: '#2e4053', height: 152, pdf: 'https://www.gutenberg.org/ebooks/883' },
 { title: 'Little Dorrit', author: 'Charles Dickens', desc: 'A gentle woman cares for her father in the Marshalsea debtors\' prison — Dickens vs. bureaucracy.', cat: 'classic-fiction', color: '#6b3f20', height: 150, pdf: 'https://www.gutenberg.org/ebooks/963' },
 { title: 'Martin Chuzzlewit', author: 'Charles Dickens', desc: 'A young man travels to America and back, exposing selfishness and hypocrisy on both sides of the Atlantic.', cat: 'classic-fiction', color: '#7b241c', height: 148, pdf: 'https://www.gutenberg.org/ebooks/968' },
-{ title: 'The Pickwick Papers', author: 'Charles Dickens', desc: 'Mr. Pickwick and friends embark on comic misadventures across England — Dickens\' first novel.', cat: 'classic-fiction', color: '#e67e22', height: 155, pdf: 'https://www.gutenberg.org/ebooks/580' },
-{ title: 'A Christmas Carol', author: 'Charles Dickens', desc: 'Ebenezer Scrooge is visited by three ghosts who transform his miserly heart — the ultimate Christmas story.', cat: 'classic-fiction', color: '#1e8449', height: 112, pdf: 'https://www.gutenberg.org/ebooks/46' },
-
 // ──────────────────────────────────────
 // SCIENCE FICTION (~40 books)
 // ──────────────────────────────────────
@@ -440,7 +323,6 @@ BOOKS.push(
 { title: 'In the Days of the Comet', author: 'H.G. Wells', desc: 'A comet\'s green gas transforms humanity into rational, loving beings — utopian science fiction.', cat: 'sci-fi', color: '#2874a6', height: 122, pdf: 'https://www.gutenberg.org/ebooks/3797' },
 { title: 'The Food of the Gods', author: 'H.G. Wells', desc: 'A growth-inducing substance creates giant children who threaten to reshape civilization.', cat: 'sci-fi', color: '#1e8449', height: 128, pdf: 'https://www.gutenberg.org/ebooks/11696' },
 { title: 'When the Sleeper Wakes', author: 'H.G. Wells', desc: 'A man sleeps for two centuries and awakens as the owner of half the world.', cat: 'sci-fi', color: '#1c2833', height: 130, pdf: 'https://www.gutenberg.org/ebooks/12163' },
-{ title: 'The War in the Air', author: 'H.G. Wells', desc: 'Aerial warfare devastates civilization — Wells predicts the destructive potential of air power.', cat: 'sci-fi', color: '#5d6d7e', height: 128, pdf: 'https://www.gutenberg.org/ebooks/780' },
 { title: 'A Modern Utopia', author: 'H.G. Wells', desc: 'Two travelers discover a parallel Earth organized as an ideal world state.', cat: 'sci-fi', color: '#2980b9', height: 125, pdf: 'https://www.gutenberg.org/ebooks/6424' },
 { title: 'The Island of Doctor Moreau', author: 'H.G. Wells', desc: 'A shipwrecked man finds an island of surgically modified beast-men ruled by a mad scientist.', cat: 'sci-fi', color: '#7b241c', height: 120, pdf: 'https://www.gutenberg.org/ebooks/159' },
 { title: 'Mysterious Island', author: 'Jules Verne', desc: 'Castaways use science and ingenuity to survive on a volcanic island with strange secrets.', cat: 'sci-fi', color: '#1e8449', height: 145, pdf: 'https://www.gutenberg.org/ebooks/1268' },
@@ -448,19 +330,9 @@ BOOKS.push(
 { title: 'Off on a Comet', author: 'Jules Verne', desc: 'A fragment of Earth is carried away by a comet, and its inhabitants must survive in space.', cat: 'sci-fi', color: '#2c3e50', height: 130, pdf: 'https://www.gutenberg.org/ebooks/16457' },
 { title: 'Robur the Conqueror', author: 'Jules Verne', desc: 'An inventor builds a flying machine and kidnaps skeptics to prove heavier-than-air flight is possible.', cat: 'sci-fi', color: '#5d6d7e', height: 122, pdf: 'https://www.gutenberg.org/ebooks/3808' },
 { title: 'The Last Man', author: 'Mary Shelley', desc: 'A plague destroys humanity in the 21st century — one of the first apocalyptic novels.', cat: 'sci-fi', color: '#4a235a', height: 148, pdf: 'https://www.gutenberg.org/ebooks/18247' },
-{ title: 'A Princess of Mars', author: 'Edgar Rice Burroughs', desc: 'John Carter is transported to Mars and battles warriors while winning a princess\'s heart.', cat: 'sci-fi', color: '#c0392b', height: 128, pdf: 'https://www.gutenberg.org/ebooks/62' },
-{ title: 'The Gods of Mars', author: 'Edgar Rice Burroughs', desc: 'John Carter returns to Mars and discovers the dark truth behind the Martian religion.', cat: 'sci-fi', color: '#922b21', height: 125, pdf: 'https://www.gutenberg.org/ebooks/64' },
-{ title: 'The Warlord of Mars', author: 'Edgar Rice Burroughs', desc: 'John Carter pursues his enemies to the frozen north of Mars in a battle for his princess.', cat: 'sci-fi', color: '#7b241c', height: 125, pdf: 'https://www.gutenberg.org/ebooks/68' },
-{ title: 'Thuvia, Maid of Mars', author: 'Edgar Rice Burroughs', desc: 'Carthoris, son of John Carter, rescues a Martian princess from kidnappers.', cat: 'sci-fi', color: '#d35400', height: 120, pdf: 'https://www.gutenberg.org/ebooks/72' },
-{ title: 'The Chessmen of Mars', author: 'Edgar Rice Burroughs', desc: 'Tara of Helium is captured by headless Martians who play living chess with human pieces.', cat: 'sci-fi', color: '#b7950b', height: 128, pdf: 'https://www.gutenberg.org/ebooks/1153' },
-{ title: 'At the Earth\'s Core', author: 'Edgar Rice Burroughs', desc: 'A mechanical mole burrows into a hollow Earth filled with prehistoric creatures and primitive humans.', cat: 'sci-fi', color: '#6b3f20', height: 118, pdf: 'https://www.gutenberg.org/ebooks/545' },
-{ title: 'The Land That Time Forgot', author: 'Edgar Rice Burroughs', desc: 'A submarine discovers a lost continent where evolution plays out in geographic stages.', cat: 'sci-fi', color: '#1e8449', height: 118, pdf: 'https://www.gutenberg.org/ebooks/551' },
 { title: 'Skylark of Space', author: 'E.E. "Doc" Smith', desc: 'The first space opera — a scientist invents faster-than-light travel and explores the galaxy.', cat: 'sci-fi', color: '#2874a6', height: 130, pdf: 'https://www.gutenberg.org/ebooks/20869' },
 { title: 'Triplanetary', author: 'E.E. "Doc" Smith', desc: 'An interstellar war between civilizations spans millennia — the start of the Lensman series.', cat: 'sci-fi', color: '#1a5276', height: 132, pdf: 'https://www.gutenberg.org/ebooks/32706' },
 { title: 'The Scarlet Plague', author: 'Jack London', desc: 'An old man recalls how a plague wiped out civilization — post-apocalyptic fiction from 1912.', cat: 'sci-fi', color: '#922b21', height: 112, pdf: 'https://www.gutenberg.org/ebooks/21970' },
-{ title: 'The Star Rover', author: 'Jack London', desc: 'A prisoner transcends his body through astral projection and relives past incarnations.', cat: 'sci-fi', color: '#6c5ce7', height: 130, pdf: 'https://www.gutenberg.org/ebooks/1162' },
-{ title: 'The Lost World', author: 'Arthur Conan Doyle', desc: 'Professor Challenger leads an expedition to a South American plateau where dinosaurs still live.', cat: 'sci-fi', color: '#1e8449', height: 128, pdf: 'https://www.gutenberg.org/ebooks/139' },
-{ title: 'The Poison Belt', author: 'Arthur Conan Doyle', desc: 'Earth passes through a toxic cosmic cloud — Professor Challenger and friends face the end of the world.', cat: 'sci-fi', color: '#5d6d7e', height: 115, pdf: 'https://www.gutenberg.org/ebooks/126' },
 { title: 'The Call of Cthulhu', author: 'H.P. Lovecraft', desc: 'A professor\'s notes reveal the terrifying existence of an ancient cosmic entity sleeping beneath the Pacific.', cat: 'sci-fi', color: '#1c2833', height: 112, pdf: 'https://www.gutenberg.org/ebooks/68283' },
 { title: 'The Shadow over Innsmouth', author: 'H.P. Lovecraft', desc: 'A traveler discovers a decaying coastal town whose inhabitants have made a pact with undersea beings.', cat: 'sci-fi', color: '#2c2c54', height: 118, pdf: 'https://www.gutenberg.org/ebooks/70912' },
 { title: 'The Dunwich Horror', author: 'H.P. Lovecraft', desc: 'In a remote Massachusetts village, a monstrous entity born of forbidden rites threatens to break through.', cat: 'sci-fi', color: '#4a235a', height: 115, pdf: 'https://www.gutenberg.org/ebooks/50133' },
@@ -469,18 +341,12 @@ BOOKS.push(
 { title: 'R.U.R.', author: 'Karel Čapek', desc: 'The play that coined the word "robot" — artificial workers revolt against their human creators.', cat: 'sci-fi', color: '#5d6d7e', height: 115, pdf: 'https://www.gutenberg.org/ebooks/59112' },
 { title: 'The Night Land', author: 'William Hope Hodgson', desc: 'Millions of years in the future, the last humans shelter in a metal pyramid besieged by cosmic horrors.', cat: 'sci-fi', color: '#1c2833', height: 150, pdf: 'https://www.gutenberg.org/ebooks/10662' },
 { title: 'The House on the Borderland', author: 'William Hope Hodgson', desc: 'A recluse\'s journal describes his house under siege by pig-like creatures from another dimension.', cat: 'sci-fi', color: '#4a235a', height: 122, pdf: 'https://www.gutenberg.org/ebooks/10002' },
-{ title: 'Herland', author: 'Charlotte Perkins Gilman', desc: 'Three men discover an all-female utopia and must confront their assumptions about gender and society.', cat: 'sci-fi', color: '#27ae60', height: 120, pdf: 'https://www.gutenberg.org/ebooks/32' },
 { title: 'Ralph 124C 41+', author: 'Hugo Gernsback', desc: 'A scientist in 2660 AD uses futuristic technology to rescue his beloved — early sci-fi filled with predictions.', cat: 'sci-fi', color: '#2874a6', height: 122, pdf: 'https://www.gutenberg.org/ebooks/60854' },
-
 // ──────────────────────────────────────
 // MYSTERY & GOTHIC (~40 books)
 // ──────────────────────────────────────
-{ title: 'The Memoirs of Sherlock Holmes', author: 'Arthur Conan Doyle', desc: 'Eleven Holmes adventures including "The Final Problem" and the fateful encounter at Reichenbach Falls.', cat: 'mystery', color: '#2c3e50', height: 128, pdf: 'https://www.gutenberg.org/ebooks/834' },
-{ title: 'The Return of Sherlock Holmes', author: 'Arthur Conan Doyle', desc: 'Holmes is alive! Thirteen cases after his miraculous survival at the Reichenbach Falls.', cat: 'mystery', color: '#2e4053', height: 132, pdf: 'https://www.gutenberg.org/ebooks/108' },
-{ title: 'The Sign of the Four', author: 'Arthur Conan Doyle', desc: 'A mysterious pact, a stolen treasure, and a chase down the Thames — Holmes\' second novel.', cat: 'mystery', color: '#5d6d7e', height: 120, pdf: 'https://www.gutenberg.org/ebooks/2097' },
 { title: 'A Study in Scarlet', author: 'Arthur Conan Doyle', desc: 'Watson meets Holmes, and together they solve a murder linked to a dark secret from the American West.', cat: 'mystery', color: '#922b21', height: 122, pdf: 'https://www.gutenberg.org/ebooks/244' },
 { title: 'The Valley of Fear', author: 'Arthur Conan Doyle', desc: 'A cipher leads Holmes to a country manor murder connected to a secret society in America.', cat: 'mystery', color: '#7b241c', height: 125, pdf: 'https://www.gutenberg.org/ebooks/3289' },
-{ title: 'His Last Bow', author: 'Arthur Conan Doyle', desc: 'Eight late Holmes stories including the spy thriller set on the eve of World War I.', cat: 'mystery', color: '#1c2833', height: 122, pdf: 'https://www.gutenberg.org/ebooks/2350' },
 { title: 'The Case-Book of Sherlock Holmes', author: 'Arthur Conan Doyle', desc: 'The final twelve Holmes stories — including "The Sussex Vampire" and "The Illustrious Client."', cat: 'mystery', color: '#4a235a', height: 125, pdf: 'https://www.gutenberg.org/ebooks/69535' },
 { title: 'No Name', author: 'Wilkie Collins', desc: 'Two sisters discover they are illegitimate and penniless — one plots an elaborate scheme to reclaim her inheritance.', cat: 'mystery', color: '#6b3f20', height: 145, pdf: 'https://www.gutenberg.org/ebooks/1438' },
 { title: 'Armadale', author: 'Wilkie Collins', desc: 'Two men named Allan Armadale, a prophetic dream, and a scheming villainess — Collins at his most sensational.', cat: 'mystery', color: '#5b2c6f', height: 150, pdf: 'https://www.gutenberg.org/ebooks/1895' },
@@ -490,26 +356,18 @@ BOOKS.push(
 { title: 'The Secret of Father Brown', author: 'G.K. Chesterton', desc: 'Father Brown reveals his detective method — he imagines himself as the criminal.', cat: 'mystery', color: '#795548', height: 118, pdf: 'https://www.gutenberg.org/ebooks/17270' },
 { title: 'The Man Who Was Thursday', author: 'G.K. Chesterton', desc: 'A detective infiltrates an anarchist council where each member is named after a day of the week.', cat: 'mystery', color: '#2c2c54', height: 125, pdf: 'https://www.gutenberg.org/ebooks/1695' },
 { title: 'The Narrative of Arthur Gordon Pym', author: 'Edgar Allan Poe', desc: 'A stowaway\'s journey to the Antarctic leads to mutiny, cannibalism, and cosmic mystery.', cat: 'mystery', color: '#1c2833', height: 130, pdf: 'https://www.gutenberg.org/ebooks/51060' },
-{ title: 'The Murders in the Rue Morgue', author: 'Edgar Allan Poe', desc: 'The first detective story — C. Auguste Dupin solves a locked-room murder in Paris.', cat: 'mystery', color: '#922b21', height: 112, pdf: 'https://www.gutenberg.org/ebooks/2148' },
 { title: 'The Leavenworth Case', author: 'Anna Katharine Green', desc: 'A wealthy man is murdered in his library — the first bestselling detective novel by a woman.', cat: 'mystery', color: '#5b2c6f', height: 132, pdf: 'https://www.gutenberg.org/ebooks/4047' },
 { title: 'That Affair Next Door', author: 'Anna Katharine Green', desc: 'Miss Butterworth, an amateur detective, investigates a murder in the house next door.', cat: 'mystery', color: '#d4a574', height: 128, pdf: 'https://www.gutenberg.org/ebooks/6769' },
 { title: 'The Circular Staircase', author: 'Mary Roberts Rinehart', desc: 'A spinster rents a country house and encounters murder, secret passages, and midnight intruders.', cat: 'mystery', color: '#4a235a', height: 128, pdf: 'https://www.gutenberg.org/ebooks/434' },
 { title: 'The Bat', author: 'Mary Roberts Rinehart', desc: 'A master criminal known as "The Bat" terrorizes a country estate — mystery and gothic thrills.', cat: 'mystery', color: '#1c2833', height: 122, pdf: 'https://www.gutenberg.org/ebooks/2771' },
-{ title: 'The Amateur Cracksman', author: 'E.W. Hornung', desc: 'A.J. Raffles, gentleman by day and burglar by night — the anti-Sherlock Holmes.', cat: 'mystery', color: '#2c3e50', height: 120, pdf: 'https://www.gutenberg.org/ebooks/706' },
 { title: 'Raffles: Further Adventures', author: 'E.W. Hornung', desc: 'More escapades of the gentleman thief Raffles and his loyal sidekick Bunny Manders.', cat: 'mystery', color: '#2e4053', height: 118, pdf: 'https://www.gutenberg.org/ebooks/8094' },
 { title: 'Arsène Lupin, Gentleman-Burglar', author: 'Maurice Leblanc', desc: 'The charming French master thief outwits the police with style, wit, and daring.', cat: 'mystery', color: '#1a5276', height: 122, pdf: 'https://www.gutenberg.org/ebooks/6133' },
 { title: 'Arsène Lupin vs. Herlock Sholmes', author: 'Maurice Leblanc', desc: 'The gentleman burglar faces off against a thinly-veiled Sherlock Holmes in a battle of wits.', cat: 'mystery', color: '#2874a6', height: 125, pdf: 'https://www.gutenberg.org/ebooks/6134' },
 { title: 'The Hollow Needle', author: 'Maurice Leblanc', desc: 'Arsène Lupin discovers a centuries-old secret hidden in the cliffs of Normandy.', cat: 'mystery', color: '#5d6d7e', height: 128, pdf: 'https://www.gutenberg.org/ebooks/4017' },
 { title: '813', author: 'Maurice Leblanc', desc: 'Lupin poses as a detective chief to solve a murder while pursuing a hidden fortune.', cat: 'mystery', color: '#6c5ce7', height: 130, pdf: 'https://www.gutenberg.org/ebooks/7896' },
-{ title: 'The Castle of Otranto', author: 'Horace Walpole', desc: 'The first gothic novel — a giant helmet, a haunted castle, and a tyrannical prince.', cat: 'mystery', color: '#2c2c54', height: 115, pdf: 'https://www.gutenberg.org/ebooks/696' },
 { title: 'The Mysteries of Udolpho', author: 'Ann Radcliffe', desc: 'A young woman is imprisoned in a gloomy Italian castle — the archetypal gothic novel.', cat: 'mystery', color: '#4a235a', height: 150, pdf: 'https://www.gutenberg.org/ebooks/3268' },
-{ title: 'The Monk', author: 'Matthew Gregory Lewis', desc: 'A pious monk falls into temptation, sin, and diabolical pacts — Gothic horror at its most extreme.', cat: 'mystery', color: '#922b21', height: 140, pdf: 'https://www.gutenberg.org/ebooks/601' },
-{ title: 'The Strange Case of Dr. Jekyll and Mr. Hyde', author: 'Robert Louis Stevenson', desc: 'A respectable doctor transforms into a savage alter ego — the classic tale of duality.', cat: 'mystery', color: '#1c2833', height: 112, pdf: 'https://www.gutenberg.org/ebooks/43' },
-{ title: 'Uncle Silas', author: 'Sheridan Le Fanu', desc: 'A young heiress is placed in the care of her sinister uncle — Victorian gothic suspense.', cat: 'mystery', color: '#5b2c6f', height: 135, pdf: 'https://www.gutenberg.org/ebooks/14851' },
 { title: 'Carmilla', author: 'Sheridan Le Fanu', desc: 'A young woman is preyed upon by a female vampire — the influential precursor to Dracula.', cat: 'mystery', color: '#922b21', height: 112, pdf: 'https://www.gutenberg.org/ebooks/10007' },
 { title: 'The Beetle', author: 'Richard Marsh', desc: 'A shape-shifting Egyptian entity terrorizes London — more popular than Dracula when first published.', cat: 'mystery', color: '#1c2833', height: 130, pdf: 'https://www.gutenberg.org/ebooks/50856' },
-{ title: 'The Mystery of Edwin Drood', author: 'Charles Dickens', desc: 'Dickens\' unfinished final novel — a young man vanishes and suspicion falls on his sinister uncle.', cat: 'mystery', color: '#6b3f20', height: 132, pdf: 'https://www.gutenberg.org/ebooks/564' },
-
 // ──────────────────────────────────────
 // ADVENTURE (~40 books)
 // ──────────────────────────────────────
@@ -517,47 +375,29 @@ BOOKS.push(
 { title: 'The Vicomte de Bragelonne', author: 'Alexandre Dumas', desc: 'The final musketeers saga including the Man in the Iron Mask — loyalty, love, and betrayal.', cat: 'adventure', color: '#922b21', height: 160, pdf: 'https://www.gutenberg.org/ebooks/2759' },
 { title: 'The Man in the Iron Mask', author: 'Alexandre Dumas', desc: 'A mysterious prisoner and the musketeers\' final adventure — identity, sacrifice, and the end of an era.', cat: 'adventure', color: '#7b241c', height: 148, pdf: 'https://www.gutenberg.org/ebooks/2759' },
 { title: 'The Corsican Brothers', author: 'Alexandre Dumas', desc: 'Siamese twins separated at birth share a psychic bond — honor, revenge, and Corsican justice.', cat: 'adventure', color: '#6b3f20', height: 115, pdf: 'https://www.gutenberg.org/ebooks/50903' },
-{ title: 'The Black Arrow', author: 'Robert Louis Stevenson', desc: 'A young man seeks justice during the Wars of the Roses — swordplay and romance in medieval England.', cat: 'adventure', color: '#1c2833', height: 128, pdf: 'https://www.gutenberg.org/ebooks/848' },
-{ title: 'The Master of Ballantrae', author: 'Robert Louis Stevenson', desc: 'Two brothers — one good, one wicked — destroy each other in a feud spanning continents and decades.', cat: 'adventure', color: '#5d6d7e', height: 130, pdf: 'https://www.gutenberg.org/ebooks/622' },
 { title: 'Catriona', author: 'Robert Louis Stevenson', desc: 'David Balfour continues his adventures, navigating political intrigue and romance in Scotland.', cat: 'adventure', color: '#2874a6', height: 125, pdf: 'https://www.gutenberg.org/ebooks/364' },
 { title: 'She', author: 'H. Rider Haggard', desc: 'Explorers in Africa discover an immortal queen ruling a lost civilization — romance and adventure.', cat: 'adventure', color: '#b7950b', height: 135, pdf: 'https://www.gutenberg.org/ebooks/3155' },
-{ title: 'Allan Quatermain', author: 'H. Rider Haggard', desc: 'The great white hunter leads another expedition into the African interior seeking a lost white race.', cat: 'adventure', color: '#6b3f20', height: 132, pdf: 'https://www.gutenberg.org/ebooks/711' },
 { title: 'Ayesha: The Return of She', author: 'H. Rider Haggard', desc: 'The sequel to She — the quest for the reincarnated immortal queen leads to the mountains of Tibet.', cat: 'adventure', color: '#d35400', height: 130, pdf: 'https://www.gutenberg.org/ebooks/5228' },
-{ title: 'Kim', author: 'Rudyard Kipling', desc: 'An Irish orphan boy in India becomes a spy in the Great Game between Britain and Russia.', cat: 'adventure', color: '#e67e22', height: 135, pdf: 'https://www.gutenberg.org/ebooks/2226' },
 { title: 'Captains Courageous', author: 'Rudyard Kipling', desc: 'A spoiled rich boy falls off a liner and is rescued by Gloucester fishermen who teach him to work.', cat: 'adventure', color: '#1a5276', height: 120, pdf: 'https://www.gutenberg.org/ebooks/5765' },
 { title: 'The Man Who Would Be King', author: 'Rudyard Kipling', desc: 'Two British adventurers set themselves up as kings in a remote region of Afghanistan.', cat: 'adventure', color: '#b7950b', height: 112, pdf: 'https://www.gutenberg.org/ebooks/8147' },
 { title: 'The Deerslayer', author: 'James Fenimore Cooper', desc: 'Natty Bumppo\'s first adventure on the frontier — the prequel to the Leatherstocking Tales.', cat: 'adventure', color: '#1e8449', height: 140, pdf: 'https://www.gutenberg.org/ebooks/3285' },
 { title: 'The Pathfinder', author: 'James Fenimore Cooper', desc: 'Natty Bumppo guides a military expedition through the wilderness of the Great Lakes.', cat: 'adventure', color: '#2d5a27', height: 138, pdf: 'https://www.gutenberg.org/ebooks/1880' },
-{ title: 'The Pioneers', author: 'James Fenimore Cooper', desc: 'The aging Natty Bumppo clashes with civilization as settlement encroaches on the frontier.', cat: 'adventure', color: '#6b3f20', height: 142, pdf: 'https://www.gutenberg.org/ebooks/2275' },
-{ title: 'The Prairie', author: 'James Fenimore Cooper', desc: 'Natty Bumppo\'s final years on the Great Plains — the closing chapter of the Leatherstocking Tales.', cat: 'adventure', color: '#d35400', height: 138, pdf: 'https://www.gutenberg.org/ebooks/827' },
-{ title: 'Captain Blood', author: 'Rafael Sabatini', desc: 'An Irish physician is sold into slavery and becomes the most feared pirate in the Caribbean.', cat: 'adventure', color: '#c0392b', height: 135, pdf: 'https://www.gutenberg.org/ebooks/1965' },
-{ title: 'Scaramouche', author: 'Rafael Sabatini', desc: 'A lawyer becomes an actor and swordsman during the French Revolution — swashbuckling and romance.', cat: 'adventure', color: '#922b21', height: 138, pdf: 'https://www.gutenberg.org/ebooks/1947' },
 { title: 'The Sea Hawk', author: 'Rafael Sabatini', desc: 'An English gentleman is betrayed, enslaved, and becomes a Barbary corsair seeking revenge.', cat: 'adventure', color: '#1a5276', height: 132, pdf: 'https://www.gutenberg.org/ebooks/1924' },
-{ title: 'The Prisoner of Zenda', author: 'Anthony Hope', desc: 'An Englishman impersonates a kidnapped king in the fictional kingdom of Ruritania.', cat: 'adventure', color: '#7b241c', height: 122, pdf: 'https://www.gutenberg.org/ebooks/95' },
-{ title: 'Rupert of Hentzau', author: 'Anthony Hope', desc: 'The sequel to The Prisoner of Zenda — more intrigue and adventure in Ruritania.', cat: 'adventure', color: '#922b21', height: 122, pdf: 'https://www.gutenberg.org/ebooks/96' },
-{ title: 'The Elusive Pimpernel', author: 'Baroness Orczy', desc: 'Chauvelin plots to unmask and capture the Scarlet Pimpernel on French soil.', cat: 'adventure', color: '#c0392b', height: 128, pdf: 'https://www.gutenberg.org/ebooks/2004' },
 { title: 'I Will Repay', author: 'Baroness Orczy', desc: 'The Scarlet Pimpernel rescues an aristocrat caught in a web of revolutionary justice and old grudges.', cat: 'adventure', color: '#922b21', height: 125, pdf: 'https://www.gutenberg.org/ebooks/2853' },
 { title: 'Doer of the Word', author: 'Baroness Orczy', desc: 'The Scarlet Pimpernel faces his greatest challenge as the Terror reaches its peak.', cat: 'adventure', color: '#7b241c', height: 120, pdf: 'https://www.gutenberg.org/ebooks/3761' },
 { title: 'The People of the Abyss', author: 'Jack London', desc: 'London goes undercover in the East End slums — a searing exposé of poverty in Edwardian England.', cat: 'adventure', color: '#5d6d7e', height: 122, pdf: 'https://www.gutenberg.org/ebooks/1688' },
 { title: 'The Cruise of the Snark', author: 'Jack London', desc: 'London sails across the Pacific in a small boat — adventure, mishap, and exotic islands.', cat: 'adventure', color: '#2874a6', height: 125, pdf: 'https://www.gutenberg.org/ebooks/2415' },
 { title: 'Typhoon', author: 'Joseph Conrad', desc: 'Captain MacWhirr stubbornly steers his ship through a devastating typhoon in the South China Sea.', cat: 'adventure', color: '#1c2833', height: 115, pdf: 'https://www.gutenberg.org/ebooks/1142' },
-{ title: 'Youth', author: 'Joseph Conrad', desc: 'Marlow\'s first voyage to the East — a ship catches fire, and youth faces its first test.', cat: 'adventure', color: '#2e4053', height: 112, pdf: 'https://www.gutenberg.org/ebooks/525' },
 { title: 'The Coral Island', author: 'R.M. Ballantyne', desc: 'Three boys shipwrecked on a Pacific island — the adventure classic that inspired Lord of the Flies.', cat: 'adventure', color: '#27ae60', height: 125, pdf: 'https://www.gutenberg.org/ebooks/4711' },
 { title: 'The Swiss Family Robinson', author: 'Johann David Wyss', desc: 'A shipwrecked family builds an idyllic life on a tropical island using ingenuity and teamwork.', cat: 'adventure', color: '#1e8449', height: 135, pdf: 'https://www.gutenberg.org/ebooks/3836' },
-{ title: 'Beau Geste', author: 'P.C. Wren', desc: 'Three brothers join the French Foreign Legion and face danger in the Sahara Desert.', cat: 'adventure', color: '#b7950b', height: 132, pdf: 'https://www.gutenberg.org/ebooks/2381' },
-
 // ──────────────────────────────────────
 // RUSSIAN LITERATURE (~30 books)
 // ──────────────────────────────────────
 { title: 'The Possessed', author: 'Fyodor Dostoevsky', desc: 'A group of nihilists plot revolution in a provincial Russian town — Dostoevsky\'s political novel.', cat: 'russian-lit', color: '#1c2833', height: 155, pdf: 'https://www.gutenberg.org/ebooks/8117' },
-{ title: 'The Gambler', author: 'Fyodor Dostoevsky', desc: 'A tutor becomes addicted to roulette at a German spa — obsession, ruin, and the thrill of chance.', cat: 'russian-lit', color: '#922b21', height: 118, pdf: 'https://www.gutenberg.org/ebooks/2197' },
 { title: 'The Double', author: 'Fyodor Dostoevsky', desc: 'A civil servant is haunted by his exact duplicate who is everything he wishes he could be.', cat: 'russian-lit', color: '#5d6d7e', height: 118, pdf: 'https://www.gutenberg.org/ebooks/2846' },
-{ title: 'Poor Folk', author: 'Fyodor Dostoevsky', desc: 'Two lonely souls exchange letters in St. Petersburg — Dostoevsky\'s compassionate debut novel.', cat: 'russian-lit', color: '#6c5ce7', height: 115, pdf: 'https://www.gutenberg.org/ebooks/2302' },
 { title: 'The Eternal Husband', author: 'Fyodor Dostoevsky', desc: 'A cuckolded husband seeks out his wife\'s former lover — dark psychological comedy.', cat: 'russian-lit', color: '#4a235a', height: 120, pdf: 'https://www.gutenberg.org/ebooks/49146' },
 { title: 'The Death of Ivan Ilyich', author: 'Leo Tolstoy', desc: 'A judge confronts his mortality and realizes he has lived his entire life wrongly.', cat: 'russian-lit', color: '#2c2c54', height: 112, pdf: 'https://www.gutenberg.org/ebooks/43019' },
-{ title: 'The Kreutzer Sonata', author: 'Leo Tolstoy', desc: 'A man confesses to murdering his wife — Tolstoy\'s controversial meditation on love, jealousy, and sex.', cat: 'russian-lit', color: '#922b21', height: 115, pdf: 'https://www.gutenberg.org/ebooks/689' },
 { title: 'Hadji Murad', author: 'Leo Tolstoy', desc: 'A Chechen warrior caught between Russia and his own people — Tolstoy\'s final masterpiece.', cat: 'russian-lit', color: '#6b3f20', height: 118, pdf: 'https://www.gutenberg.org/ebooks/1656' },
-{ title: 'Childhood, Boyhood, Youth', author: 'Leo Tolstoy', desc: 'Tolstoy\'s autobiographical trilogy — the formation of a Russian aristocrat\'s consciousness.', cat: 'russian-lit', color: '#2e4053', height: 130, pdf: 'https://www.gutenberg.org/ebooks/2142' },
 { title: 'The Cossacks', author: 'Leo Tolstoy', desc: 'A young aristocrat seeks meaning among the Cossacks of the Caucasus — nature vs. civilization.', cat: 'russian-lit', color: '#1e8449', height: 120, pdf: 'https://www.gutenberg.org/ebooks/4761' },
 { title: 'The Cherry Orchard', author: 'Anton Chekhov', desc: 'A declining aristocratic family loses their beloved estate — comedy or tragedy? Chekhov\'s farewell play.', cat: 'russian-lit', color: '#d35400', height: 112, pdf: 'https://www.gutenberg.org/ebooks/7986' },
 { title: 'Three Sisters', author: 'Anton Chekhov', desc: 'Three provincial sisters dream of returning to Moscow while their lives stagnate.', cat: 'russian-lit', color: '#6c5ce7', height: 112, pdf: 'https://www.gutenberg.org/ebooks/7986' },
@@ -573,7 +413,6 @@ BOOKS.push(
 { title: 'The Captain\'s Daughter', author: 'Alexander Pushkin', desc: 'A young officer caught up in the Pugachev Rebellion — Pushkin\'s historical novel of honor and love.', cat: 'russian-lit', color: '#7b241c', height: 118, pdf: 'https://www.gutenberg.org/ebooks/13511' },
 { title: 'The Queen of Spades', author: 'Alexander Pushkin', desc: 'A young officer becomes obsessed with learning a countess\'s secret to winning at cards.', cat: 'russian-lit', color: '#2c2c54', height: 110, pdf: 'https://www.gutenberg.org/ebooks/55856' },
 { title: 'Oblomov', author: 'Ivan Goncharov', desc: 'A nobleman cannot get out of bed — the ultimate portrait of Russian inertia and wasted potential.', cat: 'russian-lit', color: '#795548', height: 140, pdf: 'https://www.gutenberg.org/ebooks/54700' },
-
 // ──────────────────────────────────────
 // FRENCH LITERATURE (~30 books)
 // ──────────────────────────────────────
@@ -591,18 +430,15 @@ BOOKS.push(
 { title: 'The Wild Ass\'s Skin', author: 'Honoré de Balzac', desc: 'A magic talisman grants every wish but shrinks with each one — life, desire, and death.', cat: 'french-lit', color: '#922b21', height: 128, pdf: 'https://www.gutenberg.org/ebooks/1307' },
 { title: 'A Sentimental Education', author: 'Gustave Flaubert', desc: 'A young man\'s unrequited love and failed ambitions against the backdrop of 1848 Paris.', cat: 'french-lit', color: '#5d6d7e', height: 145, pdf: 'https://www.gutenberg.org/ebooks/34828' },
 { title: 'Salammbô', author: 'Gustave Flaubert', desc: 'A priestess and a mercenary in ancient Carthage — Flaubert\'s exotic historical epic.', cat: 'french-lit', color: '#b7950b', height: 138, pdf: 'https://www.gutenberg.org/ebooks/1290' },
-{ title: 'The Charterhouse of Parma', author: 'Stendhal', desc: 'A young Italian nobleman\'s adventures in love, war, and politics during the Napoleonic era.', cat: 'french-lit', color: '#2874a6', height: 148, pdf: 'https://www.gutenberg.org/ebooks/2083' },
 { title: 'Bel-Ami', author: 'Guy de Maupassant', desc: 'A charming scoundrel uses women to climb Parisian society — a cynical masterpiece.', cat: 'french-lit', color: '#1c2833', height: 130, pdf: 'https://www.gutenberg.org/ebooks/3744' },
 { title: 'Pierre and Jean', author: 'Guy de Maupassant', desc: 'Two brothers discover a family secret that tears them apart — Maupassant\'s finest novel.', cat: 'french-lit', color: '#5d6d7e', height: 118, pdf: 'https://www.gutenberg.org/ebooks/3892' },
 { title: 'A Life', author: 'Guy de Maupassant', desc: 'A Norman noblewoman\'s dreams of happiness are crushed by a faithless husband — naturalist tragedy.', cat: 'french-lit', color: '#795548', height: 125, pdf: 'https://www.gutenberg.org/ebooks/57534' },
-{ title: 'The Lady of the Camellias', author: 'Alexandre Dumas fils', desc: 'A courtesan sacrifices her love for a young man — the novel that inspired La Traviata.', cat: 'french-lit', color: '#d4a574', height: 120, pdf: 'https://www.gutenberg.org/ebooks/2122' },
 { title: 'Swann\'s Way', author: 'Marcel Proust', desc: 'The taste of a madeleine unlocks memory — the opening volume of In Search of Lost Time.', cat: 'french-lit', color: '#6c5ce7', height: 155, pdf: 'https://www.gutenberg.org/ebooks/7178' },
 { title: 'Within a Budding Grove', author: 'Marcel Proust', desc: 'The narrator falls in love with Albertine — the second volume of Proust\'s great novel.', cat: 'french-lit', color: '#8e44ad', height: 155, pdf: 'https://www.gutenberg.org/ebooks/7179' },
 { title: 'Manon Lescaut', author: 'Abbé Prévost', desc: 'A young man ruins himself for a beautiful, faithless woman — the archetypal tragic love story.', cat: 'french-lit', color: '#922b21', height: 118, pdf: 'https://www.gutenberg.org/ebooks/991' },
 { title: 'Les Liaisons Dangereuses', author: 'Choderlos de Laclos', desc: 'Two aristocrats seduce and destroy the innocent for sport — the most dangerous novel of the 18th century.', cat: 'french-lit', color: '#2c2c54', height: 135, pdf: 'https://www.gutenberg.org/ebooks/45512' },
 { title: 'Gargantua and Pantagruel', author: 'François Rabelais', desc: 'Two giants eat, drink, fight, and philosophize — Renaissance satire at its most exuberant and vulgar.', cat: 'french-lit', color: '#e67e22', height: 150, pdf: 'https://www.gutenberg.org/ebooks/1200' },
 { title: 'The Wandering Jew', author: 'Eugène Sue', desc: 'A vast conspiracy threatens the heirs of a fortune — the blockbuster serial novel of 1840s Paris.', cat: 'french-lit', color: '#1c2833', height: 155, pdf: 'https://www.gutenberg.org/ebooks/3356' },
-
 // ──────────────────────────────────────
 // POETRY & DRAMA (~40 books)
 // ──────────────────────────────────────
@@ -626,7 +462,6 @@ BOOKS.push(
 { title: 'Electra', author: 'Sophocles', desc: 'A daughter waits years for her brother to return and avenge their father\'s murder.', cat: 'poetry', color: '#5d6d7e', height: 110, pdf: 'http://classics.mit.edu/Sophocles/electra.html' },
 { title: 'The Birds', author: 'Aristophanes', desc: 'Two Athenians persuade the birds to build a city in the sky — the greatest ancient comedy.', cat: 'poetry', color: '#27ae60', height: 112, pdf: 'http://classics.mit.edu/Aristophanes/birds.html' },
 { title: 'The Clouds', author: 'Aristophanes', desc: 'A satire of Socrates and sophistry — a farmer sends his son to learn rhetoric from a "Thinkery."', cat: 'poetry', color: '#2980b9', height: 112, pdf: 'http://classics.mit.edu/Aristophanes/clouds.html' },
-{ title: 'Lysistrata', author: 'Aristophanes', desc: 'The women of Greece withhold sex to force their husbands to end the Peloponnesian War.', cat: 'poetry', color: '#d4a574', height: 110, pdf: 'http://classics.mit.edu/Aristophanes/lysistrata.html' },
 { title: 'Endymion', author: 'John Keats', desc: '"A thing of beauty is a joy forever" — Keats\'s mythological romance of a shepherd and a moon goddess.', cat: 'poetry', color: '#6c5ce7', height: 130, pdf: 'https://www.gutenberg.org/ebooks/24280' },
 { title: 'Poems of John Keats', author: 'John Keats', desc: 'Ode to a Nightingale, Ode on a Grecian Urn, To Autumn — the Romantic era\'s most sensuous poetry.', cat: 'poetry', color: '#8e44ad', height: 120, pdf: 'https://www.gutenberg.org/ebooks/23684' },
 { title: 'Prometheus Unbound', author: 'Percy Bysshe Shelley', desc: 'Prometheus is freed and humanity redeemed — Shelley\'s visionary lyrical drama of liberation.', cat: 'poetry', color: '#e67e22', height: 125, pdf: 'https://www.gutenberg.org/ebooks/4797' },
@@ -634,22 +469,16 @@ BOOKS.push(
 { title: 'Childe Harold\'s Pilgrimage', author: 'Lord Byron', desc: 'A world-weary young nobleman travels through Europe — the poem that made Byron famous overnight.', cat: 'poetry', color: '#922b21', height: 135, pdf: 'https://www.gutenberg.org/ebooks/5131' },
 { title: 'The Prelude', author: 'William Wordsworth', desc: 'Wordsworth\'s autobiographical epic — the growth of a poet\'s mind through nature and imagination.', cat: 'poetry', color: '#1e8449', height: 145, pdf: 'https://www.gutenberg.org/ebooks/12383' },
 { title: 'Lyrical Ballads', author: 'Wordsworth & Coleridge', desc: 'The manifesto of English Romanticism — Tintern Abbey, the Ancient Mariner, and a new poetic language.', cat: 'poetry', color: '#2d5a27', height: 118, pdf: 'https://www.gutenberg.org/ebooks/9622' },
-{ title: 'In Memoriam', author: 'Alfred, Lord Tennyson', desc: '"\'Tis better to have loved and lost" — Tennyson mourns his friend Arthur Hallam in 133 cantos.', cat: 'poetry', color: '#5d6d7e', height: 135, pdf: 'https://www.gutenberg.org/ebooks/198' },
-{ title: 'Idylls of the King', author: 'Alfred, Lord Tennyson', desc: 'The rise and fall of King Arthur and the Round Table — Tennyson\'s Arthurian epic.', cat: 'poetry', color: '#6b3f20', height: 145, pdf: 'https://www.gutenberg.org/ebooks/610' },
-{ title: 'The Ring and the Book', author: 'Robert Browning', desc: 'A Roman murder trial told from twelve perspectives — Browning\'s monumental dramatic monologue.', cat: 'poetry', color: '#795548', height: 155, pdf: 'https://www.gutenberg.org/ebooks/2188' },
 { title: 'Men and Women', author: 'Robert Browning', desc: 'Dramatic monologues including "Andrea del Sarto" and "Fra Lippo Lippi" — Browning at his finest.', cat: 'poetry', color: '#6b3f20', height: 125, pdf: 'https://www.gutenberg.org/ebooks/16376' },
 { title: 'Poems of Emily Dickinson', author: 'Emily Dickinson', desc: '"Because I could not stop for Death" — the reclusive poet\'s brilliant, compressed verse on mortality and nature.', cat: 'poetry', color: '#d4a574', height: 125, pdf: 'https://www.gutenberg.org/ebooks/12242' },
 { title: 'Drum-Taps', author: 'Walt Whitman', desc: 'Whitman\'s Civil War poems — the experience of battle, hospitals, and Lincoln\'s assassination.', cat: 'poetry', color: '#2c3e50', height: 118, pdf: 'https://www.gutenberg.org/ebooks/8801' },
 { title: 'North of Boston', author: 'Robert Frost', desc: 'Mending Wall, The Death of the Hired Man, After Apple-Picking — Frost\'s breakthrough poetry collection.', cat: 'poetry', color: '#1e8449', height: 115, pdf: 'https://www.gutenberg.org/ebooks/3026' },
 { title: 'A Boy\'s Will', author: 'Robert Frost', desc: 'Frost\'s first collection — lyrical poems of youth, nature, and the New England landscape.', cat: 'poetry', color: '#2d5a27', height: 112, pdf: 'https://www.gutenberg.org/ebooks/3021' },
-
 // ──────────────────────────────────────
 // HISTORY (~30 books)
 // ──────────────────────────────────────
-{ title: 'Lives of the Noble Greeks and Romans', author: 'Plutarch', desc: 'Parallel biographies comparing great Greek and Roman leaders — character as destiny.', cat: 'history', color: '#6b3f20', height: 155, pdf: 'https://www.gutenberg.org/ebooks/674' },
 { title: 'Decline and Fall Vol. 1', author: 'Edward Gibbon', desc: 'The fall of the Roman Empire begins — from the age of the Antonines to the barbarian invasions.', cat: 'history', color: '#795548', height: 155, pdf: 'https://www.gutenberg.org/ebooks/25717' },
 { title: 'Decline and Fall Vol. 2', author: 'Edward Gibbon', desc: 'The Eastern Empire, the rise of Islam, and the Crusades — Gibbon\'s majestic narrative continues.', cat: 'history', color: '#6b3f20', height: 155, pdf: 'https://www.gutenberg.org/ebooks/25717' },
-{ title: 'On War', author: 'Carl von Clausewitz', desc: '"War is the continuation of politics by other means" — the foundational text of military strategy.', cat: 'history', color: '#2c3e50', height: 148, pdf: 'https://www.gutenberg.org/ebooks/1946' },
 { title: 'The Commentaries', author: 'Julius Caesar', desc: 'Caesar\'s own account of conquering Gaul — military genius and political propaganda combined.', cat: 'history', color: '#7b241c', height: 135, pdf: 'https://www.gutenberg.org/ebooks/10657' },
 { title: 'The Annals of Imperial Rome', author: 'Tacitus', desc: 'The reigns of Tiberius, Claudius, and Nero — corruption, tyranny, and political intrigue.', cat: 'history', color: '#922b21', height: 150, pdf: 'https://www.gutenberg.org/ebooks/3296' },
 { title: 'The Germania', author: 'Tacitus', desc: 'A Roman historian describes the customs and character of the Germanic tribes beyond the Rhine.', cat: 'history', color: '#5d6d7e', height: 110, pdf: 'https://www.gutenberg.org/ebooks/7524' },
@@ -663,12 +492,8 @@ BOOKS.push(
 { title: 'The Discourses', author: 'Niccolò Machiavelli', desc: 'Machiavelli on republican government, drawn from the history of ancient Rome.', cat: 'history', color: '#2e4053', height: 140, pdf: 'https://www.gutenberg.org/ebooks/10827' },
 { title: 'History of the Conquest of Mexico', author: 'William H. Prescott', desc: 'The dramatic story of Cortés and the fall of the Aztec Empire.', cat: 'history', color: '#b7950b', height: 150, pdf: 'https://www.gutenberg.org/ebooks/7326' },
 { title: 'History of the Conquest of Peru', author: 'William H. Prescott', desc: 'Pizarro and the destruction of the Inca Empire — conquest, gold, and betrayal.', cat: 'history', color: '#d35400', height: 148, pdf: 'https://www.gutenberg.org/ebooks/1323' },
-{ title: 'The Expedition of Humphry Clinker', author: 'Tobias Smollett', desc: 'A family\'s comic tour of Britain in letters — health, politics, and Georgian society.', cat: 'history', color: '#e67e22', height: 130, pdf: 'https://www.gutenberg.org/ebooks/2160' },
 { title: 'Personal Memoirs', author: 'Ulysses S. Grant', desc: 'Grant\'s acclaimed account of the Civil War — clear, honest, and deeply compelling military memoir.', cat: 'history', color: '#2c3e50', height: 148, pdf: 'https://www.gutenberg.org/ebooks/4367' },
 { title: 'The Souls of Black Folk', author: 'W.E.B. Du Bois', desc: 'A landmark work on race in America — double consciousness, the color line, and Black experience.', cat: 'history', color: '#1c2833', height: 125, pdf: 'https://www.gutenberg.org/ebooks/408' },
-{ title: 'Up from Slavery', author: 'Booker T. Washington', desc: 'A former slave\'s journey to becoming a leading educator — self-reliance and racial uplift.', cat: 'history', color: '#795548', height: 128, pdf: 'https://www.gutenberg.org/ebooks/2376' },
-{ title: 'The Education of Henry Adams', author: 'Henry Adams', desc: 'A brilliant autobiography tracing the intellectual development of an Adams descendant through a changing America.', cat: 'history', color: '#4a6fa5', height: 140, pdf: 'https://www.gutenberg.org/ebooks/2044' },
-
 // ──────────────────────────────────────
 // PHILOSOPHY (~30 books)
 // ──────────────────────────────────────
@@ -699,50 +524,34 @@ BOOKS.push(
 { title: 'Ethics', author: 'Baruch Spinoza', desc: 'God, nature, and human freedom demonstrated in geometric order — rationalist philosophy at its purest.', cat: 'philosophy', color: '#2874a6', height: 140, pdf: 'https://www.gutenberg.org/ebooks/3800' },
 { title: 'Pensées', author: 'Blaise Pascal', desc: '"The heart has its reasons which reason knows nothing of" — fragments on faith, doubt, and the human condition.', cat: 'philosophy', color: '#795548', height: 128, pdf: 'https://www.gutenberg.org/ebooks/18269' },
 { title: 'The Consolation of Philosophy', author: 'Boethius', desc: 'A condemned man converses with Lady Philosophy about fate, fortune, and the good life.', cat: 'philosophy', color: '#6b3f20', height: 118, pdf: 'https://www.gutenberg.org/ebooks/14328' },
-{ title: 'On the Nature of Things', author: 'Lucretius', desc: 'Epicurean philosophy in verse — atoms, the void, the mortality of the soul, and freedom from fear.', cat: 'philosophy', color: '#1e8449', height: 132, pdf: 'https://www.gutenberg.org/ebooks/785' },
-
 // ──────────────────────────────────────
 // CHILDREN & FANTASY (~30 books)
 // ──────────────────────────────────────
-{ title: 'The Marvelous Land of Oz', author: 'L. Frank Baum', desc: 'Tip escapes a witch with a pumpkin-headed man and a wooden sawhorse in the sequel to Wizard of Oz.', cat: 'children', color: '#27ae60', height: 122, pdf: 'https://www.gutenberg.org/ebooks/54' },
 { title: 'Ozma of Oz', author: 'L. Frank Baum', desc: 'Dorothy returns to Oz with a talking chicken and rescues the Royal Family from a mechanical tyrant.', cat: 'children', color: '#1e8449', height: 120, pdf: 'https://www.gutenberg.org/ebooks/486' },
 { title: 'Dorothy and the Wizard in Oz', author: 'L. Frank Baum', desc: 'An earthquake sends Dorothy underground to discover strange lands before reaching Oz.', cat: 'children', color: '#2d5a27', height: 118, pdf: 'https://www.gutenberg.org/ebooks/420' },
 { title: 'The Road to Oz', author: 'L. Frank Baum', desc: 'Dorothy and friends take a magical road trip to attend Ozma\'s birthday party.', cat: 'children', color: '#27ae60', height: 118, pdf: 'https://www.gutenberg.org/ebooks/485' },
-{ title: 'The Emerald City of Oz', author: 'L. Frank Baum', desc: 'Dorothy moves to Oz permanently while the Nome King plots to conquer the Emerald City.', cat: 'children', color: '#1e8449', height: 122, pdf: 'https://www.gutenberg.org/ebooks/517' },
 { title: 'The Patchwork Girl of Oz', author: 'L. Frank Baum', desc: 'A living patchwork doll joins a quest to find ingredients for a magical antidote in Oz.', cat: 'children', color: '#8e44ad', height: 120, pdf: 'https://www.gutenberg.org/ebooks/955' },
 { title: 'The Tale of Peter Rabbit', author: 'Beatrix Potter', desc: 'A naughty little rabbit sneaks into Mr. McGregor\'s garden — the beloved children\'s classic.', cat: 'children', color: '#27ae60', height: 110, pdf: 'https://www.gutenberg.org/ebooks/14838' },
 { title: 'The Tale of Benjamin Bunny', author: 'Beatrix Potter', desc: 'Peter Rabbit and his cousin Benjamin venture back into Mr. McGregor\'s garden for Peter\'s lost clothes.', cat: 'children', color: '#1e8449', height: 110, pdf: 'https://www.gutenberg.org/ebooks/14407' },
-{ title: 'The Tale of Jemima Puddle-Duck', author: 'Beatrix Potter', desc: 'A naive duck is nearly tricked by a foxy gentleman — Potter\'s charming cautionary tale.', cat: 'children', color: '#2980b9', height: 110, pdf: 'https://www.gutenberg.org/ebooks/15057' },
 { title: 'The Tale of Tom Kitten', author: 'Beatrix Potter', desc: 'Three kittens lose their clothes and get into mischief before their mother\'s tea party.', cat: 'children', color: '#d35400', height: 110, pdf: 'https://www.gutenberg.org/ebooks/14814' },
 { title: 'Fairy Tales of Hans Christian Andersen', author: 'Hans Christian Andersen', desc: 'The Ugly Duckling, The Little Mermaid, The Snow Queen — fairy tales that touch the heart.', cat: 'children', color: '#2980b9', height: 135, pdf: 'https://www.gutenberg.org/ebooks/27200' },
 { title: 'The Snow Queen', author: 'Hans Christian Andersen', desc: 'A girl journeys to the frozen north to rescue her friend from the Snow Queen\'s icy palace.', cat: 'children', color: '#5d6d7e', height: 115, pdf: 'https://www.gutenberg.org/ebooks/27200' },
 { title: 'Pinocchio', author: 'Carlo Collodi', desc: 'A puppet comes to life and must learn honesty and courage to become a real boy.', cat: 'children', color: '#e67e22', height: 122, pdf: 'https://www.gutenberg.org/ebooks/500' },
-{ title: 'Five Children and It', author: 'E. Nesbit', desc: 'Five siblings find a sand fairy that grants wishes — which always go hilariously wrong.', cat: 'children', color: '#b7950b', height: 122, pdf: 'https://www.gutenberg.org/ebooks/778' },
-{ title: 'The Phoenix and the Carpet', author: 'E. Nesbit', desc: 'A magical phoenix and a flying carpet take five children on adventures around the world.', cat: 'children', color: '#d35400', height: 122, pdf: 'https://www.gutenberg.org/ebooks/836' },
 { title: 'The Railway Children', author: 'E. Nesbit', desc: 'Three children move to the countryside near a railway and have adventures while awaiting their father\'s return.', cat: 'children', color: '#c0392b', height: 125, pdf: 'https://www.gutenberg.org/ebooks/1874' },
-{ title: 'The Story of the Treasure Seekers', author: 'E. Nesbit', desc: 'The six Bastable children try hilarious schemes to restore their family\'s fortune.', cat: 'children', color: '#6c5ce7', height: 120, pdf: 'https://www.gutenberg.org/ebooks/770' },
 { title: 'The Enchanted Castle', author: 'E. Nesbit', desc: 'Three children discover a magic ring in the garden of an enchanted castle.', cat: 'children', color: '#8e44ad', height: 122, pdf: 'https://www.gutenberg.org/ebooks/3536' },
-{ title: 'The Secret Garden', author: 'Frances Hodgson Burnett', desc: 'A spoiled orphan finds a hidden walled garden and transforms both it and herself.', cat: 'children', color: '#2d5a27', height: 128, pdf: 'https://www.gutenberg.org/ebooks/113' },
 { title: 'Little Lord Fauntleroy', author: 'Frances Hodgson Burnett', desc: 'An American boy discovers he is heir to an English earldom and wins over his gruff grandfather.', cat: 'children', color: '#d4a574', height: 122, pdf: 'https://www.gutenberg.org/ebooks/479' },
 { title: 'Little Men', author: 'Louisa May Alcott', desc: 'Jo March runs a school for boys at Plumfield — the sequel to Little Women.', cat: 'children', color: '#795548', height: 128, pdf: 'https://www.gutenberg.org/ebooks/3014' },
 { title: 'Jo\'s Boys', author: 'Louisa May Alcott', desc: 'The Plumfield boys grow up and face the challenges of adulthood — the final March family novel.', cat: 'children', color: '#6b3f20', height: 125, pdf: 'https://www.gutenberg.org/ebooks/3424' },
 { title: 'Eight Cousins', author: 'Louisa May Alcott', desc: 'An orphaned girl is raised by her uncle among seven boisterous boy cousins.', cat: 'children', color: '#e67e22', height: 120, pdf: 'https://www.gutenberg.org/ebooks/2726' },
-{ title: 'The Adventures of Tom Sawyer', author: 'Mark Twain', desc: 'A mischievous boy on the Mississippi — whitewashed fences, hidden treasure, and first love.', cat: 'children', color: '#d35400', height: 125, pdf: 'https://www.gutenberg.org/ebooks/74' },
 { title: 'Heidi', author: 'Johanna Spyri', desc: 'An orphan girl finds happiness with her grandfather in the Swiss Alps.', cat: 'children', color: '#27ae60', height: 122, pdf: 'https://www.gutenberg.org/ebooks/1448' },
 { title: 'The Blue Fairy Book', author: 'Andrew Lang', desc: 'Classic fairy tales collected by Andrew Lang — Cinderella, Sleeping Beauty, and more.', cat: 'children', color: '#2980b9', height: 130, pdf: 'https://www.gutenberg.org/ebooks/503' },
-{ title: 'The Red Fairy Book', author: 'Andrew Lang', desc: 'More fairy tales from around the world — Rapunzel, Jack and the Beanstalk, and others.', cat: 'children', color: '#c0392b', height: 130, pdf: 'https://www.gutenberg.org/ebooks/540' },
-{ title: 'The Yellow Fairy Book', author: 'Andrew Lang', desc: 'Fairy tales from Scandinavia, Germany, France, and beyond — collected and retold.', cat: 'children', color: '#f1c40f', height: 130, pdf: 'https://www.gutenberg.org/ebooks/640' },
 { title: 'The Water-Babies', author: 'Charles Kingsley', desc: 'A young chimney sweep drowns and is reborn as a water-baby — a Victorian fairy tale of moral growth.', cat: 'children', color: '#2874a6', height: 122, pdf: 'https://www.gutenberg.org/ebooks/1018' },
 { title: 'At the Back of the North Wind', author: 'George MacDonald', desc: 'A boy befriends the North Wind and journeys to a mystical land at the back of the world.', cat: 'children', color: '#5d6d7e', height: 125, pdf: 'https://www.gutenberg.org/ebooks/225' },
-{ title: 'The Princess and the Goblin', author: 'George MacDonald', desc: 'A princess and a miner boy thwart an underground goblin invasion — MacDonald\'s beloved fantasy.', cat: 'children', color: '#8e44ad', height: 120, pdf: 'https://www.gutenberg.org/ebooks/708' },
-
 // ──────────────────────────────────────
 // RELIGION & SPIRITUALITY (~15 books)
 // ──────────────────────────────────────
 { title: 'The City of God', author: 'Saint Augustine', desc: 'Augustine defends Christianity against pagan Rome and envisions the heavenly city of God.', cat: 'religion', color: '#6b3f20', height: 155, pdf: 'https://www.gutenberg.org/ebooks/45304' },
 { title: 'Summa Theologica (Part I)', author: 'Thomas Aquinas', desc: 'The existence of God, the nature of angels, and the creation — the pinnacle of medieval theology.', cat: 'religion', color: '#795548', height: 160, pdf: 'https://www.gutenberg.org/ebooks/17611' },
-{ title: 'The Pilgrim\'s Progress', author: 'John Bunyan', desc: 'Christian journeys from the City of Destruction to the Celestial City — the greatest English allegory.', cat: 'religion', color: '#8B4513', height: 135, pdf: 'https://www.gutenberg.org/ebooks/131' },
-{ title: 'Grace Abounding', author: 'John Bunyan', desc: 'Bunyan\'s spiritual autobiography — the torments and redemption that preceded The Pilgrim\'s Progress.', cat: 'religion', color: '#6b3f20', height: 118, pdf: 'https://www.gutenberg.org/ebooks/654' },
 { title: 'The Imitation of Christ', author: 'Thomas à Kempis', desc: 'The most widely read Christian devotional after the Bible — humility, piety, and inner life.', cat: 'religion', color: '#795548', height: 120, pdf: 'https://www.gutenberg.org/ebooks/1653' },
 { title: 'The Practice of the Presence of God', author: 'Brother Lawrence', desc: 'A lay brother\'s simple method of constant communion with God through daily work.', cat: 'religion', color: '#b7950b', height: 110, pdf: 'https://www.gutenberg.org/ebooks/5657' },
 { title: 'Heaven and Hell', author: 'Emanuel Swedenborg', desc: 'Swedenborg\'s detailed visions of the afterlife — the spiritual world described from personal experience.', cat: 'religion', color: '#4a235a', height: 140, pdf: 'https://www.gutenberg.org/ebooks/34encyclopedists' },
@@ -755,12 +564,10 @@ BOOKS.push(
 { title: 'Revelations of Divine Love', author: 'Julian of Norwich', desc: 'The first book written in English by a woman — Julian\'s mystical visions of God\'s love.', cat: 'religion', color: '#d4a574', height: 118, pdf: 'https://www.gutenberg.org/ebooks/52958' },
 { title: 'The Interior Castle', author: 'Saint Teresa of Ávila', desc: 'Seven mansions of the soul — Teresa\'s guide to the stages of mystical prayer and union with God.', cat: 'religion', color: '#8e44ad', height: 125, pdf: 'https://www.gutenberg.org/ebooks/14557' },
 );
-
 // ══════════════════════════════════════════════════════════════
 // BATCH 2 — 450+ additional books (bringing total to 1000+)
 // ══════════════════════════════════════════════════════════════
 BOOKS.push(
-
 // ──────────────────────────────────────
 // CLASSIC FICTION — Batch 2 (~80 books)
 // ──────────────────────────────────────
@@ -775,11 +582,8 @@ BOOKS.push(
 { title: 'Cecilia', author: 'Fanny Burney', desc: 'An heiress navigates fortune hunters, guardians, and pride to find happiness on her own terms.', cat: 'classic-fiction', color: '#c49a6c', height: 150, pdf: 'https://www.gutenberg.org/ebooks/7700' },
 { title: 'The Mysteries of Udolpho', author: 'Ann Radcliffe', desc: 'A young woman is imprisoned in a sinister Italian castle filled with apparent supernatural terrors.', cat: 'classic-fiction', color: '#2c2c2c', height: 155, pdf: 'https://www.gutenberg.org/ebooks/3268' },
 { title: 'The Italian', author: 'Ann Radcliffe', desc: 'A dark tale of the Inquisition, forbidden love, and a terrifying monk in southern Italy.', cat: 'classic-fiction', color: '#3d3d3d', height: 142, pdf: 'https://www.gutenberg.org/ebooks/7705' },
-{ title: 'The Monk', author: 'Matthew Lewis', desc: 'A virtuous monk falls to temptation, sorcery, and damnation in this scandalous Gothic novel.', cat: 'classic-fiction', color: '#1a1a2e', height: 140, pdf: 'https://www.gutenberg.org/ebooks/601' },
 { title: 'Caleb Williams', author: 'William Godwin', desc: 'A servant discovers his master\'s terrible secret and is hunted across England.', cat: 'classic-fiction', color: '#4a3728', height: 135, pdf: 'https://www.gutenberg.org/ebooks/11323' },
-{ title: 'Maria, or The Wrongs of Woman', author: 'Mary Wollstonecraft', desc: 'An unfinished novel exposing the legal and social injustices women face in marriage and society.', cat: 'classic-fiction', color: '#7b2d3b', height: 125, pdf: 'https://www.gutenberg.org/ebooks/134' },
 { title: 'Oroonoko', author: 'Aphra Behn', desc: 'An African prince is enslaved in Surinam in one of the earliest English novels.', cat: 'classic-fiction', color: '#5c4033', height: 118, pdf: 'https://www.gutenberg.org/ebooks/29854' },
-{ title: 'Rasselas', author: 'Samuel Johnson', desc: 'A prince escapes the Happy Valley to discover that no condition of life brings perfect contentment.', cat: 'classic-fiction', color: '#6b4423', height: 120, pdf: 'https://www.gutenberg.org/ebooks/652' },
 { title: 'The Vicar of Wakefield', author: 'Oliver Goldsmith', desc: 'A kindly vicar endures loss, imprisonment, and deception before fortune is restored.', cat: 'classic-fiction', color: '#8b7355', height: 125, pdf: 'https://www.gutenberg.org/ebooks/2667' },
 { title: 'Roderick Random', author: 'Tobias Smollett', desc: 'A Scottish orphan\'s picaresque adventures through the navy, society, and South America.', cat: 'classic-fiction', color: '#4a6741', height: 140, pdf: 'https://www.gutenberg.org/ebooks/4085' },
 { title: 'Peregrine Pickle', author: 'Tobias Smollett', desc: 'A headstrong young man\'s comic misadventures across England and the Continent.', cat: 'classic-fiction', color: '#5a7751', height: 148, pdf: 'https://www.gutenberg.org/ebooks/4084' },
@@ -792,7 +596,6 @@ BOOKS.push(
 { title: 'McTeague', author: 'Frank Norris', desc: 'A brutal San Francisco dentist\'s marriage disintegrates into greed, violence, and Death Valley.', cat: 'classic-fiction', color: '#8b4513', height: 140, pdf: 'https://www.gutenberg.org/ebooks/165' },
 { title: 'The Octopus', author: 'Frank Norris', desc: 'California wheat ranchers battle the railroad monopoly in this epic naturalist novel.', cat: 'classic-fiction', color: '#9b5523', height: 152, pdf: 'https://www.gutenberg.org/ebooks/268' },
 { title: 'The Pit', author: 'Frank Norris', desc: 'A speculator tries to corner the Chicago wheat market and is destroyed by larger forces.', cat: 'classic-fiction', color: '#ab6533', height: 145, pdf: 'https://www.gutenberg.org/ebooks/327' },
-{ title: 'The Damnation of Theron Ware', author: 'Harold Frederic', desc: 'A naive Methodist minister\'s intellectual and moral awakening leads to disillusionment.', cat: 'classic-fiction', color: '#5b3a29', height: 138, pdf: 'https://www.gutenberg.org/ebooks/133' },
 { title: 'The Rise of David Levinsky', author: 'Abraham Cahan', desc: 'A Russian-Jewish immigrant builds a garment empire but loses his soul in the process.', cat: 'classic-fiction', color: '#6b4a39', height: 142, pdf: 'https://www.gutenberg.org/ebooks/44784' },
 { title: 'The Four Million', author: 'O. Henry', desc: 'Twenty-five stories of ordinary New Yorkers with O. Henry\'s trademark surprise endings.', cat: 'classic-fiction', color: '#c0392b', height: 120, pdf: 'https://www.gutenberg.org/ebooks/2776' },
 { title: 'The Voice of the City', author: 'O. Henry', desc: 'More tales of Manhattan life from the master of the ironic twist.', cat: 'classic-fiction', color: '#d04030', height: 118, pdf: 'https://www.gutenberg.org/ebooks/2846' },
@@ -801,7 +604,6 @@ BOOKS.push(
 { title: 'Tales of Soldiers and Civilians', author: 'Ambrose Bierce', desc: 'Stark, ironic stories of the Civil War and the uncanny from the author of An Occurrence at Owl Creek Bridge.', cat: 'classic-fiction', color: '#3c3c3c', height: 122, pdf: 'https://www.gutenberg.org/ebooks/13334' },
 { title: 'Can Such Things Be?', author: 'Ambrose Bierce', desc: 'Supernatural and psychological horror tales exploring death, madness, and the inexplicable.', cat: 'classic-fiction', color: '#4c4c4c', height: 125, pdf: 'https://www.gutenberg.org/ebooks/4366' },
 { title: 'The Luck of Roaring Camp', author: 'Bret Harte', desc: 'Gold Rush stories that defined the literature of the American West.', cat: 'classic-fiction', color: '#b8860b', height: 118, pdf: 'https://www.gutenberg.org/ebooks/2709' },
-{ title: 'Miss Lulu Bett', author: 'Zona Gale', desc: 'A downtrodden spinster rebels against her stifling family in small-town Wisconsin.', cat: 'classic-fiction', color: '#9c7a5b', height: 120, pdf: 'https://www.gutenberg.org/ebooks/2081' },
 { title: 'The Magnificent Ambersons', author: 'Booth Tarkington', desc: 'A proud Midwestern family declines as the automobile age transforms their city.', cat: 'classic-fiction', color: '#7b5e44', height: 138, pdf: 'https://www.gutenberg.org/ebooks/8867' },
 { title: 'Penrod', author: 'Booth Tarkington', desc: 'The comic misadventures of an irrepressible twelve-year-old boy in a Midwestern town.', cat: 'classic-fiction', color: '#8b6e54', height: 125, pdf: 'https://www.gutenberg.org/ebooks/402' },
 { title: 'Alice Adams', author: 'Booth Tarkington', desc: 'A young woman\'s desperate social climbing in a small Midwestern city ends in humiliation and self-knowledge.', cat: 'classic-fiction', color: '#9b7e64', height: 130, pdf: 'https://www.gutenberg.org/ebooks/44148' },
@@ -812,21 +614,16 @@ BOOKS.push(
 { title: 'Winesburg, Ohio', author: 'Sherwood Anderson', desc: 'Interconnected tales reveal the hidden loneliness and thwarted desires of small-town Americans.', cat: 'classic-fiction', color: '#7d6b5d', height: 128, pdf: 'https://www.gutenberg.org/ebooks/416' },
 { title: 'The Professor\'s House', author: 'Willa Cather', desc: 'A historian confronts middle-age malaise as memories of a student\'s mesa discovery haunt him.', cat: 'classic-fiction', color: '#6d8b74', height: 130, pdf: 'https://www.gutenberg.org/ebooks/67046' },
 { title: 'A Lost Lady', author: 'Willa Cather', desc: 'A charming woman\'s decline mirrors the passing of the pioneer era on the Nebraska prairie.', cat: 'classic-fiction', color: '#5d7b64', height: 120, pdf: 'https://www.gutenberg.org/ebooks/63012' },
-{ title: 'Alexander\'s Bridge', author: 'Willa Cather', desc: 'An engineer is torn between his wife and a former lover, paralleling the structural weakness in his great bridge.', cat: 'classic-fiction', color: '#4d6b54', height: 118, pdf: 'https://www.gutenberg.org/ebooks/44' },
 { title: 'Virginia', author: 'Ellen Glasgow', desc: 'A Southern woman sacrifices everything for her family and receives nothing in return.', cat: 'classic-fiction', color: '#8a6d5c', height: 140, pdf: 'https://www.gutenberg.org/ebooks/34375' },
 { title: 'Barren Ground', author: 'Ellen Glasgow', desc: 'A betrayed farm woman transforms barren Virginia land into prosperity through sheer will.', cat: 'classic-fiction', color: '#9a7d6c', height: 145, pdf: 'https://www.gutenberg.org/ebooks/44091' },
 { title: 'Three Lives', author: 'Gertrude Stein', desc: 'Three portraits of working-class women in experimental prose that broke with literary convention.', cat: 'classic-fiction', color: '#b0a090', height: 122, pdf: 'https://www.gutenberg.org/ebooks/15408' },
 { title: 'Tender Buttons', author: 'Gertrude Stein', desc: 'A radical experiment in language — prose poems about objects, food, and rooms.', cat: 'classic-fiction', color: '#c0b0a0', height: 110, pdf: 'https://www.gutenberg.org/ebooks/15396' },
-{ title: 'Wieland', author: 'Charles Brockden Brown', desc: 'America\'s first Gothic novel — mysterious voices drive a pious man to murder his family.', cat: 'classic-fiction', color: '#3a2a1a', height: 130, pdf: 'https://www.gutenberg.org/ebooks/792' },
 { title: 'The Awakening', author: 'Kate Chopin', desc: 'A woman discovers passion and independence in Creole New Orleans and defies the constraints of marriage.', cat: 'classic-fiction', color: '#c97f5f', height: 125, pdf: 'https://www.gutenberg.org/ebooks/160' },
 { title: 'The House Behind the Cedars', author: 'Charles W. Chesnutt', desc: 'A mixed-race woman passes as white in the post-Civil War South until her secret is exposed.', cat: 'classic-fiction', color: '#5d4037', height: 130, pdf: 'https://www.gutenberg.org/ebooks/472' },
 { title: 'The Conjure Woman', author: 'Charles W. Chesnutt', desc: 'An ex-slave tells magical tales of plantation life to his new Northern employers.', cat: 'classic-fiction', color: '#6d5047', height: 118, pdf: 'https://www.gutenberg.org/ebooks/11666' },
-{ title: 'Looking Backward', author: 'Edward Bellamy', desc: 'A Bostonian wakes in the year 2000 to find a socialist utopia has replaced industrial capitalism.', cat: 'classic-fiction', color: '#34495e', height: 132, pdf: 'https://www.gutenberg.org/ebooks/624' },
-{ title: 'The Yellow Wallpaper', author: 'Charlotte Perkins Gilman', desc: 'A woman confined for a rest cure descends into madness as the wallpaper comes alive.', cat: 'classic-fiction', color: '#d4b43c', height: 110, pdf: 'https://www.gutenberg.org/ebooks/1952' },
 { title: 'Windy McPherson\'s Son', author: 'Sherwood Anderson', desc: 'A small-town boy rises to wealth in Chicago but finds material success hollow and meaningless.', cat: 'classic-fiction', color: '#8d7b6d', height: 135, pdf: 'https://www.gutenberg.org/ebooks/4240' },
 { title: 'The Landlord at Lion\'s Head', author: 'William Dean Howells', desc: 'A Vermont farmer\'s son claws his way into Boston society with ruthless charm.', cat: 'classic-fiction', color: '#6b8e5a', height: 138, pdf: 'https://www.gutenberg.org/ebooks/4516' },
 { title: 'A Hazard of New Fortunes', author: 'William Dean Howells', desc: 'A literary couple moves to New York and confronts the social upheaval of Gilded Age America.', cat: 'classic-fiction', color: '#5b7e4a', height: 148, pdf: 'https://www.gutenberg.org/ebooks/5765' },
-{ title: 'The Damnation of Theron Ware', author: 'Harold Frederic', desc: 'A Methodist minister loses his faith after encountering Catholicism, science, and a fascinating woman.', cat: 'classic-fiction', color: '#735b47', height: 135, pdf: 'https://www.gutenberg.org/ebooks/133' },
 { title: 'The Blazed Trail', author: 'Stewart Edward White', desc: 'A young man battles timber barons and the wilderness to build a logging empire in Michigan.', cat: 'classic-fiction', color: '#5a7247', height: 135, pdf: 'https://www.gutenberg.org/ebooks/6015' },
 { title: 'The Turmoil', author: 'Booth Tarkington', desc: 'An idealistic son rebels against his industrialist father as their Midwestern city chokes on progress.', cat: 'classic-fiction', color: '#7a6e5a', height: 132, pdf: 'https://www.gutenberg.org/ebooks/1098' },
 { title: 'Seventeen', author: 'Booth Tarkington', desc: 'A teenager\'s absurd infatuation with a visiting girl makes a fool of him all summer.', cat: 'classic-fiction', color: '#8a7e6a', height: 122, pdf: 'https://www.gutenberg.org/ebooks/1095' },
@@ -837,23 +634,16 @@ BOOKS.push(
 { title: 'The Aspern Papers', author: 'Henry James', desc: 'A literary scholar schemes to obtain a dead poet\'s letters from his elderly former mistress.', cat: 'classic-fiction', color: '#5a7b8a', height: 120, pdf: 'https://www.gutenberg.org/ebooks/211' },
 { title: 'The Bostonians', author: 'Henry James', desc: 'A Southern conservative and a Boston feminist clash over an impressionable young woman.', cat: 'classic-fiction', color: '#3a5b6a', height: 145, pdf: 'https://www.gutenberg.org/ebooks/19717' },
 { title: 'The Heir of Redclyffe', author: 'Charlotte M. Yonge', desc: 'A passionate young baronet struggles to conquer his temper and live up to his ideals.', cat: 'classic-fiction', color: '#7d6655', height: 140, pdf: 'https://www.gutenberg.org/ebooks/2863' },
-{ title: 'Lorna Doone', author: 'R.D. Blackmore', desc: 'A farmer rescues the beautiful Lorna from a clan of outlaws in seventeenth-century Exmoor.', cat: 'classic-fiction', color: '#5a8a5a', height: 152, pdf: 'https://www.gutenberg.org/ebooks/840' },
 { title: 'The Cloister and the Hearth', author: 'Charles Reade', desc: 'A young artist crosses medieval Europe to find his beloved and unknowingly becomes the father of Erasmus.', cat: 'classic-fiction', color: '#6a5a4a', height: 155, pdf: 'https://www.gutenberg.org/ebooks/1366' },
 { title: 'The Woman Who Did', author: 'Grant Allen', desc: 'A New Woman refuses marriage on principle and raises her daughter alone in defiance of Victorian society.', cat: 'classic-fiction', color: '#8a6a7a', height: 120, pdf: 'https://www.gutenberg.org/ebooks/10570' },
 { title: 'Two on a Tower', author: 'Thomas Hardy', desc: 'An aristocratic woman and a young astronomer fall in love beneath the immensity of the stars.', cat: 'classic-fiction', color: '#4a5a6a', height: 128, pdf: 'https://www.gutenberg.org/ebooks/3057' },
 { title: 'A Pair of Blue Eyes', author: 'Thomas Hardy', desc: 'A rector\'s daughter is courted by two very different men on the Cornish cliffs.', cat: 'classic-fiction', color: '#5a6a7a', height: 130, pdf: 'https://www.gutenberg.org/ebooks/224' },
-
 // ──────────────────────────────────────
 // SCIENCE FICTION — Batch 2 (~55 books)
 // ──────────────────────────────────────
-{ title: 'Thuvia, Maid of Mars', author: 'Edgar Rice Burroughs', desc: 'Carthoris of Helium rescues the princess Thuvia from enemies on a Barsoom of illusions.', cat: 'sci-fi', color: '#b03a2e', height: 130, pdf: 'https://www.gutenberg.org/ebooks/72' },
-{ title: 'The Master Mind of Mars', author: 'Edgar Rice Burroughs', desc: 'An Earthman on Mars must reverse a mad scientist\'s brain-swapping experiments to save a princess.', cat: 'sci-fi', color: '#c0442e', height: 128, pdf: 'https://www.gutenberg.org/ebooks/1153' },
 { title: 'A Fighting Man of Mars', author: 'Edgar Rice Burroughs', desc: 'A warrior\'s quest to rescue his beloved leads to invisible men and a weapon of mass destruction.', cat: 'sci-fi', color: '#a02e1e', height: 132, pdf: 'https://www.gutenberg.org/ebooks/68340' },
 { title: 'The Monster Men', author: 'Edgar Rice Burroughs', desc: 'A scientist creates artificial men on a Borneo island, unleashing horror when they escape.', cat: 'sci-fi', color: '#9b4d3a', height: 125, pdf: 'https://www.gutenberg.org/ebooks/963' },
 { title: 'The Mucker', author: 'Edgar Rice Burroughs', desc: 'A Chicago thug is shipwrecked and transformed by love and adventure on a Pacific island.', cat: 'sci-fi', color: '#8b3d2a', height: 135, pdf: 'https://www.gutenberg.org/ebooks/331' },
-{ title: 'Pellucidar', author: 'Edgar Rice Burroughs', desc: 'David Innes returns to the world at the Earth\'s core to unite its warring stone-age kingdoms.', cat: 'sci-fi', color: '#7b5d3a', height: 128, pdf: 'https://www.gutenberg.org/ebooks/605' },
-{ title: 'Tanar of Pellucidar', author: 'Edgar Rice Burroughs', desc: 'A prince of the inner world is captured by corsairs and must fight his way across Pellucidar.', cat: 'sci-fi', color: '#6b4d2a', height: 130, pdf: 'https://www.gutenberg.org/ebooks/613' },
-{ title: 'The Beasts of Tarzan', author: 'Edgar Rice Burroughs', desc: 'Tarzan is marooned on an African island and allies with a panther and great apes to rescue his son.', cat: 'sci-fi', color: '#4a7a3a', height: 132, pdf: 'https://www.gutenberg.org/ebooks/85' },
 { title: 'Space Viking', author: 'H. Beam Piper', desc: 'A nobleman becomes a space raider seeking vengeance, then realizes he must rebuild galactic civilization.', cat: 'sci-fi', color: '#2e4057', height: 138, pdf: 'https://www.gutenberg.org/ebooks/20728' },
 { title: 'Little Fuzzy', author: 'H. Beam Piper', desc: 'A prospector discovers adorable alien creatures and fights a megacorporation to prove they are sapient.', cat: 'sci-fi', color: '#3e5067', height: 130, pdf: 'https://www.gutenberg.org/ebooks/18137' },
 { title: 'Uller Uprising', author: 'H. Beam Piper', desc: 'Human colonists face a massive alien revolt on a distant planet in this military SF classic.', cat: 'sci-fi', color: '#4e6077', height: 125, pdf: 'https://www.gutenberg.org/ebooks/19474' },
@@ -883,11 +673,9 @@ BOOKS.push(
 { title: 'The Purple Cloud', author: 'M.P. Shiel', desc: 'The last man alive wanders a world depopulated by a poisonous purple vapor.', cat: 'sci-fi', color: '#6a0dad', height: 135, pdf: 'https://www.gutenberg.org/ebooks/11229' },
 { title: 'The Lord of the Sea', author: 'M.P. Shiel', desc: 'A man builds floating steel fortresses to dominate the world\'s shipping lanes.', cat: 'sci-fi', color: '#5a0d9d', height: 138, pdf: 'https://www.gutenberg.org/ebooks/34298' },
 { title: 'The Night Land', author: 'William Hope Hodgson', desc: 'In the far future, the last humans survive in a metal pyramid surrounded by monstrous darkness.', cat: 'sci-fi', color: '#1c1c1c', height: 155, pdf: 'https://www.gutenberg.org/ebooks/10662' },
-{ title: 'Herland', author: 'Charlotte Perkins Gilman', desc: 'Three men discover a utopian society of women who reproduce without men.', cat: 'sci-fi', color: '#27ae60', height: 122, pdf: 'https://www.gutenberg.org/ebooks/32' },
 { title: 'Caesar\'s Column', author: 'Ignatius Donnelly', desc: 'A dystopian future where plutocrats rule and revolution leads to apocalyptic destruction.', cat: 'sci-fi', color: '#5d3a1a', height: 135, pdf: 'https://www.gutenberg.org/ebooks/10447' },
 { title: 'The Hampdenshire Wonder', author: 'J.D. Beresford', desc: 'A child genius with terrifying intellect is born in rural England and disturbs everyone around him.', cat: 'sci-fi', color: '#4a6741', height: 125, pdf: 'https://www.gutenberg.org/ebooks/33738' },
 { title: 'Darkness and Dawn', author: 'George Allan England', desc: 'Two survivors awake a thousand years after civilization\'s collapse and must rebuild humanity.', cat: 'sci-fi', color: '#3a3a1a', height: 145, pdf: 'https://www.gutenberg.org/ebooks/7488' },
-
 // ──────────────────────────────────────
 // MYSTERY & GOTHIC — Batch 2 (~40 books)
 // ──────────────────────────────────────
@@ -915,26 +703,17 @@ BOOKS.push(
 { title: 'The House of the Whispering Pines', author: 'Anna Katharine Green', desc: 'A man confesses to murder to protect the woman he loves, but the real killer is still at large.', cat: 'mystery', color: '#2d5a27', height: 130, pdf: 'https://www.gutenberg.org/ebooks/6659' },
 { title: 'The Filigree Ball', author: 'Anna Katharine Green', desc: 'Two brides die mysteriously in the same haunted house, and detective Gryce must find the connection.', cat: 'mystery', color: '#3d6a37', height: 128, pdf: 'https://www.gutenberg.org/ebooks/1286' },
 { title: 'The House of the Seven Keys', author: 'Earl Derr Biggers', desc: 'A man inherits a mansion with seven locked rooms and a dead body in the first one he opens.', cat: 'mystery', color: '#8b5e3c', height: 125, pdf: 'https://www.gutenberg.org/ebooks/21121' },
-{ title: 'Seven Keys to Baldpate', author: 'Earl Derr Biggers', desc: 'A writer bets he can produce a novel in 24 hours at a deserted mountain inn, but strangers keep arriving.', cat: 'mystery', color: '#9b6e4c', height: 128, pdf: 'https://www.gutenberg.org/ebooks/8756' },
 { title: 'The Benson Murder Case', author: 'S.S. Van Dine', desc: 'Philo Vance uses psychology and erudition to solve the shooting of a Wall Street broker.', cat: 'mystery', color: '#2c3e50', height: 130, pdf: 'https://www.gutenberg.org/ebooks/70816' },
 { title: 'The Canary Murder Case', author: 'S.S. Van Dine', desc: 'A beautiful showgirl is strangled and Philo Vance navigates a web of jealous suitors.', cat: 'mystery', color: '#34495e', height: 128, pdf: 'https://www.gutenberg.org/ebooks/70899' },
 { title: 'The Great Portrait Mystery', author: 'R. Austin Freeman', desc: 'Dr. Thorndyke investigates art forgery, missing persons, and ingenious crimes.', cat: 'mystery', color: '#c04040', height: 120, pdf: 'https://www.gutenberg.org/ebooks/13886' },
-{ title: 'The Gold Bug', author: 'Edgar Allan Poe', desc: 'A cryptogram on a piece of parchment leads to Captain Kidd\'s buried treasure.', cat: 'mystery', color: '#d4a017', height: 112, pdf: 'https://www.gutenberg.org/ebooks/2147' },
 { title: 'The Notting Hill Mystery', author: 'Charles Felix', desc: 'Widely considered the first detective novel in English, told through documents, letters, and depositions.', cat: 'mystery', color: '#5a5a3a', height: 125, pdf: 'https://www.gutenberg.org/ebooks/43950' },
-{ title: 'Trent\'s Last Case', author: 'E.C. Bentley', desc: 'An artist-detective investigates a tycoon\'s murder and falls in love with the prime suspect.', cat: 'mystery', color: '#4a6a4a', height: 128, pdf: 'https://www.gutenberg.org/ebooks/2154' },
-
 // ──────────────────────────────────────
 // ADVENTURE — Batch 2 (~40 books)
 // ──────────────────────────────────────
-{ title: 'Puck of Pook\'s Hill', author: 'Rudyard Kipling', desc: 'Two children meet Puck and are transported through English history from Romans to Normans.', cat: 'adventure', color: '#2e7d32', height: 125, pdf: 'https://www.gutenberg.org/ebooks/557' },
 { title: 'Stalky & Co.', author: 'Rudyard Kipling', desc: 'Three scheming schoolboys outwit masters and rivals at an English boarding school.', cat: 'adventure', color: '#388e3c', height: 125, pdf: 'https://www.gutenberg.org/ebooks/3006' },
 { title: 'The Light That Failed', author: 'Rudyard Kipling', desc: 'A war artist goes blind and struggles with love, art, and his desire to die gloriously.', cat: 'adventure', color: '#4caf50', height: 130, pdf: 'https://www.gutenberg.org/ebooks/2876' },
 { title: 'Actions and Reactions', author: 'Rudyard Kipling', desc: 'Stories and poems ranging from supernatural horror to broad comedy across the British Empire.', cat: 'adventure', color: '#1b5e20', height: 122, pdf: 'https://www.gutenberg.org/ebooks/2819' },
-{ title: 'The Son of Tarzan', author: 'Edgar Rice Burroughs', desc: 'Tarzan\'s son escapes civilization to find freedom in the African jungle.', cat: 'adventure', color: '#4a7a3a', height: 135, pdf: 'https://www.gutenberg.org/ebooks/90' },
-{ title: 'Tarzan and the Jewels of Opar', author: 'Edgar Rice Burroughs', desc: 'Tarzan returns to the lost city of Opar for its gold but falls victim to amnesia.', cat: 'adventure', color: '#5a8a4a', height: 130, pdf: 'https://www.gutenberg.org/ebooks/92' },
-{ title: 'Jungle Tales of Tarzan', author: 'Edgar Rice Burroughs', desc: 'Twelve tales of young Tarzan learning the ways of the apes, hunting, and first love.', cat: 'adventure', color: '#6a9a5a', height: 125, pdf: 'https://www.gutenberg.org/ebooks/106' },
 { title: 'Tarzan the Untamed', author: 'Edgar Rice Burroughs', desc: 'Tarzan wages a one-man war against German forces in East Africa during World War I.', cat: 'adventure', color: '#3a6a2a', height: 138, pdf: 'https://www.gutenberg.org/ebooks/1401' },
-{ title: 'Beau Geste', author: 'P.C. Wren', desc: 'Three brothers join the French Foreign Legion and face a sadistic commander in the Sahara.', cat: 'adventure', color: '#c2b280', height: 140, pdf: 'https://www.gutenberg.org/ebooks/2381' },
 { title: 'Beau Sabreur', author: 'P.C. Wren', desc: 'A French officer navigates treachery and romance in the deserts of North Africa.', cat: 'adventure', color: '#d2c290', height: 135, pdf: 'https://www.gutenberg.org/ebooks/6332' },
 { title: 'Under Drake\'s Flag', author: 'G.A. Henty', desc: 'An English boy joins Francis Drake\'s expedition around the world and fights the Spanish.', cat: 'adventure', color: '#0d47a1', height: 130, pdf: 'https://www.gutenberg.org/ebooks/18677' },
 { title: 'With Clive in India', author: 'G.A. Henty', desc: 'A young Englishman serves with Clive and helps establish British rule in India.', cat: 'adventure', color: '#1565c0', height: 135, pdf: 'https://www.gutenberg.org/ebooks/24755' },
@@ -949,18 +728,12 @@ BOOKS.push(
 { title: 'The Great Doings of Mr. Dodd', author: 'E. Phillips Oppenheim', desc: 'A retired businessman stumbles into international espionage and discovers hidden talents.', cat: 'adventure', color: '#3e2723', height: 125, pdf: 'https://www.gutenberg.org/ebooks/7652' },
 { title: 'The Great Doings of Mr. Morrison', author: 'E. Phillips Oppenheim', desc: 'A mild-mannered accountant is drawn into a web of intrigue stretching from London to the Riviera.', cat: 'adventure', color: '#4e3733', height: 122, pdf: 'https://www.gutenberg.org/ebooks/7653' },
 { title: 'The Great Prince Shan', author: 'E. Phillips Oppenheim', desc: 'A Chinese prince threatens Europe with an alliance that could destroy Western civilization.', cat: 'adventure', color: '#5e4743', height: 128, pdf: 'https://www.gutenberg.org/ebooks/2444' },
-{ title: 'The Thirty-Nine Steps', author: 'John Buchan', desc: 'A man stumbles onto a spy plot and must flee across the Scottish moors to prevent an assassination.', cat: 'adventure', color: '#37474f', height: 122, pdf: 'https://www.gutenberg.org/ebooks/558' },
-{ title: 'Greenmantle', author: 'John Buchan', desc: 'Richard Hannay goes undercover in wartime Constantinople to thwart a German-backed Islamic uprising.', cat: 'adventure', color: '#455a64', height: 135, pdf: 'https://www.gutenberg.org/ebooks/559' },
-{ title: 'Mr. Standfast', author: 'John Buchan', desc: 'Hannay hunts a deadly spy across Britain while posing as a pacifist during World War I.', cat: 'adventure', color: '#546e7a', height: 138, pdf: 'https://www.gutenberg.org/ebooks/560' },
 { title: 'Prester John', author: 'John Buchan', desc: 'A young Scotsman uncovers a Zulu uprising in southern Africa and races to stop it.', cat: 'adventure', color: '#607d8b', height: 128, pdf: 'https://www.gutenberg.org/ebooks/7308' },
-{ title: 'The Riddle of the Sands', author: 'Erskine Childers', desc: 'Two yachtsmen uncover a German invasion plan while sailing the North Sea coast.', cat: 'adventure', color: '#26587a', height: 132, pdf: 'https://www.gutenberg.org/ebooks/2360' },
 { title: 'Nada the Lily', author: 'H. Rider Haggard', desc: 'A Zulu warrior\'s epic tale of love, war, and a pack of ghost wolves in Shaka\'s kingdom.', cat: 'adventure', color: '#5d4037', height: 135, pdf: 'https://www.gutenberg.org/ebooks/1207' },
 { title: 'Montezuma\'s Daughter', author: 'H. Rider Haggard', desc: 'An Englishman journeys to Aztec Mexico seeking revenge and becomes entangled in the Spanish Conquest.', cat: 'adventure', color: '#6d5047', height: 140, pdf: 'https://www.gutenberg.org/ebooks/1848' },
 { title: 'The World\'s Desire', author: 'H. Rider Haggard & Andrew Lang', desc: 'Odysseus returns to Egypt seeking Helen of Troy and faces ancient magic and a deadly plague.', cat: 'adventure', color: '#7d6057', height: 132, pdf: 'https://www.gutenberg.org/ebooks/2763' },
 { title: 'Eric Brighteyes', author: 'H. Rider Haggard', desc: 'A Viking saga of love, betrayal, and doom set in medieval Iceland.', cat: 'adventure', color: '#4a5568', height: 135, pdf: 'https://www.gutenberg.org/ebooks/3092' },
 { title: 'Doña Perfecta', author: 'Benito Pérez Galdós', desc: 'A liberal engineer clashes with his fanatically religious aunt in a provincial Spanish town.', cat: 'adventure', color: '#7a5a3a', height: 125, pdf: 'https://www.gutenberg.org/ebooks/15920' },
-{ title: 'The Prisoner of Zenda', author: 'Anthony Hope', desc: 'An English gentleman impersonates a drugged king at his coronation and falls in love with the queen.', cat: 'adventure', color: '#8e24aa', height: 128, pdf: 'https://www.gutenberg.org/ebooks/95' },
-
 // ──────────────────────────────────────
 // POETRY & DRAMA — Batch 2 (~45 books)
 // ──────────────────────────────────────
@@ -974,11 +747,9 @@ BOOKS.push(
 { title: 'Cymbeline', author: 'William Shakespeare', desc: 'A princess\'s virtue is tested by a wager, a villainous stepmother, and Roman invasion.', cat: 'poetry', color: '#1a237e', height: 125, pdf: 'https://www.gutenberg.org/ebooks/1538' },
 { title: 'Richard III', author: 'William Shakespeare', desc: 'A deformed duke murders his way to England\'s throne in Shakespeare\'s most compelling villain play.', cat: 'poetry', color: '#b71c1c', height: 128, pdf: 'https://www.gutenberg.org/ebooks/1103' },
 { title: 'Henry V', author: 'William Shakespeare', desc: 'A young king inspires his outnumbered army to victory at Agincourt with the St. Crispin\'s Day speech.', cat: 'poetry', color: '#0d47a1', height: 125, pdf: 'https://www.gutenberg.org/ebooks/1521' },
-{ title: 'Doctor Faustus', author: 'Christopher Marlowe', desc: 'A scholar sells his soul to the devil for twenty-four years of unlimited knowledge and power.', cat: 'poetry', color: '#4a148c', height: 120, pdf: 'https://www.gutenberg.org/ebooks/779' },
 { title: 'Tamburlaine the Great', author: 'Christopher Marlowe', desc: 'A Scythian shepherd conquers empires through sheer will and magnificent rhetoric.', cat: 'poetry', color: '#6a1b9a', height: 125, pdf: 'https://www.gutenberg.org/ebooks/1094' },
 { title: 'The Alchemist', author: 'Ben Jonson', desc: 'Three con artists exploit London\'s gullible citizens with fake alchemy during a plague quarantine.', cat: 'poetry', color: '#f9a825', height: 122, pdf: 'https://www.gutenberg.org/ebooks/4081' },
 { title: 'Volpone', author: 'Ben Jonson', desc: 'A Venetian nobleman feigns mortal illness to trick legacy hunters out of their wealth.', cat: 'poetry', color: '#ff8f00', height: 125, pdf: 'https://www.gutenberg.org/ebooks/4039' },
-{ title: 'Tartuffe', author: 'Molière', desc: 'A religious hypocrite insinuates himself into a household and nearly steals everything.', cat: 'poetry', color: '#e65100', height: 118, pdf: 'https://www.gutenberg.org/ebooks/2027' },
 { title: 'The Misanthrope', author: 'Molière', desc: 'A man who insists on brutal honesty is tormented by his love for a witty coquette.', cat: 'poetry', color: '#ef6c00', height: 115, pdf: 'https://www.gutenberg.org/ebooks/8775' },
 { title: 'The Miser', author: 'Molière', desc: 'A pathologically stingy father\'s obsession with money wrecks his children\'s hopes of marriage.', cat: 'poetry', color: '#f57c00', height: 115, pdf: 'https://www.gutenberg.org/ebooks/6925' },
 { title: 'A Doll\'s House', author: 'Henrik Ibsen', desc: 'A wife realizes her marriage is a sham and slams the door on domesticity forever.', cat: 'poetry', color: '#455a64', height: 118, pdf: 'https://www.gutenberg.org/ebooks/2542' },
@@ -993,9 +764,6 @@ BOOKS.push(
 { title: 'Pygmalion', author: 'George Bernard Shaw', desc: 'A phonetics professor bets he can pass a Cockney flower girl off as a duchess.', cat: 'poetry', color: '#dd2c00', height: 120, pdf: 'https://www.gutenberg.org/ebooks/3825' },
 { title: 'Poems of Robert Burns', author: 'Robert Burns', desc: 'Scotland\'s national poet sings of love, nature, equality, and whisky in Scots dialect.', cat: 'poetry', color: '#4a148c', height: 130, pdf: 'https://www.gutenberg.org/ebooks/1279' },
 { title: 'The Marriage of Heaven and Hell', author: 'William Blake', desc: 'Blake overturns conventional morality with proverbs of Hell and visions of angelic error.', cat: 'poetry', color: '#880e4f', height: 112, pdf: 'https://www.gutenberg.org/ebooks/45315' },
-{ title: 'Evangeline', author: 'Henry Wadsworth Longfellow', desc: 'An Acadian woman searches for her lost love across America after the British deportation.', cat: 'poetry', color: '#4e342e', height: 120, pdf: 'https://www.gutenberg.org/ebooks/2039' },
-{ title: 'The Song of Hiawatha', author: 'Henry Wadsworth Longfellow', desc: 'An epic poem of the Ojibwe hero Hiawatha in trochaic tetrameter inspired by the Kalevala.', cat: 'poetry', color: '#5d4037', height: 128, pdf: 'https://www.gutenberg.org/ebooks/19' },
-{ title: 'The Autocrat of the Breakfast-Table', author: 'Oliver Wendell Holmes', desc: 'Witty table talk blending humor, philosophy, and poetry at a Boston boarding house.', cat: 'poetry', color: '#6d4c41', height: 130, pdf: 'https://www.gutenberg.org/ebooks/751' },
 { title: 'Cathleen ni Houlihan', author: 'W.B. Yeats', desc: 'A mysterious old woman inspires a young man to sacrifice everything for Ireland\'s freedom.', cat: 'poetry', color: '#1b5e20', height: 110, pdf: 'https://www.gutenberg.org/ebooks/49610' },
 { title: 'The Countess Cathleen', author: 'W.B. Yeats', desc: 'A noble countess sells her soul to save her starving people from demon merchants.', cat: 'poetry', color: '#2e7d32', height: 115, pdf: 'https://www.gutenberg.org/ebooks/49609' },
 { title: 'The Land of Heart\'s Desire', author: 'W.B. Yeats', desc: 'A fairy child lures a young bride away from her hearth into the otherworld.', cat: 'poetry', color: '#388e3c', height: 112, pdf: 'https://www.gutenberg.org/ebooks/49611' },
@@ -1004,7 +772,6 @@ BOOKS.push(
 { title: 'The Duchess of Padua', author: 'Oscar Wilde', desc: 'A young man plots revenge on the duke who murdered his father but falls in love with the duke\'s wife.', cat: 'poetry', color: '#6a1b9a', height: 120, pdf: 'https://www.gutenberg.org/ebooks/873' },
 { title: 'Major Barbara', author: 'George Bernard Shaw', desc: 'A Salvation Army officer confronts her arms-dealer father over the morality of wealth and poverty.', cat: 'poetry', color: '#ff6f00', height: 122, pdf: 'https://www.gutenberg.org/ebooks/3789' },
 { title: 'The Doctor\'s Dilemma', author: 'George Bernard Shaw', desc: 'A doctor must decide whether to save a brilliant but amoral artist or a decent but dull colleague.', cat: 'poetry', color: '#e65100', height: 125, pdf: 'https://www.gutenberg.org/ebooks/5070' },
-
 // ──────────────────────────────────────
 // FRENCH LITERATURE — Batch 2 (~30 books)
 // ──────────────────────────────────────
@@ -1013,7 +780,6 @@ BOOKS.push(
 { title: 'The Chouans', author: 'Honoré de Balzac', desc: 'Royalist guerrillas fight Republican troops in Brittany during the French Revolution.', cat: 'french-lit', color: '#8c54a3', height: 140, pdf: 'https://www.gutenberg.org/ebooks/1858' },
 { title: 'César Birotteau', author: 'Honoré de Balzac', desc: 'A perfumer\'s rise and catastrophic fall illuminate the ruthless financial world of Restoration Paris.', cat: 'french-lit', color: '#5c2473', height: 135, pdf: 'https://www.gutenberg.org/ebooks/1852' },
 { title: 'The Country Doctor', author: 'Honoré de Balzac', desc: 'A selfless physician transforms a poor Alpine village through medicine, education, and moral example.', cat: 'french-lit', color: '#4c1463', height: 130, pdf: 'https://www.gutenberg.org/ebooks/1385' },
-{ title: 'Colonel Chabert', author: 'Honoré de Balzac', desc: 'A Napoleonic officer presumed dead at Eylau returns to find his wife remarried and his fortune gone.', cat: 'french-lit', color: '#6c3483', height: 118, pdf: 'https://www.gutenberg.org/ebooks/1954' },
 { title: 'A Woman of Thirty', author: 'Honoré de Balzac', desc: 'A woman makes a disastrous marriage and spends decades seeking love and meaning.', cat: 'french-lit', color: '#9b59b6', height: 125, pdf: 'https://www.gutenberg.org/ebooks/1749' },
 { title: 'Maupassant Short Stories', author: 'Guy de Maupassant', desc: 'Masterful tales of Norman peasants, Parisian society, war, and the uncanny from France\'s greatest short-story writer.', cat: 'french-lit', color: '#2c3e50', height: 135, pdf: 'https://www.gutenberg.org/ebooks/3090' },
 { title: 'The Necklace and Other Stories', author: 'Guy de Maupassant', desc: 'A woman borrows a necklace and spends ten years paying for its replacement — plus more ironic tales.', cat: 'french-lit', color: '#34495e', height: 120, pdf: 'https://www.gutenberg.org/ebooks/3090' },
@@ -1024,7 +790,6 @@ BOOKS.push(
 { title: 'Jack', author: 'Alphonse Daudet', desc: 'An illegitimate boy is neglected by his vain mother and crushed by industrial labor in Paris.', cat: 'french-lit', color: '#d68910', height: 140, pdf: 'https://www.gutenberg.org/ebooks/11916' },
 { title: 'The Crime of Sylvestre Bonnard', author: 'Anatole France', desc: 'A gentle old bibliophile rescues a young woman from misery in this warmhearted comedy.', cat: 'french-lit', color: '#1a5276', height: 122, pdf: 'https://www.gutenberg.org/ebooks/5765' },
 { title: 'Thaïs', author: 'Anatole France', desc: 'A monk converts an Alexandrian courtesan to Christianity but loses his own soul to desire.', cat: 'french-lit', color: '#2a6286', height: 125, pdf: 'https://www.gutenberg.org/ebooks/8548' },
-{ title: 'Penguin Island', author: 'Anatole France', desc: 'A satirical history of France told as the story of penguins accidentally baptized into civilization.', cat: 'french-lit', color: '#3a7296', height: 135, pdf: 'https://www.gutenberg.org/ebooks/1930' },
 { title: 'The Revolt of the Angels', author: 'Anatole France', desc: 'Guardian angels in Paris rebel against God and plan a second war in heaven.', cat: 'french-lit', color: '#4a82a6', height: 130, pdf: 'https://www.gutenberg.org/ebooks/15404' },
 { title: 'An Iceland Fisherman', author: 'Pierre Loti', desc: 'Breton fishermen risk death in Icelandic waters while a young woman waits and hopes at home.', cat: 'french-lit', color: '#1b4f72', height: 122, pdf: 'https://www.gutenberg.org/ebooks/6395' },
 { title: 'Mauprat', author: 'George Sand', desc: 'A young man raised among bandits is redeemed by the love of a noble and educated cousin.', cat: 'french-lit', color: '#7b241c', height: 135, pdf: 'https://www.gutenberg.org/ebooks/3585' },
@@ -1035,7 +800,6 @@ BOOKS.push(
 { title: 'Chicot the Jester', author: 'Alexandre Dumas', desc: 'The king\'s fool proves the wisest man at court amid the French Wars of Religion.', cat: 'french-lit', color: '#b03a2e', height: 148, pdf: 'https://www.gutenberg.org/ebooks/2753' },
 { title: 'The Memoirs of a Physician', author: 'Alexandre Dumas', desc: 'Joseph Balsamo and the secret forces behind the French Revolution in Dumas\'s occult historical novel.', cat: 'french-lit', color: '#922b21', height: 155, pdf: 'https://www.gutenberg.org/ebooks/2746' },
 { title: 'Louise de la Vallière', author: 'Alexandre Dumas', desc: 'Louis XIV\'s mistress struggles as court intrigue and Fouquet\'s ambitions threaten the young king.', cat: 'french-lit', color: '#7b241c', height: 152, pdf: 'https://www.gutenberg.org/ebooks/2681' },
-
 // ──────────────────────────────────────
 // RUSSIAN LITERATURE — Batch 2 (~20 books)
 // ──────────────────────────────────────
@@ -1046,7 +810,6 @@ BOOKS.push(
 { title: 'Ivanov', author: 'Anton Chekhov', desc: 'A disillusioned landowner drifts toward ruin while his dying wife watches helplessly.', cat: 'russian-lit', color: '#1a237e', height: 115, pdf: 'https://www.gutenberg.org/ebooks/7986' },
 { title: 'The Mother', author: 'Maxim Gorky', desc: 'A factory worker\'s mother joins the revolutionary movement and becomes its moral center.', cat: 'russian-lit', color: '#b71c1c', height: 140, pdf: 'https://www.gutenberg.org/ebooks/3783' },
 { title: 'Twenty-Six Men and a Girl', author: 'Maxim Gorky', desc: 'Twenty-six bakers idealize a young girl who visits their cellar bakery — until reality intrudes.', cat: 'russian-lit', color: '#c62828', height: 112, pdf: 'https://www.gutenberg.org/ebooks/45507' },
-{ title: 'Foma Gordyeeff', author: 'Maxim Gorky', desc: 'A merchant\'s son rebels against the greed and cruelty of Russia\'s rising capitalist class.', cat: 'russian-lit', color: '#d32f2f', height: 135, pdf: 'https://www.gutenberg.org/ebooks/2354' },
 { title: 'My Childhood', author: 'Maxim Gorky', desc: 'Gorky recalls his brutal childhood among dyers, thieves, and the poor along the Volga.', cat: 'russian-lit', color: '#e53935', height: 130, pdf: 'https://www.gutenberg.org/ebooks/49541' },
 { title: 'The Seven That Were Hanged', author: 'Leonid Andreyev', desc: 'Seven condemned prisoners face death in their own ways in this devastating meditation on mortality.', cat: 'russian-lit', color: '#263238', height: 118, pdf: 'https://www.gutenberg.org/ebooks/6722' },
 { title: 'The Red Laugh', author: 'Leonid Andreyev', desc: 'War drives a soldier and his brother insane in this hallucinatory anti-war novella.', cat: 'russian-lit', color: '#37474f', height: 115, pdf: 'https://www.gutenberg.org/ebooks/35082' },
@@ -1055,11 +818,9 @@ BOOKS.push(
 { title: 'Virgin Soil', author: 'Ivan Turgenev', desc: 'Young populists try to rouse the peasantry and discover the gap between idealism and reality.', cat: 'russian-lit', color: '#2e7d32', height: 140, pdf: 'https://www.gutenberg.org/ebooks/6502' },
 { title: 'Torrents of Spring', author: 'Ivan Turgenev', desc: 'A young Russian falls in love in Frankfurt but is seduced away by a predatory married woman.', cat: 'russian-lit', color: '#388e3c', height: 120, pdf: 'https://www.gutenberg.org/ebooks/6342' },
 { title: 'The Cossacks', author: 'Leo Tolstoy', desc: 'A young nobleman seeks meaning among the free Cossacks of the Caucasus mountains.', cat: 'russian-lit', color: '#795548', height: 125, pdf: 'https://www.gutenberg.org/ebooks/4761' },
-{ title: 'The Kreutzer Sonata', author: 'Leo Tolstoy', desc: 'A man confesses to murdering his wife in a jealous rage sparked by Beethoven\'s sonata.', cat: 'russian-lit', color: '#6d4c41', height: 118, pdf: 'https://www.gutenberg.org/ebooks/689' },
 { title: 'Family Happiness', author: 'Leo Tolstoy', desc: 'A young woman\'s romantic marriage cools into a deeper but less passionate companionship.', cat: 'russian-lit', color: '#8d6e63', height: 118, pdf: 'https://www.gutenberg.org/ebooks/4039' },
 { title: 'Master and Man', author: 'Leo Tolstoy', desc: 'A merchant and his servant are lost in a blizzard, and the master discovers selflessness at the last moment.', cat: 'russian-lit', color: '#5d4037', height: 115, pdf: 'https://www.gutenberg.org/ebooks/986' },
 { title: 'The Power of Darkness', author: 'Leo Tolstoy', desc: 'A peasant drama of adultery, murder, and repentance in a Russian village.', cat: 'russian-lit', color: '#4e342e', height: 118, pdf: 'https://www.gutenberg.org/ebooks/1705' },
-
 // ──────────────────────────────────────
 // CHILDREN & FANTASY — Batch 2 (~30 books)
 // ──────────────────────────────────────
@@ -1073,13 +834,11 @@ BOOKS.push(
 { title: 'The Merry Adventures of Robin Hood', author: 'Howard Pyle', desc: 'Robin Hood and his Merry Men rob the rich and outwit the Sheriff in Sherwood Forest.', cat: 'children', color: '#228b22', height: 140, pdf: 'https://www.gutenberg.org/ebooks/964' },
 { title: 'The Story of King Arthur', author: 'Howard Pyle', desc: 'Arthur pulls the sword from the stone and establishes the Round Table in Pyle\'s illustrated retelling.', cat: 'children', color: '#4169e1', height: 145, pdf: 'https://www.gutenberg.org/ebooks/5712' },
 { title: 'Otto of the Silver Hand', author: 'Howard Pyle', desc: 'A gentle boy is caught between warring robber barons in medieval Germany.', cat: 'children', color: '#708090', height: 125, pdf: 'https://www.gutenberg.org/ebooks/6560' },
-{ title: 'Men of Iron', author: 'Howard Pyle', desc: 'A boy trains as a knight in fifteenth-century England to restore his family\'s honor.', cat: 'children', color: '#696969', height: 130, pdf: 'https://www.gutenberg.org/ebooks/535' },
 { title: 'The Green Fairy Book', author: 'Andrew Lang', desc: 'Forty-two fairy tales from around the world including Spanish, Chinese, and Icelandic traditions.', cat: 'children', color: '#2e8b57', height: 135, pdf: 'https://www.gutenberg.org/ebooks/3083' },
 { title: 'The Pink Fairy Book', author: 'Andrew Lang', desc: 'Fairy tales from Scandinavia, Japan, Sicily, and Africa collected by the great folklore scholar.', cat: 'children', color: '#ff69b4', height: 135, pdf: 'https://www.gutenberg.org/ebooks/5765' },
 { title: 'The Violet Fairy Book', author: 'Andrew Lang', desc: 'Tales from Romania, Japan, Lapland, and West Africa fill this jewel-toned collection.', cat: 'children', color: '#9400d3', height: 135, pdf: 'https://www.gutenberg.org/ebooks/7448' },
 { title: 'The Olive Fairy Book', author: 'Andrew Lang', desc: 'Fairy tales from India, Turkey, Denmark, and Armenia in this lesser-known volume.', cat: 'children', color: '#808000', height: 132, pdf: 'https://www.gutenberg.org/ebooks/5765' },
 { title: 'The Lilac Fairy Book', author: 'Andrew Lang', desc: 'The final Lang fairy book brings together Portuguese, Algonquin, and Hungarian tales.', cat: 'children', color: '#c8a2c8', height: 132, pdf: 'https://www.gutenberg.org/ebooks/5765' },
-{ title: 'The Princess and Curdie', author: 'George MacDonald', desc: 'Curdie and a pack of grotesque but loyal beasts save a kingdom from corrupt courtiers.', cat: 'children', color: '#4682b4', height: 128, pdf: 'https://www.gutenberg.org/ebooks/709' },
 { title: 'Phantastes', author: 'George MacDonald', desc: 'A young man wanders through a dreamlike fairy land in this pioneering fantasy novel that inspired C.S. Lewis.', cat: 'children', color: '#5f9ea0', height: 130, pdf: 'https://www.gutenberg.org/ebooks/325' },
 { title: 'Lilith', author: 'George MacDonald', desc: 'A librarian enters a parallel world of sleeping spirits, talking ravens, and the demoness Lilith.', cat: 'children', color: '#483d8b', height: 135, pdf: 'https://www.gutenberg.org/ebooks/1640' },
 { title: 'The Water-Babies', author: 'Charles Kingsley', desc: 'A chimney sweep drowns and becomes a water-baby, learning moral lessons in an underwater world.', cat: 'children', color: '#00ced1', height: 125, pdf: 'https://www.gutenberg.org/ebooks/1018' },
@@ -1092,8 +851,6 @@ BOOKS.push(
 { title: 'What Katy Did Next', author: 'Susan Coolidge', desc: 'The recovered Katy travels to Europe and has romantic adventures in England and Italy.', cat: 'children', color: '#e6a06a', height: 125, pdf: 'https://www.gutenberg.org/ebooks/24056' },
 { title: 'Pollyanna', author: 'Eleanor H. Porter', desc: 'An orphan transforms a grumpy New England town by playing the \'glad game\' in every situation.', cat: 'children', color: '#f4d03f', height: 125, pdf: 'https://www.gutenberg.org/ebooks/1450' },
 { title: 'Pollyanna Grows Up', author: 'Eleanor H. Porter', desc: 'Pollyanna brings her optimism to Boston society and discovers that gladness has its limits.', cat: 'children', color: '#f9e154', height: 128, pdf: 'https://www.gutenberg.org/ebooks/2529' },
-{ title: 'The Secret Garden', author: 'Frances Hodgson Burnett', desc: 'A spoiled orphan discovers a hidden garden and heals herself and others through nature.', cat: 'children', color: '#27ae60', height: 128, pdf: 'https://www.gutenberg.org/ebooks/113' },
-
 // ──────────────────────────────────────
 // HISTORY — Batch 2 (~30 books)
 // ──────────────────────────────────────
@@ -1102,11 +859,6 @@ BOOKS.push(
 { title: 'The Lives of the Twelve Caesars', author: 'Suetonius', desc: 'Scandalous biographies of Rome\'s first twelve rulers from Julius Caesar to Domitian.', cat: 'history', color: '#8b5a4a', height: 150, pdf: 'https://www.gutenberg.org/ebooks/6400' },
 { title: 'Anabasis', author: 'Xenophon', desc: 'Ten thousand Greek mercenaries fight their way home from the heart of the Persian Empire.', cat: 'history', color: '#4a6b3a', height: 135, pdf: 'https://www.gutenberg.org/ebooks/1170' },
 { title: 'Memorabilia', author: 'Xenophon', desc: 'Xenophon\'s recollections of Socrates — conversations on virtue, leadership, and practical wisdom.', cat: 'history', color: '#5a7b4a', height: 128, pdf: 'https://www.gutenberg.org/ebooks/1177' },
-{ title: 'Cyropaedia', author: 'Xenophon', desc: 'The education of Cyrus the Great — part biography, part manual on ideal leadership.', cat: 'history', color: '#6a8b5a', height: 142, pdf: 'https://www.gutenberg.org/ebooks/2085' },
-{ title: 'Lives: Alexander', author: 'Plutarch', desc: 'The life of Alexander the Great — from his taming of Bucephalus to the conquest of the known world.', cat: 'history', color: '#5c4033', height: 130, pdf: 'https://www.gutenberg.org/ebooks/674' },
-{ title: 'Lives: Caesar', author: 'Plutarch', desc: 'The rise and assassination of Julius Caesar as told by antiquity\'s greatest biographer.', cat: 'history', color: '#6c5043', height: 128, pdf: 'https://www.gutenberg.org/ebooks/674' },
-{ title: 'Lives: Pericles', author: 'Plutarch', desc: 'The golden age of Athens under its greatest democratic leader and patron of the arts.', cat: 'history', color: '#7c6053', height: 122, pdf: 'https://www.gutenberg.org/ebooks/674' },
-{ title: 'Lives: Cicero', author: 'Plutarch', desc: 'Rome\'s greatest orator navigates the fall of the Republic and pays with his life.', cat: 'history', color: '#8c7063', height: 125, pdf: 'https://www.gutenberg.org/ebooks/674' },
 { title: 'The Travels of Marco Polo', author: 'Marco Polo', desc: 'A Venetian merchant describes the wonders of Kublai Khan\'s China and the Far East.', cat: 'history', color: '#b8860b', height: 140, pdf: 'https://www.gutenberg.org/ebooks/10636' },
 { title: 'The Oregon Trail', author: 'Francis Parkman', desc: 'A young historian\'s firsthand account of life among the Sioux on the Great Plains in 1846.', cat: 'history', color: '#8b6914', height: 135, pdf: 'https://www.gutenberg.org/ebooks/5757' },
 { title: 'Montcalm and Wolfe', author: 'Francis Parkman', desc: 'The epic struggle between France and England for control of North America culminating at Quebec.', cat: 'history', color: '#6b4914', height: 152, pdf: 'https://www.gutenberg.org/ebooks/45863' },
@@ -1123,7 +875,6 @@ BOOKS.push(
 { title: 'Memoirs of Napoleon', author: 'Louis Antoine Fauvelet de Bourrienne', desc: 'Napoleon\'s private secretary reveals the man behind the emperor in intimate detail.', cat: 'history', color: '#1a237e', height: 150, pdf: 'https://www.gutenberg.org/ebooks/3567' },
 { title: 'History of the French Revolution', author: 'Thomas Carlyle', desc: 'The storming of the Bastille, the Terror, and Napoleon\'s rise told in volcanic prose.', cat: 'history', color: '#c62828', height: 155, pdf: 'https://www.gutenberg.org/ebooks/1301' },
 { title: 'The Prince', author: 'Niccolò Machiavelli', desc: 'The ruthless handbook of political power that shocked and fascinated Renaissance Europe.', cat: 'history', color: '#2c3e50', height: 118, pdf: 'https://www.gutenberg.org/ebooks/1232' },
-
 // ──────────────────────────────────────
 // PHILOSOPHY — Batch 2 (~25 books)
 // ──────────────────────────────────────
@@ -1135,12 +886,10 @@ BOOKS.push(
 { title: 'Philebus', author: 'Plato', desc: 'Socrates debates whether the good life consists in pleasure, knowledge, or a mixture of both.', cat: 'philosophy', color: '#1a6276', height: 118, pdf: 'https://www.gutenberg.org/ebooks/1744' },
 { title: 'Meditations', author: 'Marcus Aurelius', desc: 'A Roman emperor\'s private journal of Stoic self-examination and moral discipline.', cat: 'philosophy', color: '#795548', height: 125, pdf: 'https://www.gutenberg.org/ebooks/2680' },
 { title: 'The Principal Doctrines', author: 'Epicurus', desc: 'Forty maxims distilling Epicurean philosophy — pleasure, friendship, and freedom from fear.', cat: 'philosophy', color: '#6d4c41', height: 110, pdf: 'https://www.gutenberg.org/ebooks/57488' },
-{ title: 'On the Nature of Things', author: 'Lucretius', desc: 'The great Latin poem explaining Epicurean atomism, mortality, and the workings of the natural world.', cat: 'philosophy', color: '#5d4037', height: 140, pdf: 'https://www.gutenberg.org/ebooks/785' },
 { title: 'Essays of Montaigne', author: 'Michel de Montaigne', desc: 'The inventor of the essay reflects on cannibals, education, friendship, death, and self-knowledge.', cat: 'philosophy', color: '#4e342e', height: 155, pdf: 'https://www.gutenberg.org/ebooks/3600' },
 { title: 'Pensées', author: 'Blaise Pascal', desc: 'Fragments of a brilliant apology for Christianity — the wager, the hidden God, and human wretchedness.', cat: 'philosophy', color: '#3e2723', height: 135, pdf: 'https://www.gutenberg.org/ebooks/18269' },
 { title: 'Philosophical Dictionary', author: 'Voltaire', desc: 'Voltaire attacks superstition, fanaticism, and injustice in witty alphabetical entries.', cat: 'philosophy', color: '#e65100', height: 140, pdf: 'https://www.gutenberg.org/ebooks/18569' },
 { title: 'Zadig', author: 'Voltaire', desc: 'A wise Babylonian endures absurd misfortunes that test whether reason can overcome fate.', cat: 'philosophy', color: '#ef6c00', height: 115, pdf: 'https://www.gutenberg.org/ebooks/18028' },
-{ title: 'The Varieties of Religious Experience', author: 'William James', desc: 'A psychologist examines mysticism, conversion, saintliness, and the pragmatic value of belief.', cat: 'philosophy', color: '#1b5e20', height: 148, pdf: 'https://www.gutenberg.org/ebooks/621' },
 { title: 'Pragmatism', author: 'William James', desc: 'Truth is what works — James makes the case for a philosophy that judges ideas by their practical results.', cat: 'philosophy', color: '#2e7d32', height: 128, pdf: 'https://www.gutenberg.org/ebooks/5116' },
 { title: 'The Will to Believe', author: 'William James', desc: 'James defends the right to believe on faith when evidence is insufficient to decide.', cat: 'philosophy', color: '#388e3c', height: 125, pdf: 'https://www.gutenberg.org/ebooks/26659' },
 { title: 'Essays: First Series', author: 'Ralph Waldo Emerson', desc: 'Self-Reliance, Compensation, The Over-Soul — Emerson\'s foundational statements of Transcendentalism.', cat: 'philosophy', color: '#4a148c', height: 130, pdf: 'https://www.gutenberg.org/ebooks/2944' },
@@ -1150,7 +899,6 @@ BOOKS.push(
 { title: 'The Problems of Philosophy', author: 'Bertrand Russell', desc: 'A clear and accessible introduction to epistemology, perception, universals, and the value of philosophy.', cat: 'philosophy', color: '#283593', height: 120, pdf: 'https://www.gutenberg.org/ebooks/5827' },
 { title: 'A Treatise on Human Nature, Vol. 1', author: 'David Hume', desc: 'Hume undermines causation, the self, and induction with devastating skeptical arguments.', cat: 'philosophy', color: '#1a237e', height: 145, pdf: 'https://www.gutenberg.org/ebooks/4705' },
 { title: 'Utilitarianism', author: 'John Stuart Mill', desc: 'Mill refines Bentham\'s greatest happiness principle with distinctions between higher and lower pleasures.', cat: 'philosophy', color: '#0d47a1', height: 115, pdf: 'https://www.gutenberg.org/ebooks/11224' },
-
 // ──────────────────────────────────────
 // RELIGION & SPIRITUALITY — Batch 2 (~15 books)
 // ──────────────────────────────────────
@@ -1168,7 +916,6 @@ BOOKS.push(
 { title: 'The Upanishads', author: 'Various (tr. Max Müller)', desc: 'Ancient Indian scriptures exploring Brahman, Atman, and the nature of ultimate reality.', cat: 'religion', color: '#e65100', height: 135, pdf: 'https://www.gutenberg.org/ebooks/3283' },
 { title: 'The Confessions of Saint Augustine', author: 'Saint Augustine', desc: 'Augustine traces his journey from youthful sin through philosophical seeking to Christian conversion.', cat: 'religion', color: '#6b3f20', height: 140, pdf: 'https://www.gutenberg.org/ebooks/3296' },
 { title: 'The Enneads (Selections)', author: 'Plotinus', desc: 'The fountainhead of Neoplatonism — the One, the Intellect, the Soul, and mystical union.', cat: 'religion', color: '#4a148c', height: 140, pdf: 'https://www.gutenberg.org/ebooks/57002' },
-
 // ──────────────────────────────────────
 // PSYCHOLOGY — Batch 2 (~15 books)
 // ──────────────────────────────────────
@@ -1182,35 +929,29 @@ BOOKS.push(
 { title: 'Three Contributions to the Theory of Sex', author: 'Sigmund Freud', desc: 'Freud\'s foundational theory of infantile sexuality, perversion, and the stages of psychosexual development.', cat: 'psychology', color: '#9c27b0', height: 122, pdf: 'https://www.gutenberg.org/ebooks/14969' },
 { title: 'Wit and Its Relation to the Unconscious', author: 'Sigmund Freud', desc: 'Freud analyzes jokes and humor as expressions of repressed thoughts and unconscious desires.', cat: 'psychology', color: '#ab47bc', height: 130, pdf: 'https://www.gutenberg.org/ebooks/57710' },
 { title: 'Psychology of the Unconscious', author: 'Carl Jung', desc: 'Jung\'s break with Freud — mythological symbols, the libido, and the collective unconscious emerge.', cat: 'psychology', color: '#1a237e', height: 145, pdf: 'https://www.gutenberg.org/ebooks/65903' },
-{ title: 'The Theory of the Leisure Class', author: 'Thorstein Veblen', desc: 'Conspicuous consumption and waste explained as status competition in industrial society.', cat: 'psychology', color: '#283593', height: 135, pdf: 'https://www.gutenberg.org/ebooks/833' },
 { title: 'The Crowd', author: 'Gustave Le Bon', desc: 'How crowds think, feel, and act — the classic study of mob psychology and mass suggestion.', cat: 'psychology', color: '#303f9f', height: 125, pdf: 'https://www.gutenberg.org/ebooks/445' },
 { title: 'Studies in the Psychology of Sex, Vol. 1', author: 'Havelock Ellis', desc: 'A pioneering scientific study of sexual psychology that challenged Victorian taboos.', cat: 'psychology', color: '#3949ab', height: 140, pdf: 'https://www.gutenberg.org/ebooks/13610' },
 { title: 'An Introduction to Social Psychology', author: 'William McDougall', desc: 'Instinct, emotion, and sentiment as the foundations of social behavior in this influential early text.', cat: 'psychology', color: '#1e88e5', height: 132, pdf: 'https://www.gutenberg.org/ebooks/17854' },
 { title: 'On the Witness Stand', author: 'Hugo Münsterberg', desc: 'A pioneer of applied psychology exposes the unreliability of eyewitness testimony and confessions.', cat: 'psychology', color: '#1565c0', height: 128, pdf: 'https://www.gutenberg.org/ebooks/43498' },
 );
-
 // ══════════════════════════════════════════════════════════════
 // BATCH 3 — Additional books to bring total over 1000
 // ══════════════════════════════════════════════════════════════
 BOOKS.push(
-
 // ──────────────────────────────────────
 // MORE CLASSIC FICTION
 // ──────────────────────────────────────
 { title: 'The Autobiography of an Ex-Colored Man', author: 'James Weldon Johnson', desc: 'A biracial man passes as white and reflects on race, identity, and the cost of his choice.', cat: 'classic-fiction', color: '#5d4037', height: 128, pdf: 'https://www.gutenberg.org/ebooks/11012' },
 { title: 'Iola Leroy', author: 'Frances E.W. Harper', desc: 'A mixed-race woman discovers her heritage during the Civil War and dedicates herself to racial uplift.', cat: 'classic-fiction', color: '#6d5047', height: 135, pdf: 'https://www.gutenberg.org/ebooks/12352' },
 { title: 'The Marrow of Tradition', author: 'Charles W. Chesnutt', desc: 'A fictionalized account of the Wilmington race massacre of 1898 exposes white supremacist violence.', cat: 'classic-fiction', color: '#4e342e', height: 140, pdf: 'https://www.gutenberg.org/ebooks/11228' },
-{ title: 'The Age of Innocence', author: 'Edith Wharton', desc: 'A New York lawyer sacrifices passion for convention in Gilded Age society.', cat: 'classic-fiction', color: '#7a5a6a', height: 135, pdf: 'https://www.gutenberg.org/ebooks/541' },
 { title: 'The Reef', author: 'Edith Wharton', desc: 'A diplomat\'s past affair with a young woman resurfaces to threaten his new engagement.', cat: 'classic-fiction', color: '#8a6a7a', height: 128, pdf: 'https://www.gutenberg.org/ebooks/4117' },
 { title: 'The Fruit of the Tree', author: 'Edith Wharton', desc: 'A factory manager marries a wealthy widow and faces a moral crisis over euthanasia.', cat: 'classic-fiction', color: '#6a4a5a', height: 140, pdf: 'https://www.gutenberg.org/ebooks/4117' },
 { title: 'Crome Yellow', author: 'Aldous Huxley', desc: 'A shy poet visits a country house full of eccentrics who debate art, love, and the future.', cat: 'classic-fiction', color: '#f0e68c', height: 120, pdf: 'https://www.gutenberg.org/ebooks/66877' },
 { title: 'The Circular Staircase', author: 'Mary Roberts Rinehart', desc: 'A spinster rents a country house and encounters murder, secret passages, and hidden identities.', cat: 'classic-fiction', color: '#5c3a6a', height: 128, pdf: 'https://www.gutenberg.org/ebooks/434' },
 { title: 'My Mortal Enemy', author: 'Willa Cather', desc: 'A woman who eloped for love grows bitter as poverty and illness erode her marriage.', cat: 'classic-fiction', color: '#7d9b74', height: 112, pdf: 'https://www.gutenberg.org/ebooks/67153' },
-{ title: 'The Song of the Lark', author: 'Willa Cather', desc: 'A minister\'s daughter in a Colorado town rises to become a great opera singer through talent and will.', cat: 'classic-fiction', color: '#6d8b64', height: 145, pdf: 'https://www.gutenberg.org/ebooks/44' },
 { title: 'Cranford', author: 'Elizabeth Gaskell', desc: 'Genteel ladies manage poverty, gossip, and social crises in a small English town with quiet dignity.', cat: 'classic-fiction', color: '#d4a574', height: 120, pdf: 'https://www.gutenberg.org/ebooks/394' },
 { title: 'Ruth', author: 'Elizabeth Gaskell', desc: 'A fallen woman tries to rebuild her life but is destroyed when her past is revealed.', cat: 'classic-fiction', color: '#c49a6c', height: 135, pdf: 'https://www.gutenberg.org/ebooks/4275' },
 { title: 'Sylvia\'s Lovers', author: 'Elizabeth Gaskell', desc: 'A whaling-town love triangle is shattered by the press-gang in this brooding Yorkshire tragedy.', cat: 'classic-fiction', color: '#b48a5c', height: 140, pdf: 'https://www.gutenberg.org/ebooks/5762' },
-
 // ──────────────────────────────────────
 // MORE SCIENCE FICTION
 // ──────────────────────────────────────
@@ -1218,15 +959,12 @@ BOOKS.push(
 { title: 'Lone Star Planet', author: 'H. Beam Piper', desc: 'On a Texan-cultured planet, assassinating politicians is a protected civil right.', cat: 'sci-fi', color: '#3e6087', height: 118, pdf: 'https://www.gutenberg.org/ebooks/18347' },
 { title: 'Omnilingual', author: 'H. Beam Piper', desc: 'Archaeologists on Mars crack an alien language using the universal key of the periodic table.', cat: 'sci-fi', color: '#4e7097', height: 115, pdf: 'https://www.gutenberg.org/ebooks/19445' },
 { title: 'Null-ABC', author: 'H. Beam Piper', desc: 'In a future where literacy is taboo, a secret society of readers preserves knowledge underground.', cat: 'sci-fi', color: '#5e80a7', height: 122, pdf: 'https://www.gutenberg.org/ebooks/18800' },
-{ title: 'Greylorn', author: 'Keith Laumer', desc: 'A starship captain makes a desperate gamble to find allies for a besieged Earth.', cat: 'sci-fi', color: '#2c3e50', height: 115, pdf: 'https://www.gutenberg.org/ebooks/23968' },
 { title: 'A Trace of Memory', author: 'Keith Laumer', desc: 'A drifter discovers he has lived before on an alien world and must recover his lost memories.', cat: 'sci-fi', color: '#34495e', height: 128, pdf: 'https://www.gutenberg.org/ebooks/25585' },
 { title: 'The Galaxy Primes', author: 'E.E. Smith', desc: 'Four psychically gifted humans are flung across the galaxy and must find their way home.', cat: 'sci-fi', color: '#1a2060', height: 130, pdf: 'https://www.gutenberg.org/ebooks/21970' },
 { title: 'Subspace Survivors', author: 'E.E. Smith', desc: 'Passengers stranded in subspace must build a new civilization while seeking rescue.', cat: 'sci-fi', color: '#2a3070', height: 122, pdf: 'https://www.gutenberg.org/ebooks/24775' },
 { title: 'The Weapon Shops of Isher', author: 'A.E. van Vogt', desc: 'Immortal weapon shops protect citizens against a tyrannical empress in the far future.', cat: 'sci-fi', color: '#5d3a1a', height: 130, pdf: 'https://www.gutenberg.org/ebooks/68996' },
-{ title: 'The Black Star Passes', author: 'John W. Campbell', desc: 'Three scientist-adventurers battle alien invaders with ever-more-powerful superscience.', cat: 'sci-fi', color: '#1a1a3e', height: 132, pdf: 'https://www.gutenberg.org/ebooks/20039' },
 { title: 'Islands of Space', author: 'John W. Campbell', desc: 'Humanity\'s first interstellar expedition encounters alien civilizations and cosmic mysteries.', cat: 'sci-fi', color: '#2a2a4e', height: 128, pdf: 'https://www.gutenberg.org/ebooks/20988' },
 { title: 'Invaders from the Infinite', author: 'John W. Campbell', desc: 'Earth allies with friendly aliens to defeat an invasion from another galaxy.', cat: 'sci-fi', color: '#3a3a5e', height: 130, pdf: 'https://www.gutenberg.org/ebooks/21070' },
-
 // ──────────────────────────────────────
 // MORE ADVENTURE
 // ──────────────────────────────────────
@@ -1236,8 +974,6 @@ BOOKS.push(
 { title: 'Doyle\'s Exploits of Brigadier Gerard', author: 'Arthur Conan Doyle', desc: 'A vain but brave Napoleonic hussar blunders through adventures with irresistible charm.', cat: 'adventure', color: '#c62828', height: 125, pdf: 'https://www.gutenberg.org/ebooks/11247' },
 { title: 'The White Company', author: 'Arthur Conan Doyle', desc: 'An English free company fights across medieval France and Spain in the Hundred Years War.', cat: 'adventure', color: '#d32f2f', height: 145, pdf: 'https://www.gutenberg.org/ebooks/903' },
 { title: 'Sir Nigel', author: 'Arthur Conan Doyle', desc: 'A young squire proves his valor at Crecy and Poitiers in the age of chivalry.', cat: 'adventure', color: '#e53935', height: 140, pdf: 'https://www.gutenberg.org/ebooks/3289' },
-{ title: 'Doña Bárbara', author: 'Rómulo Gallegos', desc: 'A civilized rancher battles a ruthless cattle queen on the Venezuelan plains.', cat: 'adventure', color: '#4a7a3a', height: 138, pdf: 'https://www.gutenberg.org/ebooks/22788' },
-
 // ──────────────────────────────────────
 // MORE POETRY & DRAMA
 // ──────────────────────────────────────
@@ -1246,34 +982,23 @@ BOOKS.push(
 { title: 'The Wasps', author: 'Aristophanes', desc: 'A father is addicted to jury duty and his son tries desperately to cure him.', cat: 'poetry', color: '#f9a825', height: 115, pdf: 'https://www.gutenberg.org/ebooks/7998' },
 { title: 'She Stoops to Conquer', author: 'Oliver Goldsmith', desc: 'A young man is tricked into thinking a gentleman\'s house is an inn, with hilarious romantic consequences.', cat: 'poetry', color: '#e65100', height: 118, pdf: 'https://www.gutenberg.org/ebooks/383' },
 { title: 'The Rivals', author: 'Richard Brinsley Sheridan', desc: 'The famously malapropistic Mrs. Malaprop tries to control her niece\'s love life in Bath.', cat: 'poetry', color: '#ef6c00', height: 118, pdf: 'https://www.gutenberg.org/ebooks/1752' },
-{ title: 'The School for Scandal', author: 'Richard Brinsley Sheridan', desc: 'London\'s gossipmongers nearly destroy two brothers before the screen is pulled down on hypocrisy.', cat: 'poetry', color: '#f57c00', height: 120, pdf: 'https://www.gutenberg.org/ebooks/1929' },
 { title: 'The Way of the World', author: 'William Congreve', desc: 'A brilliant couple negotiate marriage terms in the wittiest comedy of the Restoration stage.', cat: 'poetry', color: '#ff8f00', height: 120, pdf: 'https://www.gutenberg.org/ebooks/1292' },
-{ title: 'All for Love', author: 'John Dryden', desc: 'Dryden retells the Antony and Cleopatra story in neoclassical blank verse.', cat: 'poetry', color: '#c62828', height: 122, pdf: 'https://www.gutenberg.org/ebooks/2062' },
-{ title: 'The Duchess of Malfi', author: 'John Webster', desc: 'A widowed duchess secretly remarries beneath her station and is destroyed by her jealous brothers.', cat: 'poetry', color: '#1a1a2e', height: 125, pdf: 'https://www.gutenberg.org/ebooks/2232' },
 { title: 'The Changeling', author: 'Thomas Middleton', desc: 'A noblewoman commissions a murder to avoid an unwanted marriage and is trapped by her accomplice.', cat: 'poetry', color: '#2a2a3e', height: 122, pdf: 'https://www.gutenberg.org/ebooks/23450' },
 { title: 'Tis Pity She\'s a Whore', author: 'John Ford', desc: 'A brother and sister\'s incestuous love affair leads to catastrophe in Renaissance Italy.', cat: 'poetry', color: '#3a3a4e', height: 118, pdf: 'https://www.gutenberg.org/ebooks/18848' },
-
 // ──────────────────────────────────────
 // MORE BIOLOGY & NATURE
 // ──────────────────────────────────────
-{ title: 'The Descent of Man', author: 'Charles Darwin', desc: 'Darwin applies natural selection to human evolution, sexual selection, and the origin of moral feelings.', cat: 'biology', color: '#2e7d32', height: 150, pdf: 'https://www.gutenberg.org/ebooks/2300' },
 { title: 'The Expression of the Emotions', author: 'Charles Darwin', desc: 'Darwin shows that human and animal facial expressions share evolutionary origins.', cat: 'biology', color: '#388e3c', height: 135, pdf: 'https://www.gutenberg.org/ebooks/1227' },
-{ title: 'The Formation of Vegetable Mould', author: 'Charles Darwin', desc: 'Darwin\'s final book reveals how earthworms shape the landscape through their tireless work.', cat: 'biology', color: '#4caf50', height: 125, pdf: 'https://www.gutenberg.org/ebooks/2355' },
 { title: 'Insectivorous Plants', author: 'Charles Darwin', desc: 'Darwin investigates the sundew, Venus flytrap, and other plants that capture and digest insects.', cat: 'biology', color: '#66bb6a', height: 130, pdf: 'https://www.gutenberg.org/ebooks/5765' },
-{ title: 'The Natural History of Selborne', author: 'Gilbert White', desc: 'An English clergyman\'s meticulous and charming observations of wildlife in a Hampshire village.', cat: 'biology', color: '#1b5e20', height: 130, pdf: 'https://www.gutenberg.org/ebooks/1408' },
 { title: 'Walden', author: 'Henry David Thoreau', desc: 'Two years of deliberate living by a pond reveal nature\'s wisdom and society\'s unnecessary complexity.', cat: 'biology', color: '#33691e', height: 135, pdf: 'https://www.gutenberg.org/ebooks/205' },
 { title: 'The Malay Archipelago', author: 'Alfred Russel Wallace', desc: 'Wallace\'s eight-year journey through Indonesia, discovering the Wallace Line and natural selection independently.', cat: 'biology', color: '#43a047', height: 148, pdf: 'https://www.gutenberg.org/ebooks/2530' },
-
 // ──────────────────────────────────────
 // MORE PHYSICS & MATH
 // ──────────────────────────────────────
 { title: 'Opticks', author: 'Isaac Newton', desc: 'Newton\'s experiments with prisms, lenses, and the nature of light and color.', cat: 'physics', color: '#1565c0', height: 140, pdf: 'https://www.gutenberg.org/ebooks/33504' },
-{ title: 'Dialogues Concerning Two New Sciences', author: 'Galileo Galilei', desc: 'Galileo lays the foundations of modern physics — kinematics, material strength, and the scientific method.', cat: 'physics', color: '#0d47a1', height: 145, pdf: 'https://www.gutenberg.org/ebooks/753' },
 { title: 'On the Revolutions of Heavenly Spheres', author: 'Nicolaus Copernicus', desc: 'The book that placed the Sun at the center of the universe and launched the Scientific Revolution.', cat: 'physics', color: '#283593', height: 140, pdf: 'https://www.gutenberg.org/ebooks/5766' },
 { title: 'Sidereus Nuncius', author: 'Galileo Galilei', desc: 'Galileo announces his telescopic discoveries — mountains on the Moon, Jupiter\'s moons, and countless new stars.', cat: 'physics', color: '#1a237e', height: 115, pdf: 'https://www.gutenberg.org/ebooks/46036' },
-{ title: 'The Elements', author: 'Euclid', desc: 'The most influential mathematics textbook ever written — geometry built from axioms with rigorous proofs.', cat: 'math', color: '#4a148c', height: 150, pdf: 'https://www.gutenberg.org/ebooks/21076' },
 { title: 'A Mathematician\'s Apology', author: 'G.H. Hardy', desc: 'Hardy defends pure mathematics as an art form and reflects on the beauty of mathematical proof.', cat: 'math', color: '#6a1b9a', height: 112, pdf: 'https://www.gutenberg.org/ebooks/62474' },
-
 // ──────────────────────────────────────
 // MORE POLITICS & ECONOMICS
 // ──────────────────────────────────────
@@ -1288,14 +1013,11 @@ BOOKS.push(
 { title: 'The Spirit of Laws', author: 'Montesquieu', desc: 'The theory of separation of powers that shaped the American Constitution and modern democracy.', cat: 'politics', color: '#0d47a1', height: 152, pdf: 'https://www.gutenberg.org/ebooks/27573' },
 { title: 'Second Treatise of Government', author: 'John Locke', desc: 'Locke\'s theory of natural rights, consent of the governed, and the right of revolution.', cat: 'politics', color: '#283593', height: 128, pdf: 'https://www.gutenberg.org/ebooks/7370' },
 );
-
 // ===== MORE CS AND PHYSICS BOOKS =====
 BOOKS.push(
-
 // ──────────────────────────────────────
 // COMPUTER SCIENCE
 // ──────────────────────────────────────
-
 // Allen Downey books
 { title: 'Think Python', author: 'Allen B. Downey', desc: 'An introduction to programming using Python that emphasizes clear thinking and problem solving.', cat: 'cs', color: '#1565c0', height: 130, pdf: 'https://greenteapress.com/thinkpython2/thinkpython2.pdf' },
 { title: 'Think Java', author: 'Allen B. Downey & Chris Mayfield', desc: 'A concise introduction to computer science and programming using Java.', cat: 'cs', color: '#0d47a1', height: 128, pdf: 'https://greenteapress.com/thinkjava7/thinkjava7.pdf' },
@@ -1304,89 +1026,67 @@ BOOKS.push(
 { title: 'Think DSP', author: 'Allen B. Downey', desc: 'Digital signal processing in Python — signals, spectra, filters, and convolution.', cat: 'cs', color: '#303f9f', height: 122, pdf: 'https://greenteapress.com/thinkdsp/thinkdsp.pdf' },
 { title: 'Think Complexity', author: 'Allen B. Downey', desc: 'Complexity science and computational modeling covering cellular automata, networks, and evolution.', cat: 'cs', color: '#3949ab', height: 126, pdf: 'https://greenteapress.com/complexity2/thinkcomplexity2.pdf' },
 { title: 'Think Stats', author: 'Allen B. Downey', desc: 'Probability and statistics for programmers using Python and real data sets.', cat: 'cs', color: '#1e88e5', height: 124, pdf: 'https://greenteapress.com/thinkstats2/thinkstats2.pdf' },
-
 // Operating Systems
 { title: 'Operating Systems: Three Easy Pieces', author: 'Remzi & Andrea Arpaci-Dusseau', desc: 'A free OS textbook covering virtualization, concurrency, and persistence with clarity and humor.', cat: 'cs', color: '#b71c1c', height: 155, pdf: 'https://pages.cs.wisc.edu/~remzi/OSTEP/' },
-
 // Networking
 { title: 'Computer Networking: A Top-Down Approach', author: 'Jim Kurose & Keith Ross', desc: 'Supplementary materials and interactive features for the classic networking textbook.', cat: 'cs', color: '#0277bd', height: 150, pdf: 'https://gaia.cs.umass.edu/kurose_ross/online_lectures.htm' },
 { title: 'An Introduction to Computer Networks', author: 'Peter L. Dordal', desc: 'A free textbook covering Ethernet, IP, TCP, routing, and network applications.', cat: 'cs', color: '#01579b', height: 145, pdf: 'http://intronetworks.cs.luc.edu/current2/ComputerNetworks.pdf' },
 { title: 'High Performance Browser Networking', author: 'Ilya Grigorik', desc: 'Networking and browser internals for building faster web applications.', cat: 'cs', color: '#006064', height: 140, pdf: 'https://hpbn.co/' },
-
 // Databases
 { title: 'Architecture of a Database System', author: 'Joseph M. Hellerstein et al.', desc: 'A survey of the internal architecture of modern relational database management systems.', cat: 'cs', color: '#4a148c', height: 130, pdf: 'https://dsf.berkeley.edu/papers/fntdb07-architecture.pdf' },
 { title: 'Readings in Database Systems (Red Book)', author: 'Peter Bailis et al.', desc: 'Classic and modern papers in database systems curated with expert commentary.', cat: 'cs', color: '#6a1b9a', height: 135, pdf: 'http://www.redbook.io/' },
-
 // Compilers
 { title: 'Crafting Interpreters', author: 'Robert Nystrom', desc: 'Build two complete interpreters from scratch — a tree-walk interpreter and a bytecode virtual machine.', cat: 'cs', color: '#e65100', height: 155, pdf: 'https://craftinginterpreters.com/' },
 { title: 'Compiler Construction', author: 'Niklaus Wirth', desc: 'A concise textbook on compiler design by the creator of Pascal.', cat: 'cs', color: '#bf360c', height: 120, pdf: 'https://people.inf.ethz.ch/wirth/CompilerConstruction/CompilerConstruction.pdf' },
-
 // Distributed Systems
 { title: 'Designing Data-Intensive Applications', author: 'Martin Kleppmann', desc: 'A guide to the ideas behind reliable, scalable, and maintainable data systems.', cat: 'cs', color: '#1b5e20', height: 155, pdf: 'https://dataintensive.net/' },
 { title: 'Distributed Systems', author: 'Maarten van Steen & Andrew S. Tanenbaum', desc: 'A comprehensive free textbook on principles and paradigms of distributed computing.', cat: 'cs', color: '#2e7d32', height: 150, pdf: 'https://www.distributed-systems.net/index.php/books/ds4/' },
-
 // Cryptography
 { title: 'A Graduate Course in Applied Cryptography', author: 'Dan Boneh & Victor Shoup', desc: 'A rigorous introduction to modern cryptography covering encryption, authentication, and public-key systems.', cat: 'cs', color: '#263238', height: 160, pdf: 'https://toc.cryptobook.us/book.pdf' },
 { title: 'Crypto 101', author: 'Laurens Van Houtven', desc: 'An introductory course on cryptography for programmers with no math prerequisites.', cat: 'cs', color: '#37474f', height: 120, pdf: 'https://www.crypto101.io/' },
-
 // Computer Graphics
 { title: 'Computer Graphics from Scratch', author: 'Gabriel Gambetta', desc: 'Build a raytracer and rasterizer from first principles without any graphics API.', cat: 'cs', color: '#ff6f00', height: 140, pdf: 'https://gabrielgambetta.com/computer-graphics-from-scratch/' },
 { title: 'Ray Tracing in One Weekend', author: 'Peter Shirley', desc: 'Write a ray tracer in C++ over a weekend and produce stunning photorealistic images.', cat: 'cs', color: '#f57f17', height: 115, pdf: 'https://raytracing.github.io/books/RayTracingInOneWeekend.html' },
 { title: 'Physically Based Rendering (PBRT)', author: 'Matt Pharr et al.', desc: 'The definitive reference on physically based rendering techniques and their implementation.', cat: 'cs', color: '#e65100', height: 158, pdf: 'https://www.pbr-book.org/' },
-
 // Information Retrieval
 { title: 'Introduction to Information Retrieval', author: 'Christopher D. Manning et al.', desc: 'A comprehensive textbook on search engines, text classification, and information retrieval algorithms.', cat: 'cs', color: '#004d40', height: 150, pdf: 'https://nlp.stanford.edu/IR-book/pdf/irbookprint.pdf' },
-
 // Machine Learning & AI (Stanford / free)
 { title: 'Speech and Language Processing', author: 'Dan Jurafsky & James H. Martin', desc: 'A comprehensive introduction to natural language processing, computational linguistics, and speech recognition.', cat: 'cs', color: '#311b92', height: 158, pdf: 'https://web.stanford.edu/~jurafsky/slp3/' },
 { title: 'Reinforcement Learning: An Introduction', author: 'Richard S. Sutton & Andrew G. Barto', desc: 'The foundational textbook on reinforcement learning covering bandits, MDPs, and policy gradient methods.', cat: 'cs', color: '#4527a0', height: 152, pdf: 'http://incompleteideas.net/book/RLbook2020.pdf' },
 { title: 'Deep Learning', author: 'Ian Goodfellow, Yoshua Bengio & Aaron Courville', desc: 'The comprehensive textbook on deep learning from fundamentals to advanced research topics.', cat: 'cs', color: '#512da8', height: 155, pdf: 'https://www.deeplearningbook.org/' },
 { title: 'Neural Networks and Deep Learning', author: 'Michael Nielsen', desc: 'A free online book explaining the core ideas behind neural networks and deep learning.', cat: 'cs', color: '#5e35b1', height: 135, pdf: 'http://neuralnetworksanddeeplearning.com/' },
 { title: 'Mathematics for Machine Learning', author: 'Marc Peter Deisenroth et al.', desc: 'The essential math — linear algebra, calculus, probability — needed for machine learning.', cat: 'cs', color: '#7b1fa2', height: 145, pdf: 'https://mml-book.github.io/book/mml-book.pdf' },
-
 // Algorithms and Theory
 { title: 'Algorithms', author: 'Jeff Erickson', desc: 'A comprehensive algorithms textbook developed for the University of Illinois CS 374 course.', cat: 'cs', color: '#880e4f', height: 155, pdf: 'https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf' },
 { title: 'Open Data Structures', author: 'Pat Morin', desc: 'An open-content textbook covering the implementation and analysis of fundamental data structures.', cat: 'cs', color: '#ad1457', height: 140, pdf: 'https://opendatastructures.org/ods-python.pdf' },
-
 // Programming Languages & Software
 { title: 'Programming Languages: Application and Interpretation', author: 'Shriram Krishnamurthi', desc: 'A hands-on introduction to programming language design and implementation.', cat: 'cs', color: '#c62828', height: 140, pdf: 'https://cs.brown.edu/courses/cs173/2012/book/book.pdf' },
 { title: 'The Art of Unix Programming', author: 'Eric S. Raymond', desc: 'The philosophy, design patterns, and culture behind Unix and its enduring influence on software.', cat: 'cs', color: '#d84315', height: 148, pdf: 'http://www.catb.org/esr/writings/taoup/html/' },
 { title: 'Pro Git', author: 'Scott Chacon & Ben Straub', desc: 'The complete guide to Git — branching, merging, rebasing, and distributed workflows.', cat: 'cs', color: '#f4511e', height: 142, pdf: 'https://git-scm.com/book/en/v2' },
-
 // ──────────────────────────────────────
 // PHYSICS
 // ──────────────────────────────────────
-
 // Feynman and modern physics
 { title: 'QED: The Strange Theory of Light and Matter', author: 'Richard P. Feynman', desc: 'Feynman explains quantum electrodynamics to a general audience with his trademark clarity and wit.', cat: 'physics', color: '#1565c0', height: 120, pdf: 'https://archive.org/details/qedstrangetheory0000feyn' },
 { title: 'The Character of Physical Law', author: 'Richard P. Feynman', desc: 'Seven Messenger Lectures exploring the nature of physical laws, symmetry, and the relationship between mathematics and physics.', cat: 'physics', color: '#0d47a1', height: 125, pdf: 'https://archive.org/details/characterofphysi0000feyn' },
 { title: 'Feynman\'s Tips on Physics', author: 'Richard P. Feynman et al.', desc: 'Problem-solving tips and exercises supplementing the Feynman Lectures on Physics.', cat: 'physics', color: '#1a237e', height: 122, pdf: 'https://www.feynmanlectures.caltech.edu/' },
-
 // Classical Mechanics
 { title: 'An Introduction to Mechanics', author: 'Daniel Kleppner & Robert Kolenkow', desc: 'A rigorous and engaging introduction to Newtonian mechanics used at MIT.', cat: 'physics', color: '#283593', height: 140, pdf: 'https://archive.org/details/an-introduction-to-mechanics-kleppner-kolenkow' },
 { title: 'Classical Mechanics', author: 'John R. Taylor', desc: 'A modern and thorough treatment of Lagrangian and Hamiltonian mechanics with excellent problems.', cat: 'physics', color: '#303f9f', height: 145, pdf: 'https://archive.org/details/classical-mechanics-john-r.-taylor' },
 { title: 'The Principles of Mechanics', author: 'Heinrich Hertz', desc: 'Hertz\'s foundational reformulation of classical mechanics in terms of geometric constraints.', cat: 'physics', color: '#3949ab', height: 135, pdf: 'https://archive.org/details/principlesofmech00hert' },
-
 // Electricity and Magnetism
 { title: 'A Treatise on Electricity and Magnetism', author: 'James Clerk Maxwell', desc: 'Maxwell\'s masterwork unifying electricity, magnetism, and light into the electromagnetic theory.', cat: 'physics', color: '#0277bd', height: 158, pdf: 'https://www.gutenberg.org/ebooks/14986' },
 { title: 'Experimental Researches in Electricity', author: 'Michael Faraday', desc: 'Faraday\'s groundbreaking experiments that revealed electromagnetic induction and the foundations of field theory.', cat: 'physics', color: '#01579b', height: 150, pdf: 'https://www.gutenberg.org/ebooks/14986' },
 { title: 'Electricity and Magnetism', author: 'Edward M. Purcell', desc: 'The Berkeley Physics Course volume that teaches E&M with special relativity from the start.', cat: 'physics', color: '#006064', height: 148, pdf: 'https://archive.org/details/electricityandma0000purc' },
-
 // Quantum Mechanics
 { title: 'Quantum Mechanics: The Theoretical Minimum', author: 'Leonard Susskind & Art Friedman', desc: 'A clear introduction to quantum mechanics starting from the bare essentials.', cat: 'physics', color: '#4a148c', height: 138, pdf: 'https://archive.org/details/quantum-mechanics-the-theoretical-minimum' },
 { title: 'The Old Quantum Theory', author: 'D. ter Haar', desc: 'Original papers by Planck, Einstein, Bohr, and others that launched the quantum revolution.', cat: 'physics', color: '#6a1b9a', height: 130, pdf: 'https://archive.org/details/oldquantumtheory0000haar' },
 { title: 'On the Theory of Quanta', author: 'Louis de Broglie', desc: 'De Broglie\'s Nobel Prize-winning thesis proposing the wave nature of matter.', cat: 'physics', color: '#7b1fa2', height: 112, pdf: 'https://fondationlouisdebroglie.org/LDB-oeuvres/De_Broglie_Kracklauer.pdf' },
-
 // Thermodynamics
-{ title: 'Treatise on Thermodynamics', author: 'Max Planck', desc: 'Planck\'s clear and authoritative exposition of the laws of thermodynamics.', cat: 'physics', color: '#e65100', height: 132, pdf: 'https://www.gutenberg.org/ebooks/50880' },
 { title: 'On the Sensations of Tone', author: 'Hermann von Helmholtz', desc: 'Helmholtz connects acoustics, physics, and physiology in this landmark study of sound and hearing.', cat: 'physics', color: '#bf360c', height: 148, pdf: 'https://www.gutenberg.org/ebooks/55521' },
-{ title: 'The Theory of Heat Radiation', author: 'Max Planck', desc: 'Planck introduces the quantum hypothesis to explain blackbody radiation and launches modern physics.', cat: 'physics', color: '#d84315', height: 135, pdf: 'https://www.gutenberg.org/ebooks/40030' },
-
 // Public domain classics
 { title: 'The Atomic Theory', author: 'Niels Bohr', desc: 'Bohr presents his atomic model and the correspondence principle in these Nobel Lecture writings.', cat: 'physics', color: '#1b5e20', height: 118, pdf: 'https://www.nobelprize.org/uploads/2018/06/bohr-lecture.pdf' },
 { title: 'Physics and Philosophy', author: 'Werner Heisenberg', desc: 'Heisenberg explores the philosophical implications of quantum mechanics and the nature of reality.', cat: 'physics', color: '#2e7d32', height: 128, pdf: 'https://archive.org/details/physicsandphilos0000heis' },
-{ title: 'Relativity: The Special and General Theory', author: 'Albert Einstein', desc: 'Einstein explains his revolutionary theories of relativity in accessible language for the general reader.', cat: 'physics', color: '#004d40', height: 130, pdf: 'https://www.gutenberg.org/ebooks/5001' },
-
 // OpenStax Physics
 { title: 'University Physics Volume 1', author: 'OpenStax', desc: 'Mechanics, waves, and thermodynamics covered in a peer-reviewed, free university textbook.', cat: 'physics', color: '#00695c', height: 155, pdf: 'https://openstax.org/details/books/university-physics-volume-1' },
 { title: 'University Physics Volume 2', author: 'OpenStax', desc: 'Electricity, magnetism, and optics in a comprehensive free textbook for university courses.', cat: 'physics', color: '#00796b', height: 155, pdf: 'https://openstax.org/details/books/university-physics-volume-2' },
