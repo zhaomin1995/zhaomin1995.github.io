@@ -162,6 +162,11 @@
       transition: width 0.3s ease;
     }
 
+    @keyframes indeterminate {
+      0% { background-position: -150% 0; }
+      100% { background-position: 250% 0; }
+    }
+
     /* Loading state */
     .loading-msg {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -193,8 +198,9 @@
     <i class="fas fa-book-open" style="font-size:2.5rem; color:#8b5e3c; margin-bottom:0.5rem;"></i>
     <div style="font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:700; color:var(--page-text);" id="dlTitle"></div>
     <div style="font-size:0.8rem; color:var(--page-sec);" id="dlAuthor"></div>
-    <div style="width:280px; height:6px; background:rgba(0,0,0,0.08); border-radius:3px; overflow:hidden; margin-top:1rem;">
-      <div id="dlBar" style="height:100%; width:0%; background:#8b5e3c; border-radius:3px; transition:width 0.2s ease;"></div>
+    <div id="dlBarTrack" style="width:280px; height:6px; background:rgba(0,0,0,0.08); border-radius:3px; overflow:hidden; margin-top:1rem; position:relative;">
+      <div id="dlBar" style="height:100%; width:0%; background:#8b5e3c; border-radius:3px; transition:width 0.3s ease;"></div>
+      <div id="dlBarIndeterminate" style="display:none; position:absolute; inset:0; border-radius:3px; background:linear-gradient(90deg, transparent 0%, #8b5e3c 40%, #8b5e3c 60%, transparent 100%); background-size:50% 100%; animation:indeterminate 1.2s ease-in-out infinite;"></div>
     </div>
     <div style="font-size:0.72rem; color:var(--page-sec);" id="dlDetail">Preparing...</div>
     <div style="font-size:0.62rem; color:var(--page-sec); margin-top:0.5rem;">Cached for this browser session</div>
@@ -324,7 +330,7 @@
       } catch { /* ignore cache write failures */ }
     }
 
-    /* ── Fetch with streaming progress ── */
+    /* ── Fetch text from a URL, showing streaming progress when available ── */
     async function fetchWithProgress(fetchUrl) {
       const r = await fetch(fetchUrl);
       if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -332,31 +338,26 @@
       const contentLength = r.headers.get('Content-Length');
       const total = contentLength ? parseInt(contentLength, 10) : 0;
 
-      // Try streaming for progress, fall back to simple .text()
-      if (r.body && r.body.getReader) {
-        try {
-          const reader = r.body.getReader();
-          const decoder = new TextDecoder();
-          let loaded = 0;
-          let text = '';
-
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            loaded += value.length;
-            text += decoder.decode(value, { stream: true });
-            updateLoadingProgress(loaded, total);
-          }
-          text += decoder.decode();
-          updateLoadingProgress(total || text.length, total || text.length);
-          return text;
-        } catch {
-          // Streaming failed, re-fetch with simple .text()
+      if (total > 0 && r.body && r.body.getReader) {
+        const reader = r.body.getReader();
+        const decoder = new TextDecoder();
+        let loaded = 0;
+        let text = '';
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          loaded += value.length;
+          text += decoder.decode(value, { stream: true });
+          updateLoadingProgress(loaded, total);
         }
+        text += decoder.decode();
+        updateLoadingProgress(total, total);
+        return text;
       }
 
-      // Fallback: no streaming, just load entire text at once
+      setIndeterminate(true);
       const text = await r.text();
+      setIndeterminate(false);
       updateLoadingProgress(text.length, text.length);
       return text;
     }
@@ -365,17 +366,15 @@
     async function fetchWithProxy(url) {
       const dlDetail = document.getElementById('dlDetail');
 
-      // Try direct fetch first
       try {
-        if (dlDetail) dlDetail.textContent = 'Connecting directly...';
+        if (dlDetail) dlDetail.textContent = 'Connecting...';
         return await fetchWithProgress(url);
-      } catch { /* CORS blocked */ }
+      } catch { /* CORS blocked or failed */ }
 
-      // Try each CORS proxy
       for (let i = 0; i < CORS_PROXIES.length; i++) {
         try {
-          if (dlDetail) dlDetail.textContent = `Trying proxy ${i + 1}/${CORS_PROXIES.length}...`;
-          document.getElementById('dlBar').style.width = '0%';
+          if (dlDetail) dlDetail.textContent = `Downloading via proxy ${i + 1}/${CORS_PROXIES.length}...`;
+          setIndeterminate(true);
           const result = await fetchWithProgress(CORS_PROXIES[i](url));
           if (result && result.length > 100) return result;
         } catch { continue; }
@@ -564,11 +563,17 @@
     document.getElementById('dlTitle').textContent = book.title;
     document.getElementById('dlAuthor').textContent = book.author;
 
+    function setIndeterminate(on) {
+      document.getElementById('dlBar').style.display = on ? 'none' : 'block';
+      document.getElementById('dlBarIndeterminate').style.display = on ? 'block' : 'none';
+    }
+
     function showLoading() {
       dlOverlay.style.display = 'flex';
       dlOverlay.style.opacity = '1';
       document.getElementById('dlDetail').textContent = 'Connecting...';
       document.getElementById('dlBar').style.width = '0%';
+      setIndeterminate(false);
     }
 
     function hideLoading() {
@@ -581,6 +586,7 @@
       const detail = document.getElementById('dlDetail');
       if (!bar) return;
 
+      setIndeterminate(false);
       const loadedKB = (loaded / 1024).toFixed(0);
 
       if (total > 0) {
@@ -589,7 +595,7 @@
         bar.style.width = pct + '%';
         detail.textContent = `${loadedKB} KB / ${totalKB} KB — ${pct}%`;
       } else {
-        bar.style.width = Math.min(90, loaded / 5000) + '%';
+        bar.style.width = '100%';
         detail.textContent = `${loadedKB} KB downloaded`;
       }
     }
