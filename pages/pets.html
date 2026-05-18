@@ -117,15 +117,38 @@
       position: fixed; inset: 0; z-index: 500;
       background: rgba(0,0,0,0.85); display: none;
       align-items: center; justify-content: center;
-      cursor: pointer; opacity: 0; transition: opacity 0.3s ease;
+      opacity: 0; transition: opacity 0.3s ease;
     }
     .lightbox.show { display: flex; opacity: 1; }
     .lightbox img {
-      max-width: 90vw; max-height: 85vh; border-radius: 8px;
+      max-width: 80vw; max-height: 85vh; border-radius: 8px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.5);
       transform: scale(0.9); transition: transform 0.3s ease;
     }
     .lightbox.show img { transform: scale(1); }
+
+    .lb-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.15); border: none;
+      color: #fff; font-size: 1.5rem; cursor: pointer;
+      width: 48px; height: 48px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+      backdrop-filter: blur(8px);
+    }
+    .lb-btn:hover { background: rgba(255,255,255,0.3); }
+    .lb-prev { left: 1.5rem; }
+    .lb-next { right: 1.5rem; }
+    .lb-close {
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      background: rgba(255,255,255,0.15); border: none;
+      color: #fff; font-size: 1.2rem; cursor: pointer;
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+      backdrop-filter: blur(8px);
+    }
+    .lb-close:hover { background: rgba(255,255,255,0.3); }
 
     @media (max-width: 640px) {
       .page-header h1 { font-size: 1.8rem; }
@@ -163,9 +186,12 @@
     </div>
   </div>
 
-  <!-- Lightbox for full-size photo -->
+  <!-- Lightbox with prev/next navigation -->
   <div class="lightbox" id="lightbox">
+    <button class="lb-btn lb-prev" id="lbPrev"><i class="fas fa-chevron-left"></i></button>
     <img id="lightboxImg" src="" alt="">
+    <button class="lb-btn lb-next" id="lbNext"><i class="fas fa-chevron-right"></i></button>
+    <button class="lb-close" id="lbClose"><i class="fas fa-times"></i></button>
   </div>
 
   <script>
@@ -232,11 +258,9 @@
         item.appendChild(img);
         gallery.appendChild(item);
 
-        // Click to open lightbox
-        item.addEventListener('click', () => {
-          document.getElementById('lightboxImg').src = photo.url;
-          document.getElementById('lightbox').classList.add('show');
-        });
+        // Click to open lightbox at this photo's index
+        const photoIndex = shown + i;
+        item.addEventListener('click', () => openLightbox(photoIndex));
 
         // Staggered fade-in animation
         setTimeout(() => { item.classList.add('visible'); }, (shown + i) * 100 + 50);
@@ -252,12 +276,31 @@
     loadMoreBtn.addEventListener('click', loadBatch);
     loadPetPhotos();
 
-    // Lightbox close
-    document.getElementById('lightbox').addEventListener('click', () => {
-      document.getElementById('lightbox').classList.remove('show');
-    });
+    // Lightbox with prev/next
+    let currentLbIndex = 0;
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+
+    function openLightbox(index) {
+      currentLbIndex = index;
+      lightboxImg.src = PET_PHOTOS[index].url;
+      lightbox.classList.add('show');
+    }
+
+    function lbNav(delta) {
+      currentLbIndex = (currentLbIndex + delta + PET_PHOTOS.length) % PET_PHOTOS.length;
+      lightboxImg.src = PET_PHOTOS[currentLbIndex].url;
+    }
+
+    document.getElementById('lbPrev').addEventListener('click', e => { e.stopPropagation(); lbNav(-1); });
+    document.getElementById('lbNext').addEventListener('click', e => { e.stopPropagation(); lbNav(1); });
+    document.getElementById('lbClose').addEventListener('click', () => lightbox.classList.remove('show'));
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) lightbox.classList.remove('show'); });
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('show');
+      if (!lightbox.classList.contains('show')) return;
+      if (e.key === 'Escape') lightbox.classList.remove('show');
+      if (e.key === 'ArrowLeft') lbNav(-1);
+      if (e.key === 'ArrowRight') lbNav(1);
     });
   </script>
 </body>
