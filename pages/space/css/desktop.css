@@ -48,9 +48,9 @@ body { font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
 .menu-item.open { background: rgba(255,255,255,0.15); }
 .menu-drop { position: absolute; top: 100%; left: 0; min-width: 220px; background: rgba(40,40,55,0.95); backdrop-filter: blur(20px); border-radius: 6px; padding: 0.25rem 0; box-shadow: 0 8px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); display: none; z-index: 1100; }
 .menu-item.open .menu-drop { display: block; }
-.menu-drop-item { padding: 0.3rem 0.8rem; font-size: 0.7rem; color: rgba(255,255,255,0.8); display: flex; justify-content: space-between; align-items: center; cursor: default; }
+.menu-drop-item { padding: 0.3rem 0.8rem; font-size: 0.7rem; color: rgba(255,255,255,0.8); display: flex; align-items: center; cursor: default; }
 .menu-drop-item:hover { background: #3478f6; color: #fff; border-radius: 3px; margin: 0 0.2rem; padding-left: 0.6rem; padding-right: 0.6rem; }
-.menu-drop-item .shortcut { color: rgba(255,255,255,0.35); font-size: 0.62rem; }
+.menu-drop-item .shortcut { color: rgba(255,255,255,0.35); font-size: 0.62rem; margin-left: auto; padding-left: 1.5rem; }
 .menu-drop-item:hover .shortcut { color: rgba(255,255,255,0.6); }
 .menu-drop-item.disabled { color: rgba(255,255,255,0.25); pointer-events: none; }
 .menu-drop-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 0.2rem 0; }
