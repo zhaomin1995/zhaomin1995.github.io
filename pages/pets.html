@@ -252,8 +252,27 @@
     const loadMoreBtn = document.getElementById('loadMoreBtn');
     const emptyState = document.getElementById('emptyState');
 
+    /* ── Load local photos from the version-controlled manifest ──
+       assets/img/pets/manifest.json lists photos committed to the repo,
+       so pets show up on GitHub Pages without any Firebase upload. */
+    async function loadLocalPhotos() {
+      try {
+        const r = await fetch('../assets/img/pets/manifest.json', { cache: 'no-cache' });
+        if (!r.ok) return [];
+        const list = await r.json();
+        return list.map(p => ({
+          file: p.file,
+          url: `../assets/img/pets/${p.file}`,
+          name: p.name || p.file.replace(/\.[^.]+$/, '').replace(/_/g, ' '),
+          date: p.date || ''
+        }));
+      } catch (e) {
+        return [];
+      }
+    }
+
     /* ── Load pet photos from Firebase Storage /images/pet/ folder ── */
-    async function loadPetPhotos() {
+    async function loadFirebasePhotos() {
       try {
         const r = await fetch(`${FB_STORAGE}/o?prefix=images/pet/`);
         const data = await r.json();
@@ -261,20 +280,24 @@
           /\.(jpg|jpeg|png|webp|gif)$/i.test(i.name)
         );
 
-        PET_PHOTOS = items.map(item => {
+        return items.map(item => {
           const fileName = item.name.replace('images/pet/', '');
           const url = `${FB_STORAGE}/o/${encodeURIComponent(item.name)}?alt=media`;
           // Use file updated time for sorting
           const date = item.updated ? item.updated.split('T')[0] : '';
           return { file: fileName, url: url, name: fileName.replace(/\.[^.]+$/, '').replace(/_/g, ' '), date: date };
         });
-
-        // Sort by date (newest first)
-        PET_PHOTOS.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-
       } catch (e) {
         console.error('Failed to load pet photos:', e);
+        return [];
       }
+    }
+
+    /* ── Merge local + Firebase photos, newest first ── */
+    async function loadPetPhotos() {
+      const [local, remote] = await Promise.all([loadLocalPhotos(), loadFirebasePhotos()]);
+      PET_PHOTOS = [...local, ...remote];
+      PET_PHOTOS.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 
       document.getElementById('skeletonGrid').classList.add('hidden');
 
