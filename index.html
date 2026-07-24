@@ -246,16 +246,6 @@
           <h3 class="misc-label"><span class="lang-en">Pets</span><span class="lang-zh">宠物</span></h3>
           <p class="misc-desc"><span class="lang-en">Meet Joey and his friends!</span><span class="lang-zh">来认识 Joey 和他的朋友们！</span></p>
         </div>
-        <div class="misc-card misc-card-link" id="readingCard" tabindex="0" role="button" aria-label="Reading">
-          <i class="fas fa-book-open misc-icon"></i>
-          <h3 class="misc-label"><span class="lang-en">Reading</span><span class="lang-zh">阅读</span></h3>
-          <p class="misc-desc"><span class="lang-en">Reading is always fun. Always.</span><span class="lang-zh">阅读总是有趣的。永远是。</span></p>
-        </div>
-        <div class="misc-card misc-card-link" id="historyCard" tabindex="0" role="button" aria-label="History">
-          <i class="fas fa-landmark misc-icon"></i>
-          <h3 class="misc-label"><span class="lang-en">History</span><span class="lang-zh">历史</span></h3>
-          <p class="misc-desc"><span class="lang-en">What happened in the past?</span><span class="lang-zh">过去发生了什么？</span></p>
-        </div>
       </div>
     </div>
   </section>
@@ -407,30 +397,6 @@
       setTimeout(() => { window.location.href = 'pages/travel.html'; }, 1000);
     });
 
-    // History card: same expand animation, uses default card-bg color
-    document.getElementById('historyCard').addEventListener('click', () => {
-      const card = document.getElementById('historyCard');
-      const overlay = document.getElementById('cardExpandOverlay');
-      const rect = card.getBoundingClientRect();
-
-      overlay.style.top = rect.top + 'px';
-      overlay.style.left = rect.left + 'px';
-      overlay.style.width = rect.width + 'px';
-      overlay.style.height = rect.height + 'px';
-      overlay.style.borderRadius = '16px';
-      overlay.classList.add('active');
-
-      requestAnimationFrame(() => {
-        overlay.style.top = '0';
-        overlay.style.left = '0';
-        overlay.style.width = '100vw';
-        overlay.style.height = '100vh';
-        overlay.style.borderRadius = '0';
-      });
-
-      setTimeout(() => { window.location.href = 'pages/history.html'; }, 500);
-    });
-
     // Pets card: expand keeping same background color
     document.getElementById('petsCard').addEventListener('click', () => {
       const card = document.getElementById('petsCard');
@@ -458,36 +424,6 @@
       });
 
       setTimeout(() => { window.location.href = 'pages/pets.html'; }, 700);
-    });
-
-    // Reading card: expand with warm brown background fade
-    document.getElementById('readingCard').addEventListener('click', () => {
-      const card = document.getElementById('readingCard');
-      const overlay = document.getElementById('cardExpandOverlay');
-      const rect = card.getBoundingClientRect();
-
-      overlay.style.transition = 'none';
-      overlay.style.background = getComputedStyle(document.documentElement).getPropertyValue('--card-bg').trim();
-      overlay.style.top = rect.top + 'px';
-      overlay.style.left = rect.left + 'px';
-      overlay.style.width = rect.width + 'px';
-      overlay.style.height = rect.height + 'px';
-      overlay.style.borderRadius = '16px';
-      overlay.classList.add('active');
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          overlay.style.transition = 'top 0.7s cubic-bezier(0.4,0,0.2,1), left 0.7s cubic-bezier(0.4,0,0.2,1), width 0.7s cubic-bezier(0.4,0,0.2,1), height 0.7s cubic-bezier(0.4,0,0.2,1), border-radius 0.7s cubic-bezier(0.4,0,0.2,1), background 1.2s ease-in, opacity 0.15s ease';
-          overlay.style.top = '0';
-          overlay.style.left = '0';
-          overlay.style.width = '100vw';
-          overlay.style.height = '100vh';
-          overlay.style.borderRadius = '0';
-          overlay.style.background = getComputedStyle(document.documentElement).getPropertyValue('--card-bg').trim();
-        });
-      });
-
-      setTimeout(() => { window.location.href = 'pages/reading.html'; }, 1000);
     });
 
     /* ── Active nav highlighting ──
