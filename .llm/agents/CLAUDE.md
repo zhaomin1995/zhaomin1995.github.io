@@ -57,8 +57,7 @@ zhaomin1995.github.io/
 │   │   ├── i140.js         # Shared data layer for the two I-140 pages
 │   │   └── places.js       # [DEPRECATED] Was auto-generated, now reads from Firebase
 │   ├── data/
-│   │   ├── i140/           # Per-block case JSON + index.json (generated; do not hand-edit)
-│   │   └── uscis-processing-times.json  # Official 80% figures — MAINTAINED BY HAND
+│   │   └── i140/           # Per-block case JSON + index.json (generated; do not hand-edit)
 │   ├── fontawesome/
 │   │   └── js/all.min.js   # FontAwesome icons
 │   ├── img/
@@ -97,8 +96,8 @@ zhaomin1995.github.io/
 - News timeline with hover popovers showing publication details
 - Experience cards (On-Device LLM, Ads Signal Anonymizer, Meta internship, UNT research)
 - Miscellaneous grid: Travel, Pets — all clickable with expand animations
-- Links grid: shortcuts I open often (I-140 case tracker, block stats, USCIS case status
-  and processing times). Plain anchors, some off-site — no expand animation
+- Links grid: shortcuts I open often (I-140 case tracker, block stats). Plain anchors —
+  no expand animation
 - Footer: visitor counter (counterapi.dev) + Internal Space button
 - Scroll-to-top, dark mode toggle, language toggle (EN/中文)
 
@@ -203,12 +202,12 @@ zhaomin1995.github.io/
   job therefore never commits, and both pages show "Data as of <date>" plus a warning
   banner. `index.json` carries `data_as_of` / `data_age_days`; never display
   `generated_at` as if it were the data's date.
-- **Not automated**: USCIS publishes no processing-times API (the developer portal offers
-  only Case Status and FOIA), and the egov processing-times page sits behind a Cloudflare
-  bot challenge. `assets/data/uscis-processing-times.json` is therefore maintained by
-  hand; entries with `months: null` render as "not published here yet" rather than
-  inventing a number. The figure is rendered as data in the case page - never as a link
-  out to USCIS.
+- **No official processing times**: deliberately not shown. USCIS publishes no API for
+  them (the developer portal offers only Case Status and FOIA) and the egov page sits
+  behind a Cloudflare bot challenge, so the figure could only be kept current by hand.
+  That was judged not worth the upkeep and removed. The case page instead derives an
+  80th-percentile decision time from the block's own decided cases, which needs no
+  maintenance. Do not reintroduce a hand-maintained figure without being asked.
 
 ## USCIS Official API (Case Status)
 

@@ -139,8 +139,6 @@
     .tl-status { font-size: 0.95rem; font-weight: 600; margin-top: 0.1rem; }
 
     /* Estimates */
-    .est-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
-    @media (max-width: 560px) { .est-grid { grid-template-columns: 1fr; } }
     .est {
       border: 1px solid var(--line); border-radius: 12px; padding: 1rem;
     }
@@ -254,14 +252,8 @@
         <div class="card-label">
           <span class="lang-en">Estimated decision time</span><span class="lang-zh">预计审理时间</span>
         </div>
-        <div class="est-grid">
-          <!-- Official USCIS figure, maintained by hand in assets/data/uscis-processing-times.json -->
-          <div class="est" id="estOfficial"></div>
-          <!-- Same idea, computed from the cases actually in this block -->
-          <div class="est" id="estBlock"></div>
-        </div>
-        <!-- This case measured against the official window -->
-        <div id="officialProgress" style="margin-top:1.1rem"></div>
+        <!-- Derived from the cases actually in this block -->
+        <div class="est" id="estBlock"></div>
         <div style="margin-top:1.1rem">
           <div class="est-k" id="queueLabel"></div>
           <div class="bar"><div class="bar-fill" id="queueBar" style="width:0%"></div></div>
@@ -271,9 +263,8 @@
     </div>
 
     <div class="foot">
-      <span class="lang-en">Case data from the public "I-140 Application Tracker" Power BI report by anto58. Official processing times from</span>
-      <span class="lang-zh">案件数据来自 anto58 公开的 "I-140 Application Tracker" Power BI 报表。官方处理时间来自</span>
-      <a href="https://egov.uscis.gov/processing-times/" target="_blank" rel="noopener noreferrer">USCIS</a>.
+      <span class="lang-en">Case data from the public "I-140 Application Tracker" Power BI report by anto58.</span>
+      <span class="lang-zh">案件数据来自 anto58 公开的 "I-140 Application Tracker" Power BI 报表。</span>
       <br>
       <span class="lang-en">Unofficial, for personal tracking only — always confirm on the USCIS website.</span>
       <span class="lang-zh">非官方页面，仅供个人追踪使用 — 请以 USCIS 官网为准。</span>
@@ -469,14 +460,6 @@
         }).join('');
       }
 
-      // Filing date for the elapsed-time comparison: USCIS's own "we received
-      // your form" entry when the history has one, otherwise the oldest entry
-      // we know about (which is a floor, not necessarily the filing date).
-      const received = entries.filter(e => /received/i.test(e.status)).pop();
-      const filedDate = received ? received.date
-        : (entries.length ? entries[entries.length - 1].date : null);
-      renderOfficialEstimate(filedDate);
-
       // Reset the cohort panel while the block file loads.
       document.getElementById('estBlock').innerHTML = placeholderEstimate();
       document.getElementById('queueLabel').innerHTML = '';
@@ -489,94 +472,6 @@
         '<span class="lang-en">Cases in this block decided within</span>' +
         '<span class="lang-zh">本批次已决案件的完成时长</span></div>' +
         '<div class="est-unset">…</div>';
-    }
-
-    /**
-     * The official USCIS figure, rendered as data in this page — the number
-     * itself, the category it applies to, and how far this case is through that
-     * window. USCIS publishes no API for processing times, so the values are
-     * maintained by hand in assets/data/uscis-processing-times.json.
-     */
-    async function renderOfficialEstimate(filedDate) {
-      const box = document.getElementById('estOfficial');
-      const progress = document.getElementById('officialProgress');
-      progress.innerHTML = '';
-
-      let data;
-      try {
-        data = await (await fetch('../assets/data/uscis-processing-times.json')).json();
-      } catch (e) {
-        box.innerHTML = '<div class="est-k">' +
-          '<span class="lang-en">USCIS official figure unavailable.</span>' +
-          '<span class="lang-zh">无法读取官方数据。</span></div>';
-        return;
-      }
-
-      const filled = (data.categories || []).filter(c => typeof c.months === 'number');
-      const heading = '<div class="est-k">' +
-        '<span class="lang-en">USCIS official — 80% of cases completed within</span>' +
-        '<span class="lang-zh">USCIS 官方 — 80% 案件完成时长</span></div>';
-
-      if (!filled.length) {
-        box.innerHTML = heading + '<div class="est-unset">' +
-          '<span class="lang-en">Not published here yet</span>' +
-          '<span class="lang-zh">尚未录入</span></div>' +
-          '<div class="est-note">' +
-          '<span class="lang-en">USCIS offers no API for processing times, so this figure is ' +
-          'entered by hand once a month.</span>' +
-          '<span class="lang-zh">USCIS 没有提供处理时间的 API，此数字每月人工录入一次。</span></div>';
-        return;
-      }
-
-      // Remember the category across visits; default to the first one filled in.
-      const chosenId = localStorage.getItem('i140Category');
-      const chosen = filled.find(c => c.id === chosenId) || filled[0];
-      const options = filled.map(c =>
-        '<option value="' + c.id + '"' + (c.id === chosen.id ? ' selected' : '') + '>' +
-        (lang() === 'zh' ? c.label_zh : c.label_en) + '</option>').join('');
-
-      box.innerHTML = heading +
-        '<div class="est-v">' + chosen.months +
-        '<span style="font-size:0.9rem;font-weight:600"> ' +
-        (lang() === 'zh' ? '个月' : 'months') + '</span></div>' +
-        '<select id="categorySelect" style="width:100%;margin:0.4rem 0;padding:0.35rem;font-size:0.75rem;' +
-        'background:var(--field-bg);color:var(--text);border:1px solid var(--line);border-radius:8px">' +
-        options + '</select>' +
-        '<div class="est-note">' + (chosen.office || '') +
-        (chosen.as_of ? ' · ' + (lang() === 'zh' ? '数据截至 ' : 'as of ') + chosen.as_of : '') + '</div>';
-
-      document.getElementById('categorySelect').addEventListener('change', e => {
-        localStorage.setItem('i140Category', e.target.value);
-        renderOfficialEstimate(filedDate);
-      });
-
-      // The comparison that makes the figure useful: elapsed time against the
-      // published window. Needs a filing date, which only the history gives us.
-      if (!filedDate) return;
-
-      const elapsedDays = I140.daysBetween(filedDate, new Date());
-      const windowDays = Math.round(chosen.months * 30.44);
-      const pct = Math.min(100, (elapsedDays / windowDays) * 100);
-      const elapsedMonths = (elapsedDays / 30.44).toFixed(1);
-      const past = elapsedDays > windowDays;
-
-      progress.innerHTML =
-        '<div class="est-k">' +
-        '<span class="lang-en">Your case vs. that window — filed ' + I140.formatDate(filedDate, 'en') +
-        ', ' + elapsedMonths + ' months ago</span>' +
-        '<span class="lang-zh">你的案子对照该窗口 — ' + I140.formatDate(filedDate, 'zh') +
-        ' 递交，已过 ' + elapsedMonths + ' 个月</span></div>' +
-        '<div class="bar"><div class="bar-fill" style="width:' + pct.toFixed(1) + '%;background:' +
-        (past ? I140.BUCKETS.rfe.color : 'var(--accent)') + '"></div></div>' +
-        '<div class="est-note">' +
-        (past
-          ? '<span class="lang-en">Past the published 80% window by ' +
-            ((elapsedDays - windowDays) / 30.44).toFixed(1) + ' months.</span>' +
-            '<span class="lang-zh">已超出官方 80% 窗口 ' +
-            ((elapsedDays - windowDays) / 30.44).toFixed(1) + ' 个月。</span>'
-          : '<span class="lang-en">' + pct.toFixed(0) + '% through the published 80% window.</span>' +
-            '<span class="lang-zh">已走完官方 80% 窗口的 ' + pct.toFixed(0) + '%。</span>') +
-        '</div>';
     }
 
     /**
