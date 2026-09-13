@@ -153,6 +153,16 @@
     .bar { height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; margin: 0.7rem 0 0.5rem; }
     .bar-fill { height: 100%; border-radius: 999px; background: var(--accent); transition: width 0.6s ease; }
 
+    /* Banner for degraded (snapshot-only) results. */
+    .stale-notice {
+      display: flex; gap: 0.7rem; align-items: flex-start;
+      padding: 0.85rem 1rem; margin-bottom: 1rem;
+      border-radius: 12px; border: 1px solid rgba(227,160,8,0.35);
+      background: rgba(227,160,8,0.09);
+      font-size: 0.85rem; line-height: 1.55;
+    }
+    .stale-notice i { color: #e3a008; margin-top: 0.2rem; }
+
     /* States */
     .msg { text-align: center; color: var(--text-sec); padding: 2.5rem 1rem; font-size: 0.95rem; line-height: 1.7; }
     .msg strong { color: var(--text); }
@@ -198,6 +208,16 @@
 
     <!-- Results -->
     <div id="results" class="hidden">
+      <!-- Shown when the live lookup failed and this came from the local snapshot -->
+      <div class="stale-notice hidden" id="degradedNotice">
+        <i class="fas fa-triangle-exclamation"></i>
+        <div>
+          <span class="lang-en">The live lookup failed, so this is from the local snapshot:
+            status and date only, no notice text or history.</span>
+          <span class="lang-zh">实时查询失败，以下内容来自本地快照：仅有状态和日期，
+            没有通知原文和历史记录。</span>
+        </div>
+      </div>
       <!-- Case identity -->
       <div class="card">
         <div class="receipt-line">
@@ -240,6 +260,8 @@
           <!-- Same idea, computed from the cases actually in this block -->
           <div class="est" id="estBlock"></div>
         </div>
+        <!-- This case measured against the official window -->
+        <div id="officialProgress" style="margin-top:1.1rem"></div>
         <div style="margin-top:1.1rem">
           <div class="est-k" id="queueLabel"></div>
           <div class="bar"><div class="bar-fill" id="queueBar" style="width:0%"></div></div>
@@ -337,10 +359,20 @@
 
       try {
         // The case record and its history are two separate queries; fire both at once.
-        const [record, history] = await Promise.all([
-          I140.fetchCase(caseId),
-          I140.fetchCaseHistory(caseId).catch(() => [])   // history is a bonus, not a blocker
-        ]);
+        let record = null;
+        let history = [];
+        try {
+          [record, history] = await Promise.all([
+            I140.fetchCase(caseId),
+            I140.fetchCaseHistory(caseId).catch(() => [])   // history is a bonus, not a blocker
+          ]);
+        } catch (liveError) {
+          // Upstream unreachable. The committed snapshot still knows this case's
+          // status and date, so show that rather than nothing; renderCase flags
+          // the degraded state.
+          record = await I140.fetchCaseFromStatic(caseId);
+          if (!record) throw liveError;
+        }
 
         if (!record) {
           showMessage('<span class="lang-en"><strong>' + caseId + '</strong> is not in the tracker\'s dataset. It only covers I-140 receipts in the blocks it follows — check the number, or look at <a href="i140.html">block stats</a> to see which blocks are covered.</span>' +
@@ -395,6 +427,10 @@
         '</div><div class="meta-v">' + m.v + '</div></div>'
       ).join('');
 
+      // Say so plainly when this came from the snapshot instead of a live query.
+      const degraded = document.getElementById('degradedNotice');
+      degraded.classList.toggle('hidden', !record.fromSnapshot);
+
       // Current status
       const bucket = I140.BUCKETS[I140.bucketOf(record.status)];
       document.getElementById('statusDot').style.background = bucket.color;
@@ -433,7 +469,14 @@
         }).join('');
       }
 
-      renderOfficialEstimate();
+      // Filing date for the elapsed-time comparison: USCIS's own "we received
+      // your form" entry when the history has one, otherwise the oldest entry
+      // we know about (which is a floor, not necessarily the filing date).
+      const received = entries.filter(e => /received/i.test(e.status)).pop();
+      const filedDate = received ? received.date
+        : (entries.length ? entries[entries.length - 1].date : null);
+      renderOfficialEstimate(filedDate);
+
       // Reset the cohort panel while the block file loads.
       document.getElementById('estBlock').innerHTML = placeholderEstimate();
       document.getElementById('queueLabel').innerHTML = '';
@@ -448,59 +491,92 @@
         '<div class="est-unset">…</div>';
     }
 
-    /** The hand-maintained official figure, or a clear "not set" state. */
-    async function renderOfficialEstimate() {
+    /**
+     * The official USCIS figure, rendered as data in this page — the number
+     * itself, the category it applies to, and how far this case is through that
+     * window. USCIS publishes no API for processing times, so the values are
+     * maintained by hand in assets/data/uscis-processing-times.json.
+     */
+    async function renderOfficialEstimate(filedDate) {
       const box = document.getElementById('estOfficial');
+      const progress = document.getElementById('officialProgress');
+      progress.innerHTML = '';
+
+      let data;
       try {
-        const res = await fetch('../assets/data/uscis-processing-times.json');
-        const data = await res.json();
-        const filled = (data.categories || []).filter(c => typeof c.months === 'number');
-
-        if (!filled.length) {
-          box.innerHTML = '<div class="est-k">' +
-            '<span class="lang-en">USCIS official — 80% of cases completed within</span>' +
-            '<span class="lang-zh">USCIS 官方 — 80% 案件完成时长</span></div>' +
-            '<div class="est-unset">' +
-            '<span class="lang-en">Not set yet</span><span class="lang-zh">尚未填写</span></div>' +
-            '<div class="est-note">' +
-            '<span class="lang-en">Add the published figure to assets/data/uscis-processing-times.json — ' +
-            '<a href="' + data.source_url + '" target="_blank" rel="noopener noreferrer">official page</a>.</span>' +
-            '<span class="lang-zh">把官网公布的数字填进 assets/data/uscis-processing-times.json — ' +
-            '<a href="' + data.source_url + '" target="_blank" rel="noopener noreferrer">官方页面</a>。</span></div>';
-          return;
-        }
-
-        // Show the category the user picked last, defaulting to the first filled one.
-        const chosenId = localStorage.getItem('i140Category');
-        const chosen = filled.find(c => c.id === chosenId) || filled[0];
-        const options = filled.map(c =>
-          '<option value="' + c.id + '"' + (c.id === chosen.id ? ' selected' : '') + '>' +
-          (lang() === 'zh' ? c.label_zh : c.label_en) + '</option>').join('');
-
-        box.innerHTML = '<div class="est-k">' +
-          '<span class="lang-en">USCIS official — 80% of cases completed within</span>' +
-          '<span class="lang-zh">USCIS 官方 — 80% 案件完成时长</span></div>' +
-          '<div class="est-v">' + chosen.months +
-          '<span style="font-size:0.9rem;font-weight:600"> ' +
-          (lang() === 'zh' ? '个月' : 'months') + '</span></div>' +
-          '<select id="categorySelect" style="width:100%;margin:0.4rem 0;padding:0.35rem;font-size:0.75rem;' +
-          'background:var(--field-bg);color:var(--text);border:1px solid var(--line);border-radius:8px">' +
-          options + '</select>' +
-          '<div class="est-note">' + (chosen.office || '') +
-          (chosen.as_of ? ' · as of ' + chosen.as_of : '') + '</div>';
-
-        const select = document.getElementById('categorySelect');
-        if (select) {
-          select.addEventListener('change', () => {
-            localStorage.setItem('i140Category', select.value);
-            renderOfficialEstimate();
-          });
-        }
+        data = await (await fetch('../assets/data/uscis-processing-times.json')).json();
       } catch (e) {
         box.innerHTML = '<div class="est-k">' +
           '<span class="lang-en">USCIS official figure unavailable.</span>' +
           '<span class="lang-zh">无法读取官方数据。</span></div>';
+        return;
       }
+
+      const filled = (data.categories || []).filter(c => typeof c.months === 'number');
+      const heading = '<div class="est-k">' +
+        '<span class="lang-en">USCIS official — 80% of cases completed within</span>' +
+        '<span class="lang-zh">USCIS 官方 — 80% 案件完成时长</span></div>';
+
+      if (!filled.length) {
+        box.innerHTML = heading + '<div class="est-unset">' +
+          '<span class="lang-en">Not published here yet</span>' +
+          '<span class="lang-zh">尚未录入</span></div>' +
+          '<div class="est-note">' +
+          '<span class="lang-en">USCIS offers no API for processing times, so this figure is ' +
+          'entered by hand once a month.</span>' +
+          '<span class="lang-zh">USCIS 没有提供处理时间的 API，此数字每月人工录入一次。</span></div>';
+        return;
+      }
+
+      // Remember the category across visits; default to the first one filled in.
+      const chosenId = localStorage.getItem('i140Category');
+      const chosen = filled.find(c => c.id === chosenId) || filled[0];
+      const options = filled.map(c =>
+        '<option value="' + c.id + '"' + (c.id === chosen.id ? ' selected' : '') + '>' +
+        (lang() === 'zh' ? c.label_zh : c.label_en) + '</option>').join('');
+
+      box.innerHTML = heading +
+        '<div class="est-v">' + chosen.months +
+        '<span style="font-size:0.9rem;font-weight:600"> ' +
+        (lang() === 'zh' ? '个月' : 'months') + '</span></div>' +
+        '<select id="categorySelect" style="width:100%;margin:0.4rem 0;padding:0.35rem;font-size:0.75rem;' +
+        'background:var(--field-bg);color:var(--text);border:1px solid var(--line);border-radius:8px">' +
+        options + '</select>' +
+        '<div class="est-note">' + (chosen.office || '') +
+        (chosen.as_of ? ' · ' + (lang() === 'zh' ? '数据截至 ' : 'as of ') + chosen.as_of : '') + '</div>';
+
+      document.getElementById('categorySelect').addEventListener('change', e => {
+        localStorage.setItem('i140Category', e.target.value);
+        renderOfficialEstimate(filedDate);
+      });
+
+      // The comparison that makes the figure useful: elapsed time against the
+      // published window. Needs a filing date, which only the history gives us.
+      if (!filedDate) return;
+
+      const elapsedDays = I140.daysBetween(filedDate, new Date());
+      const windowDays = Math.round(chosen.months * 30.44);
+      const pct = Math.min(100, (elapsedDays / windowDays) * 100);
+      const elapsedMonths = (elapsedDays / 30.44).toFixed(1);
+      const past = elapsedDays > windowDays;
+
+      progress.innerHTML =
+        '<div class="est-k">' +
+        '<span class="lang-en">Your case vs. that window — filed ' + I140.formatDate(filedDate, 'en') +
+        ', ' + elapsedMonths + ' months ago</span>' +
+        '<span class="lang-zh">你的案子对照该窗口 — ' + I140.formatDate(filedDate, 'zh') +
+        ' 递交，已过 ' + elapsedMonths + ' 个月</span></div>' +
+        '<div class="bar"><div class="bar-fill" style="width:' + pct.toFixed(1) + '%;background:' +
+        (past ? I140.BUCKETS.rfe.color : 'var(--accent)') + '"></div></div>' +
+        '<div class="est-note">' +
+        (past
+          ? '<span class="lang-en">Past the published 80% window by ' +
+            ((elapsedDays - windowDays) / 30.44).toFixed(1) + ' months.</span>' +
+            '<span class="lang-zh">已超出官方 80% 窗口 ' +
+            ((elapsedDays - windowDays) / 30.44).toFixed(1) + ' 个月。</span>'
+          : '<span class="lang-en">' + pct.toFixed(0) + '% through the published 80% window.</span>' +
+            '<span class="lang-zh">已走完官方 80% 窗口的 ' + pct.toFixed(0) + '%。</span>') +
+        '</div>';
     }
 
     /**

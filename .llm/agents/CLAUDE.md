@@ -198,9 +198,33 @@ zhaomin1995.github.io/
 - **Gotcha**: block names are not a fixed width — 78 are 8 characters (`IOE09229`) and 9 are
   9 characters (`LIN239026`, `SRC239009`). A receipt number is always 13 characters, so the
   stored id suffix is 5 digits for the former and 4 for the latter. Never slice a fixed 8.
-- **Not automated**: USCIS's own processing-times page sits behind a Cloudflare bot
-  challenge, so `assets/data/uscis-processing-times.json` is maintained by hand. Entries
-  with `months: null` render as "not set yet" rather than inventing a number.
+- **STALE SINCE 2025-06-16**: the upstream author stopped refreshing the dataset. The
+  report still answers queries, but the data has not advanced in over a year. The daily
+  job therefore never commits, and both pages show "Data as of <date>" plus a warning
+  banner. `index.json` carries `data_as_of` / `data_age_days`; never display
+  `generated_at` as if it were the data's date.
+- **Not automated**: USCIS publishes no processing-times API (the developer portal offers
+  only Case Status and FOIA), and the egov processing-times page sits behind a Cloudflare
+  bot challenge. `assets/data/uscis-processing-times.json` is therefore maintained by
+  hand; entries with `months: null` render as "not published here yet" rather than
+  inventing a number. The figure is rendered as data in the case page - never as a link
+  out to USCIS.
+
+## USCIS Official API (Case Status)
+
+- `scripts/uscis_case_status.py` - OAuth2 client-credentials client for the official
+  Torch API. `scripts/poll_uscis.py` is the daily driver, run by
+  `.github/workflows/poll-uscis.yml` on weekdays at 16:00 UTC.
+- **Sandbox keeps business hours**: Mon-Fri 07:00-20:00 US Eastern. Outside them the case
+  endpoint returns 503 with an explanatory message; the scripts exit 2 and the workflow
+  treats that as skipped, not failed. The OAuth token endpoint answers 24/7.
+- Sandbox resolves only USCIS's staging receipts (`EAC9999103403`), never real ones, so
+  `poll_uscis.py` writes nothing to the site while `USCIS_ENV=sandbox` - fictional case
+  data must never reach a page about a real case.
+- Production access needs 5 consecutive days of API traffic plus a demo; flip the
+  `USCIS_ENV` and `USCIS_RECEIPTS` repository *variables* (not secrets) when granted.
+- Credentials live in `.env` locally (gitignored) and in the `USCIS_CLIENT_ID` /
+  `USCIS_CLIENT_SECRET` repository secrets. Never in code, never in a front end.
 
 ## Features
 

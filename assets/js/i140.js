@@ -376,6 +376,56 @@
     });
   }
 
+  /* Beyond this many days the dataset is presented as a historical snapshot
+     rather than a current picture. Mirrors STALE_AFTER_DAYS in fetch_i140.py. */
+  const STALE_AFTER_DAYS = 14;
+
+  /**
+   * How current the DATA is — not when we last fetched it. The upstream report
+   * can keep serving a frozen dataset indefinitely (it has before), so every
+   * page states this rather than the fetch timestamp.
+   */
+  function freshness(index) {
+    if (!index || !index.data_as_of) return { asOf: null, ageDays: null, stale: false };
+    const asOf = new Date(index.data_as_of + 'T00:00:00Z');
+    const ageDays = Math.max(0, Math.round((Date.now() - asOf.getTime()) / 86400000));
+    return { asOf: asOf, ageDays: ageDays, stale: ageDays > STALE_AFTER_DAYS };
+  }
+
+  /**
+   * The case as recorded in the committed snapshot. Used when the live query
+   * fails, so the page degrades to "status and date, no notice text or history"
+   * instead of showing nothing at all.
+   */
+  async function fetchCaseFromStatic(caseId) {
+    await loadIndex();                 // populates blockNames, which blockOf needs
+    const block = blockOf(caseId);
+    if (!block) return null;
+
+    let cases;
+    try {
+      cases = await loadBlock(block);
+    } catch (e) {
+      return null;                     // no data file for that block
+    }
+
+    const match = cases.find(c => c.caseId === caseId);
+    if (!match) return null;
+    return {
+      caseId: match.caseId,
+      form: 'I-140',
+      formTitle: 'Immigrant Petition for Alien Worker',
+      status: match.status,
+      detail: null,                    // the notice text is not in the snapshot
+      date: match.date,
+      seen: match.seen,
+      ranking: null,
+      subgroup: null,
+      block: block,
+      fromSnapshot: true
+    };
+  }
+
   /**
    * The block a receipt number belongs to. Block names are not a fixed width —
    * the IOE blocks are 8 characters, the LIN/SRC ones 9 — so match against the
@@ -513,7 +563,9 @@
 
   global.I140 = {
     // data access
-    loadIndex, loadBlock, fetchCase, fetchCaseHistory, query, whereEquals,
+    loadIndex, loadBlock, fetchCase, fetchCaseHistory, fetchCaseFromStatic, query, whereEquals,
+    // data recency
+    freshness, STALE_AFTER_DAYS,
     // identity helpers
     blockOf, normalizeCaseId,
     // vocabulary

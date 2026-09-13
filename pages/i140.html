@@ -57,6 +57,22 @@
     .controls select:focus, .controls input:focus { border-color: var(--accent); }
     .controls .grow { flex: 1; min-width: 180px; }
     .updated { font-size: 0.75rem; color: var(--text-sec); margin-left: auto; }
+    .stale-badge {
+      display: inline-block; margin-left: 0.45rem; padding: 0.1rem 0.45rem;
+      border-radius: 999px; background: rgba(227,160,8,0.16); color: #b45309;
+      font-size: 0.68rem; font-weight: 600;
+    }
+    body.dark-mode .stale-badge { color: #e3a008; }
+
+    /* Banner for a dataset the upstream author has stopped refreshing. */
+    .stale-notice {
+      display: flex; gap: 0.7rem; align-items: flex-start;
+      padding: 0.85rem 1rem; margin-bottom: 1.2rem;
+      border-radius: 12px; border: 1px solid rgba(227,160,8,0.35);
+      background: rgba(227,160,8,0.09);
+      font-size: 0.85rem; line-height: 1.55;
+    }
+    .stale-notice i { color: #e3a008; margin-top: 0.2rem; }
 
     /* ── KPI tiles ── */
     .kpis {
@@ -166,6 +182,18 @@
       <span class="updated" id="updatedAt"></span>
     </div>
 
+    <!-- Shown when the upstream dataset has stopped advancing. -->
+    <div class="stale-notice hidden" id="staleNotice">
+      <i class="fas fa-triangle-exclamation"></i>
+      <div>
+        <span class="lang-en">The upstream tracker stopped publishing new data on
+          <strong id="staleDate"></strong>. Everything below is a historical snapshot,
+          not the current state of these cases.</span>
+        <span class="lang-zh">上游追踪器自 <strong id="staleDateZh"></strong> 起停止更新。
+          以下全部为历史快照，不代表这些案件的当前状态。</span>
+      </div>
+    </div>
+
     <div class="msg" id="loading">
       <div class="spinner"></div>
       <span class="lang-en">Loading block data…</span><span class="lang-zh">正在加载批次数据…</span>
@@ -260,8 +288,24 @@
       try {
         const index = await I140.loadIndex();
 
-        document.getElementById('updatedAt').textContent =
-          (lang() === 'zh' ? '更新于 ' : 'Updated ') + index.generated_at.slice(0, 10);
+        // Show how current the DATA is, not when we last fetched it: the
+        // upstream report can serve a frozen dataset indefinitely, and saying
+        // "updated today" about 15-month-old numbers would be a lie.
+        const fresh = I140.freshness(index);
+        const updatedAt = document.getElementById('updatedAt');
+        if (fresh.asOf) {
+          updatedAt.innerHTML =
+            '<span class="lang-en">Data as of ' + I140.formatDate(fresh.asOf, 'en') + '</span>' +
+            '<span class="lang-zh">数据截至 ' + I140.formatDate(fresh.asOf, 'zh') + '</span>' +
+            (fresh.stale ? '<span class="stale-badge">' +
+              '<span class="lang-en">' + fresh.ageDays + ' days old</span>' +
+              '<span class="lang-zh">已 ' + fresh.ageDays + ' 天未更新</span></span>' : '');
+        }
+        if (fresh.stale) {
+          document.getElementById('staleNotice').classList.remove('hidden');
+          document.getElementById('staleDate').textContent = I140.formatDate(fresh.asOf, 'en');
+          document.getElementById('staleDateZh').textContent = I140.formatDate(fresh.asOf, 'zh');
+        }
 
         index.blocks.forEach(b => {
           const opt = document.createElement('option');

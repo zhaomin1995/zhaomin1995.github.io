@@ -28,7 +28,10 @@ import urllib.request
 # -- Public report identity ----------------------------------------------------
 # The resource key is the `k` field of the report's share URL; it is what makes
 # the public endpoint accept our unauthenticated queries.
-RESOURCE_KEY = "39891ddf-f60f-42c9-9d3b-051301753316"
+# The resource key is base64-encoded into the report's share URL (the `k` field).
+# If the author ever republishes under a new link, set POWERBI_RESOURCE_KEY
+# rather than editing code.
+RESOURCE_KEY = os.environ.get("POWERBI_RESOURCE_KEY") or "39891ddf-f60f-42c9-9d3b-051301753316"
 API_HOST = "https://wabi-south-central-us-c-primary-api.analysis.windows.net"
 QUERY_URL = API_HOST + "/public/reports/querydata?synchronous=true"
 META_URL = API_HOST + "/public/reports/{key}/modelsAndExploration?preferReadOnlySession=true"
@@ -52,6 +55,10 @@ EPOCH_MS = int(dt.datetime(2000, 1, 1, tzinfo=dt.timezone.utc).timestamp() * 100
 
 # DSR marks null cells with a key that is the literal Unicode slashed-O.
 NULL_MASK_KEY = "Ø"
+
+# Beyond this, the upstream dataset is treated as no longer maintained and the
+# run emits a warning. (It froze on 2025-06-16 once already.)
+STALE_AFTER_DAYS = 14
 
 HEADERS = {
     "Accept": "application/json, text/plain, */*",
@@ -353,8 +360,18 @@ def main():
     summaries = [kept[b] for b in sorted(kept)]
 
     statuses = [name for name, _ in sorted(status_index.items(), key=lambda kv: kv[1])]
+
+    # How current the DATA is, which is a different question from when we last
+    # fetched it. The upstream tracker can keep serving a frozen dataset
+    # indefinitely, so the pages must show this date, not generated_at.
+    seen_days = [b["seen"] for b in summaries if b.get("seen") is not None]
+    data_as_of = (EPOCH + dt.timedelta(days=max(seen_days))).isoformat() if seen_days else None
+    age_days = (dt.date.today() - (EPOCH + dt.timedelta(days=max(seen_days)))).days if seen_days else None
+
     index = {
         "generated_at": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "data_as_of": data_as_of,
+        "data_age_days": age_days,
         "epoch": EPOCH.isoformat(),
         "source": "Power BI report 'I-140 Application Tracker' by anto58",
         "statuses": statuses,
@@ -365,6 +382,14 @@ def main():
         fh.write("\n")
 
     print("Wrote %d block files + index.json to %s" % (len(summaries), args.out))
+    print("Data is current as of %s (%s days old)" % (data_as_of, age_days))
+
+    # Surface staleness in the Actions run summary. The upstream dataset has
+    # been frozen before; a silently frozen source looks exactly like "no news".
+    if age_days is not None and age_days > STALE_AFTER_DAYS:
+        print("::warning::Upstream I-140 data has not advanced since %s (%d days). "
+              "The tracker's author may have stopped refreshing it."
+              % (data_as_of, age_days))
 
 
 if __name__ == "__main__":

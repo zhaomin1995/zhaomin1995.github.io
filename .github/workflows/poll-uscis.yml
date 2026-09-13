@@ -1,0 +1,76 @@
+# Daily call to the official USCIS Case Status API.
+#
+# While USCIS_ENV is "sandbox" this writes nothing: it exercises the integration
+# and builds up the API traffic USCIS wants to see before granting production
+# access. Once production keys arrive, set the USCIS_ENV and USCIS_RECEIPTS
+# repository variables and the same job starts committing real case data.
+
+name: Poll USCIS case status
+
+on:
+  schedule:
+    # 16:00 UTC on weekdays = 12:00 EDT / 11:00 EST, comfortably inside the
+    # sandbox service window (Mon-Fri 07:00-20:00 US Eastern) in both halves of
+    # the year. Weekends are skipped because the sandbox is closed then.
+    - cron: '0 16 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: poll-uscis
+  cancel-in-progress: false
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      USCIS_CLIENT_ID: ${{ secrets.USCIS_CLIENT_ID }}
+      USCIS_CLIENT_SECRET: ${{ secrets.USCIS_CLIENT_SECRET }}
+      # Repository variables, not secrets: neither value is sensitive, and they
+      # are what flips this job from rehearsal to production.
+      USCIS_ENV: ${{ vars.USCIS_ENV || 'sandbox' }}
+      USCIS_RECEIPTS: ${{ vars.USCIS_RECEIPTS }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Query case status
+        run: |
+          set +e
+          python scripts/poll_uscis.py
+          code=$?
+          set -e
+          # Exit 2 means the sandbox is outside its service window. That is a
+          # schedule, not a failure - do not send a red run for it.
+          if [ "$code" -eq 2 ]; then
+            echo "::notice::USCIS sandbox is closed right now; nothing polled."
+            exit 0
+          fi
+          exit "$code"
+
+      - name: Commit if a case changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Nothing is written in sandbox mode, so this is a no-op until the
+          # switch to production.
+          if [ -d assets/data/uscis ]; then
+            git add assets/data/uscis
+            if git diff --cached --quiet -- assets/data/uscis; then
+              echo "No case changes today; skipping commit."
+              git reset
+            else
+              git commit -m "Update USCIS case status ($(date -u +%Y-%m-%d))"
+              git push
+            fi
+          else
+            echo "No case data directory yet (sandbox mode writes nothing)."
+          fi
