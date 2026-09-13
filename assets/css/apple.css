@@ -1212,6 +1212,54 @@ a:hover {
   line-height: 1.6;
 }
 
+/* ---- Links Grid ----
+   Shortcuts I open regularly. Unlike the Misc cards (which run an expand
+   animation into a sub-page), these are plain anchors: some point off-site. */
+.links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+}
+
+.link-card {
+  display: block;
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-decoration: none;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.link-card:hover,
+.link-card:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px var(--card-shadow);
+}
+
+.link-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.link-icon {
+  font-size: 1.35rem;
+  color: var(--accent);
+  margin-bottom: 0.7rem;
+}
+
+.link-label {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.link-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
 /* ---- Languages Row ---- */
 .lang-row {
   display: flex;

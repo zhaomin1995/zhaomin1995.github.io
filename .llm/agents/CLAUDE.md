@@ -28,6 +28,15 @@ zhaomin1995.github.io/
 ├── .llm/agents/
 │   └── CLAUDE.md           # THIS FILE — repo context for LLM agents
 │
+├── .github/workflows/
+│   └── update-i140.yml     # Daily refresh of assets/data/i140/ (runs scripts/fetch_i140.py)
+│
+├── .claude/
+│   └── launch.json         # Local preview server config (python -m http.server 4173)
+│
+├── scripts/
+│   └── fetch_i140.py       # Scrapes the public I-140 Power BI report into static JSON (stdlib only)
+│
 ├── pages/                  # Sub-pages (linked from index.html via pages/)
 │   ├── travel.html         # 3D globe — photos from Firebase Storage, clustered markers
 │   ├── history.html        # Zoomable world history timeline (Canvas, 1971 events)
@@ -35,7 +44,9 @@ zhaomin1995.github.io/
 │   ├── reader.html         # In-browser book reader (iBooks-style, two-page spread)
 │   ├── pets.html           # Pet photo gallery — loads from Firebase Storage /pet/
 │   ├── visitors.html       # Visitor stats — IP geolocation, Leaflet map
-│   └── space.html          # Internal space — login (test/test), desktop with shortcuts
+│   ├── space.html          # Internal space — login (test/test), desktop with shortcuts
+│   ├── i140.html           # I-140 block dashboard (static data, 87 blocks)
+│   └── i140-case.html      # I-140 single-case tracker (live queries)
 │
 ├── assets/
 │   ├── css/
@@ -43,7 +54,11 @@ zhaomin1995.github.io/
 │   ├── js/
 │   │   ├── events.js       # World history events (1971 events, bilingual, continent/era tags)
 │   │   ├── books.js        # Book data (1060+ books, 19 categories, free PDF links)
+│   │   ├── i140.js         # Shared data layer for the two I-140 pages
 │   │   └── places.js       # [DEPRECATED] Was auto-generated, now reads from Firebase
+│   ├── data/
+│   │   ├── i140/           # Per-block case JSON + index.json (generated; do not hand-edit)
+│   │   └── uscis-processing-times.json  # Official 80% figures — MAINTAINED BY HAND
 │   ├── fontawesome/
 │   │   └── js/all.min.js   # FontAwesome icons
 │   ├── img/
@@ -81,7 +96,9 @@ zhaomin1995.github.io/
 - About + Education in two-column layout (2.5:1 ratio)
 - News timeline with hover popovers showing publication details
 - Experience cards (On-Device LLM, Ads Signal Anonymizer, Meta internship, UNT research)
-- Miscellaneous grid: Travel, Pets, Reading, History — all clickable with expand animations
+- Miscellaneous grid: Travel, Pets — all clickable with expand animations
+- Links grid: shortcuts I open often (I-140 case tracker, block stats, USCIS case status
+  and processing times). Plain anchors, some off-site — no expand animation
 - Footer: visitor counter (counterapi.dev) + Internal Space button
 - Scroll-to-top, dark mode toggle, language toggle (EN/中文)
 
@@ -144,6 +161,46 @@ zhaomin1995.github.io/
 - File thumbnails for images, icon view for other files
 - Right-click context menu (Download, Delete)
 - Keyboard: Delete/Backspace to delete, Escape to close
+
+### `pages/i140.html` — I-140 Block Dashboard
+- A trimmed clone of the public "I-140 Application Tracker" Power BI report by anto58
+- Block picker (87 blocks, remembered in `localStorage`, overridable with `?block=IOE09229`)
+- KPI tiles by status bucket, status distribution bars, summary rates
+- "Cases by week and status" stacked bar chart — hand-rolled SVG, no charting library
+- Searchable / sortable case table; clicking a row opens that receipt in `i140-case.html`
+- Reads **static** JSON from `assets/data/i140/` (fast, and independent of upstream uptime)
+
+### `pages/i140-case.html` — Single Case Tracker
+- Receipt number in, current status + full USCIS notice text out
+- Update history timeline, built from the upstream `new_case_history` table
+- Estimated decision time: the official USCIS 80% figure side by side with the
+  80th-percentile decision time computed from the case's own block
+- Queue position within the block, plus block-wide progress and approval rate
+- Recent receipts kept in `localStorage`; deep-linkable with `?case=IOE0929646056`
+- Queries the Power BI endpoint **live** (it sends CORS headers for our origin), so a
+  single case is always current; falls back to nothing rather than showing stale data
+
+## I-140 Data Pipeline
+
+- **Source**: the Power BI report is "published to web", which exposes an unauthenticated
+  query endpoint at `wabi-south-central-us-c-primary-api.analysis.windows.net`.
+  `scripts/fetch_i140.py` issues one semantic query per block and decodes Power BI's DSR
+  wire format (value dictionaries + an `R` repeat bitmask + a U+00D8 null bitmask).
+- **Model**: one fact table `db_API` (`caseId`, `status`, `date`, `updated_at`, `Grupo`,
+  `actionCodeText`, `actionCodeDesc`, `formTitle`, …) plus `new_case_history`
+  (`caseId`, `status`, `date`, `created_at`) for per-case history.
+- **Output**: `assets/data/i140/<BLOCK>.json`, one case per line as
+  `[idSuffix, statusIdx, dateDays, seenDays]`. Status strings live once in `index.json`;
+  dates are day offsets from 2000-01-01. One-case-per-line keeps the daily git diff small.
+- **Refresh**: `.github/workflows/update-i140.yml`, daily at 09:20 UTC, commits only when a
+  block file actually changed. Run it by hand with `python scripts/fetch_i140.py`.
+- **Scale**: 87 blocks / ~317k cases / ~6.8 MB on disk; one block is a single request.
+- **Gotcha**: block names are not a fixed width — 78 are 8 characters (`IOE09229`) and 9 are
+  9 characters (`LIN239026`, `SRC239009`). A receipt number is always 13 characters, so the
+  stored id suffix is 5 digits for the former and 4 for the latter. Never slice a fixed 8.
+- **Not automated**: USCIS's own processing-times page sits behind a Cloudflare bot
+  challenge, so `assets/data/uscis-processing-times.json` is maintained by hand. Entries
+  with `months: null` render as "not set yet" rather than inventing a number.
 
 ## Features
 

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>I-140 Block Stats — Zhaomin Xiao</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/fontawesome/css/fontawesome.min.css">
+  <link rel="stylesheet" href="../assets/fontawesome/css/solid.min.css">
+  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #fafafa; --text: #1d1d1f; --text-sec: #86868b;
+      --card-bg: #ffffff; --card-shadow: rgba(0,0,0,0.08); --line: rgba(0,0,0,0.08);
+      --accent: #e17055; --field-bg: #ffffff; --row-hover: rgba(0,0,0,0.03);
+    }
+    body.dark-mode {
+      --bg: #1d1d1f; --text: #f5f5f7; --text-sec: #a1a1a6;
+      --card-bg: #2a2a2c; --card-shadow: rgba(0,0,0,0.3); --line: rgba(255,255,255,0.1);
+      --field-bg: #1d1d1f; --row-hover: rgba(255,255,255,0.04);
+    }
+    body {
+      font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
+      -webkit-font-smoothing: antialiased; line-height: 1.6;
+    }
+    .lang-zh { display: none; }
+    body.zh .lang-en { display: none; }
+    body.zh .lang-zh { display: inline; }
+    ::selection { background: rgba(225,112,85,0.2); }
+
+    /* ── Nav ── */
+    .p-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0 2rem; height: 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(250,250,250,0.85); backdrop-filter: blur(20px);
+    }
+    body.dark-mode .p-nav { background: rgba(29,29,31,0.88); }
+    .p-nav a { color: var(--text-sec); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: color 0.3s; }
+    .p-nav a:hover { color: var(--text); }
+    .p-nav-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+
+    .page { max-width: 1000px; margin: 0 auto; padding: 4.5rem 1.5rem 3rem; }
+
+    /* ── Block picker ── */
+    .controls {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; margin-bottom: 1.4rem;
+    }
+    .controls select, .controls input {
+      padding: 0.6rem 0.9rem; font-size: 0.9rem; font-family: inherit;
+      background: var(--field-bg); color: var(--text);
+      border: 1px solid var(--line); border-radius: 10px; outline: none;
+    }
+    .controls select:focus, .controls input:focus { border-color: var(--accent); }
+    .controls .grow { flex: 1; min-width: 180px; }
+    .updated { font-size: 0.75rem; color: var(--text-sec); margin-left: auto; }
+
+    /* ── KPI tiles ── */
+    .kpis {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.8rem; margin-bottom: 1rem;
+    }
+    .kpi {
+      border-radius: 14px; padding: 1rem 1.1rem; color: #fff;
+      box-shadow: 0 2px 12px var(--card-shadow);
+    }
+    .kpi-v { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+    .kpi-k { font-size: 0.78rem; font-weight: 600; opacity: 0.92; margin-top: 0.2rem; }
+
+    .card {
+      background: var(--card-bg); border-radius: 16px; padding: 1.3rem;
+      box-shadow: 0 2px 12px var(--card-shadow); margin-bottom: 1rem;
+    }
+    .card-label {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-sec); margin-bottom: 1rem;
+    }
+
+    /* Two-up layout for distribution + summary numbers */
+    .split { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1rem; align-items: start; }
+    @media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
+
+    /* ── Status distribution ── */
+    .dist-row {
+      display: grid; grid-template-columns: 1fr auto; gap: 0.6rem;
+      align-items: center; margin-bottom: 0.55rem; font-size: 0.83rem;
+    }
+    .dist-name { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+    .dist-name span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .dist-swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+    .dist-track { grid-column: 1 / -1; height: 5px; border-radius: 999px; background: var(--line); overflow: hidden; margin-top: -0.25rem; }
+    .dist-fill { height: 100%; border-radius: 999px; }
+    .dist-count { font-variant-numeric: tabular-nums; color: var(--text-sec); font-size: 0.78rem; }
+
+    /* ── Summary stats ── */
+    .stat { padding: 0.6rem 0; border-bottom: 1px solid var(--line); }
+    .stat:last-child { border-bottom: none; }
+    .stat-k { font-size: 0.75rem; color: var(--text-sec); }
+    .stat-v { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.02em; }
+
+    /* ── Weekly chart ── */
+    .chart-scroll { overflow-x: auto; padding-bottom: 0.4rem; }
+    .chart-legend { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 0.8rem; font-size: 0.75rem; color: var(--text-sec); }
+    /* Direct children only: a descendant selector here would also override the
+       display:none that hides the inactive language's spans. */
+    .chart-legend > span { display: inline-flex; align-items: center; gap: 0.35rem; }
+    .chart-legend i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+    .bar-col rect { transition: opacity 0.15s; }
+    .bar-col:hover rect { opacity: 0.75; }
+
+    /* ── Case table ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    th {
+      text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--text-sec); font-weight: 600; padding: 0.5rem 0.6rem;
+      border-bottom: 1px solid var(--line); cursor: pointer; white-space: nowrap;
+    }
+    th:hover { color: var(--text); }
+    td { padding: 0.55rem 0.6rem; border-bottom: 1px solid var(--line); white-space: nowrap; }
+    tbody tr { cursor: pointer; }
+    tbody tr:hover { background: var(--row-hover); }
+    .cell-id { font-family: 'SF Mono', Menlo, monospace; font-size: 0.8rem; }
+    .cell-status { display: flex; align-items: center; gap: 0.45rem; }
+    .cell-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+    .more-btn {
+      display: block; margin: 1rem auto 0; padding: 0.55rem 1.4rem;
+      font-size: 0.82rem; font-family: inherit; font-weight: 600;
+      background: none; color: var(--text-sec);
+      border: 1px solid var(--line); border-radius: 999px; cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .more-btn:hover { color: var(--text); border-color: var(--accent); }
+
+    .msg { text-align: center; color: var(--text-sec); padding: 3rem 1rem; font-size: 0.95rem; }
+    .spinner {
+      width: 26px; height: 26px; margin: 0 auto 0.9rem;
+      border: 3px solid var(--line); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .hidden { display: none !important; }
+
+    .foot {
+      margin-top: 2rem; padding-top: 1.2rem; border-top: 1px solid var(--line);
+      font-size: 0.75rem; color: var(--text-sec); line-height: 1.7; text-align: center;
+    }
+    .foot a { color: var(--text-sec); }
+  </style>
+</head>
+
+<body>
+  <nav class="p-nav">
+    <a href="../index.html"><i class="fas fa-arrow-left"></i> <span class="lang-en">Back</span><span class="lang-zh">返回</span></a>
+    <span class="p-nav-title"><span class="lang-en">I-140 Block Stats</span><span class="lang-zh">I-140 批次统计</span></span>
+    <a href="i140-case.html"><span class="lang-en">My case</span><span class="lang-zh">我的案件</span> <i class="fas fa-arrow-right"></i></a>
+  </nav>
+
+  <div class="page">
+    <div class="controls">
+      <select id="blockSelect" aria-label="Block"></select>
+      <input class="grow" id="searchInput" type="search" placeholder="Search receipt number or status…" aria-label="Search">
+      <span class="updated" id="updatedAt"></span>
+    </div>
+
+    <div class="msg" id="loading">
+      <div class="spinner"></div>
+      <span class="lang-en">Loading block data…</span><span class="lang-zh">正在加载批次数据…</span>
+    </div>
+
+    <div id="dashboard" class="hidden">
+      <!-- Headline counts -->
+      <div class="kpis" id="kpis"></div>
+
+      <div class="split">
+        <!-- Every distinct USCIS status in this block, by volume -->
+        <div class="card">
+          <div class="card-label">
+            <span class="lang-en">Status distribution</span><span class="lang-zh">状态分布</span>
+          </div>
+          <div id="distribution"></div>
+        </div>
+
+        <!-- Rates and dates -->
+        <div class="card">
+          <div class="card-label">
+            <span class="lang-en">Summary</span><span class="lang-zh">汇总</span>
+          </div>
+          <div id="summary"></div>
+        </div>
+      </div>
+
+      <!-- Cases by week of their current status date -->
+      <div class="card">
+        <div class="card-label">
+          <span class="lang-en">Cases by week and status</span><span class="lang-zh">按周与状态分布</span>
+        </div>
+        <div class="chart-scroll"><svg id="weekChart" role="img" aria-label="Cases by week"></svg></div>
+        <div class="chart-legend" id="chartLegend"></div>
+      </div>
+
+      <!-- Full case list -->
+      <div class="card">
+        <div class="card-label">
+          <span class="lang-en">Cases</span><span class="lang-zh">案件明细</span>
+          <span id="rowCount" style="text-transform:none;letter-spacing:0;font-weight:500"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th data-sort="caseId"><span class="lang-en">Case ID</span><span class="lang-zh">收据号</span></th>
+                <th data-sort="status"><span class="lang-en">Status</span><span class="lang-zh">状态</span></th>
+                <th data-sort="date"><span class="lang-en">USCIS date</span><span class="lang-zh">状态日期</span></th>
+                <th data-sort="seen"><span class="lang-en">Last checked</span><span class="lang-zh">最近核对</span></th>
+              </tr>
+            </thead>
+            <tbody id="caseRows"></tbody>
+          </table>
+        </div>
+        <button class="more-btn hidden" id="moreBtn">
+          <span class="lang-en">Show more</span><span class="lang-zh">显示更多</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="foot">
+      <span class="lang-en">Data from the public "I-140 Application Tracker" Power BI report by anto58, refreshed daily.</span>
+      <span class="lang-zh">数据来自 anto58 公开的 "I-140 Application Tracker" Power BI 报表，每日更新。</span>
+      <br>
+      <span class="lang-en">Unofficial, for personal tracking only — always confirm on the USCIS website.</span>
+      <span class="lang-zh">非官方页面，仅供个人追踪使用 — 请以 USCIS 官网为准。</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/i140.js"></script>
+  <script>
+    /* Inherit the theme and language chosen elsewhere on the site. */
+    if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+    if (localStorage.getItem('lang') === 'zh') { document.body.classList.add('zh'); document.documentElement.lang = 'zh'; }
+
+    const BLOCK_KEY = 'i140Block';       // last block the user looked at
+    const PAGE_SIZE = 100;               // rows added per "show more"
+
+    const lang = () => I140.currentLang();
+    const blockSelect = document.getElementById('blockSelect');
+    const searchInput = document.getElementById('searchInput');
+
+    let allCases = [];      // every case in the selected block
+    let visibleRows = [];   // after the search filter
+    let shown = 0;          // how many of visibleRows are in the DOM
+    let sortKey = 'caseId';
+    let sortDir = 1;
+
+    /* ── Boot ─────────────────────────────────────────────────────────────── */
+    (async function init() {
+      try {
+        const index = await I140.loadIndex();
+
+        document.getElementById('updatedAt').textContent =
+          (lang() === 'zh' ? '更新于 ' : 'Updated ') + index.generated_at.slice(0, 10);
+
+        index.blocks.forEach(b => {
+          const opt = document.createElement('option');
+          opt.value = b.block;
+          opt.textContent = b.block + '  (' + b.count.toLocaleString() + ')';
+          blockSelect.appendChild(opt);
+        });
+
+        // A ?block= parameter wins, then the remembered choice, then the first block.
+        const fromUrl = new URLSearchParams(location.search).get('block');
+        const remembered = localStorage.getItem(BLOCK_KEY);
+        const initial = [fromUrl, remembered].find(b => b && index.blocks.some(x => x.block === b))
+          || index.blocks[0].block;
+        blockSelect.value = initial;
+
+        await selectBlock(initial);
+      } catch (err) {
+        document.getElementById('loading').innerHTML =
+          '<span class="lang-en">Could not load the data files (' + (err.message || err) + ').</span>' +
+          '<span class="lang-zh">无法加载数据文件（' + (err.message || err) + '）。</span>';
+      }
+    })();
+
+    async function selectBlock(block) {
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('dashboard').classList.add('hidden');
+      try { localStorage.setItem(BLOCK_KEY, block); } catch (e) { /* private mode */ }
+
+      allCases = await I140.loadBlock(block);
+      render();
+
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+    }
+
+    /* ── Rendering ────────────────────────────────────────────────────────── */
+    function render() {
+      const summary = I140.summarize(allCases);
+      renderKpis(summary);
+      renderDistribution(summary);
+      renderSummary(summary);
+      renderWeekChart();
+      applyFilter();
+    }
+
+    function renderKpis(summary) {
+      const b = summary.buckets;
+      const tiles = [
+        { v: b.approved, en: 'Approved', zh: '已批准', c: I140.BUCKETS.approved.color },
+        { v: b.review, en: 'Under review', zh: '审理中', c: I140.BUCKETS.review.color },
+        { v: b.rfe, en: 'RFE sent', zh: '已发补件', c: I140.BUCKETS.rfe.color },
+        { v: b.rfeResponse, en: 'RFE responded', zh: '补件已回', c: I140.BUCKETS.rfeResponse.color },
+        { v: b.denied, en: 'Denied', zh: '已拒绝', c: I140.BUCKETS.denied.color },
+        { v: b.withdrawn, en: 'Withdrawn', zh: '已撤回', c: I140.BUCKETS.withdrawn.color }
+      ];
+      document.getElementById('kpis').innerHTML = tiles.map(t =>
+        '<div class="kpi" style="background:' + t.c + '">' +
+        '<div class="kpi-v">' + t.v.toLocaleString() + '</div>' +
+        '<div class="kpi-k"><span class="lang-en">' + t.en + '</span><span class="lang-zh">' + t.zh + '</span></div>' +
+        '</div>').join('');
+    }
+
+    function renderDistribution(summary) {
+      const max = summary.statuses.length ? summary.statuses[0][1] : 1;
+      document.getElementById('distribution').innerHTML = summary.statuses.map(([status, count]) => {
+        const color = I140.BUCKETS[I140.bucketOf(status)].color;
+        const pct = (count / summary.total) * 100;
+        return '<div class="dist-row">' +
+          '<div class="dist-name"><i class="dist-swatch" style="background:' + color + '"></i>' +
+          '<span title="' + status.replace(/"/g, '&quot;') + '">' +
+          '<span class="lang-en">' + status + '</span>' +
+          '<span class="lang-zh">' + I140.statusLabel(status, 'zh') + '</span></span></div>' +
+          '<div class="dist-count">' + count.toLocaleString() + ' · ' + pct.toFixed(1) + '%</div>' +
+          '<div class="dist-track"><div class="dist-fill" style="width:' +
+          ((count / max) * 100).toFixed(1) + '%;background:' + color + '"></div></div>' +
+          '</div>';
+      }).join('');
+    }
+
+    function renderSummary(summary) {
+      const dated = allCases.filter(c => c.date).map(c => c.date.getTime());
+      const earliest = dated.length ? new Date(Math.min.apply(null, dated)) : null;
+      const runningDays = earliest ? I140.daysBetween(earliest, new Date()) : null;
+      const pct80 = I140.decisionDaysPercentile(allCases, 80);
+
+      const stats = [
+        {
+          en: 'Total cases', zh: '案件总数',
+          v: summary.total.toLocaleString()
+        },
+        {
+          en: 'Approval rate (of decided)', zh: '批准率（已决案件）',
+          v: summary.approvalRate === null ? '—' : summary.approvalRate.toFixed(2) + '%'
+        },
+        {
+          en: 'Block progress', zh: '批次完成度',
+          v: summary.progress === null ? '—' : summary.progress.toFixed(1) + '%'
+        },
+        {
+          en: 'Still pending', zh: '仍在处理',
+          v: summary.pending.toLocaleString()
+        },
+        {
+          en: 'Decided in the last 30 days', zh: '近 30 天已决',
+          v: I140.recentlyDecided(allCases, 30).toLocaleString()
+        },
+        {
+          en: '80% of decided cases within', zh: '80% 已决案件耗时',
+          v: pct80 ? (lang() === 'zh' ? pct80.days + ' 天' : pct80.days + ' days') : '—'
+        },
+        {
+          en: 'Earliest case', zh: '最早案件',
+          v: I140.formatDate(earliest, lang()) + (runningDays ? ' · ' + runningDays + (lang() === 'zh' ? ' 天' : 'd') : '')
+        }
+      ];
+
+      document.getElementById('summary').innerHTML = stats.map(s =>
+        '<div class="stat"><div class="stat-k">' +
+        '<span class="lang-en">' + s.en + '</span><span class="lang-zh">' + s.zh + '</span>' +
+        '</div><div class="stat-v">' + s.v + '</div></div>').join('');
+    }
+
+    /**
+     * Stacked bars, one per ISO week, drawn as plain SVG — the site ships no
+     * charting library and this needs no interactivity beyond a tooltip.
+     */
+    function renderWeekChart() {
+      const weeks = I140.byWeek(allCases).slice(-60);   // last ~14 months
+      const svg = document.getElementById('weekChart');
+      if (!weeks.length) { svg.innerHTML = ''; return; }
+
+      const barW = 14, gap = 4, padLeft = 38, padTop = 10, plotH = 190, padBottom = 46;
+      const width = padLeft + weeks.length * (barW + gap) + 10;
+      const height = padTop + plotH + padBottom;
+      const max = Math.max.apply(null, weeks.map(w => w.total));
+      const order = ['approved', 'review', 'rfe', 'rfeResponse', 'denied', 'withdrawn', 'other'];
+
+      let out = '';
+
+      // Horizontal guides with counts.
+      for (let i = 0; i <= 4; i++) {
+        const y = padTop + plotH - (plotH * i / 4);
+        const value = Math.round(max * i / 4);
+        out += '<line x1="' + padLeft + '" y1="' + y + '" x2="' + (width - 10) + '" y2="' + y +
+          '" stroke="var(--line)" stroke-width="1"/>' +
+          '<text x="' + (padLeft - 6) + '" y="' + (y + 3.5) + '" text-anchor="end" ' +
+          'font-size="9" fill="var(--text-sec)">' + value + '</text>';
+      }
+
+      weeks.forEach((w, i) => {
+        const x = padLeft + i * (barW + gap);
+        let y = padTop + plotH;
+        const parts = order.filter(k => w.buckets[k]).map(k =>
+          I140.BUCKETS[k][lang() === 'zh' ? 'zh' : 'en'] + ': ' + w.buckets[k]).join('\n');
+
+        out += '<g class="bar-col"><title>' + w.key + ' — ' + w.total + '\n' + parts + '</title>';
+        order.forEach(k => {
+          const count = w.buckets[k];
+          if (!count) return;
+          const h = (count / max) * plotH;
+          y -= h;
+          out += '<rect x="' + x + '" y="' + y.toFixed(1) + '" width="' + barW +
+            '" height="' + h.toFixed(1) + '" fill="' + I140.BUCKETS[k].color + '"/>';
+        });
+        out += '</g>';
+
+        // Label every fourth week, rotated to keep them readable.
+        if (i % 4 === 0) {
+          const ty = padTop + plotH + 12;
+          out += '<text x="' + (x + barW / 2) + '" y="' + ty + '" font-size="9" fill="var(--text-sec)" ' +
+            'text-anchor="end" transform="rotate(-45 ' + (x + barW / 2) + ' ' + ty + ')">' + w.key + '</text>';
+        }
+      });
+
+      svg.setAttribute('width', width);
+      svg.setAttribute('height', height);
+      svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+      svg.innerHTML = out;
+
+      document.getElementById('chartLegend').innerHTML = order.map(k =>
+        '<span><i style="background:' + I140.BUCKETS[k].color + '"></i>' +
+        '<span class="lang-en">' + I140.BUCKETS[k].en + '</span>' +
+        '<span class="lang-zh">' + I140.BUCKETS[k].zh + '</span></span>').join('');
+    }
+
+    /* ── Case table ───────────────────────────────────────────────────────── */
+    function applyFilter() {
+      const term = searchInput.value.trim().toLowerCase();
+      visibleRows = term
+        ? allCases.filter(c =>
+            c.caseId.toLowerCase().indexOf(term) >= 0 ||
+            c.status.toLowerCase().indexOf(term) >= 0)
+        : allCases.slice();
+
+      visibleRows.sort((a, b) => {
+        const av = a[sortKey], bv = b[sortKey];
+        if (av === bv) return 0;
+        if (av === null) return 1;
+        if (bv === null) return -1;
+        return (av > bv ? 1 : -1) * sortDir;
+      });
+
+      document.getElementById('caseRows').innerHTML = '';
+      shown = 0;
+      appendRows();
+
+      document.getElementById('rowCount').textContent =
+        ' · ' + visibleRows.length.toLocaleString() +
+        (lang() === 'zh' ? ' 条' : (visibleRows.length === 1 ? ' case' : ' cases'));
+    }
+
+    function appendRows() {
+      const body = document.getElementById('caseRows');
+      const slice = visibleRows.slice(shown, shown + PAGE_SIZE);
+
+      slice.forEach(c => {
+        const color = I140.BUCKETS[c.bucket].color;
+        const tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td class="cell-id">' + c.caseId + '</td>' +
+          '<td><span class="cell-status"><i class="cell-dot" style="background:' + color + '"></i>' +
+          '<span class="lang-en">' + c.status + '</span>' +
+          '<span class="lang-zh">' + I140.statusLabel(c.status, 'zh') + '</span></span></td>' +
+          '<td>' + I140.formatDate(c.date, lang()) + '</td>' +
+          '<td>' + I140.formatDate(c.seen, lang()) + '</td>';
+        // Any row opens that receipt in the single-case view.
+        tr.addEventListener('click', () => {
+          location.href = 'i140-case.html?case=' + encodeURIComponent(c.caseId);
+        });
+        body.appendChild(tr);
+      });
+
+      shown += slice.length;
+      document.getElementById('moreBtn').classList.toggle('hidden', shown >= visibleRows.length);
+    }
+
+    /* ── Wiring ───────────────────────────────────────────────────────────── */
+    blockSelect.addEventListener('change', () => selectBlock(blockSelect.value));
+    document.getElementById('moreBtn').addEventListener('click', appendRows);
+
+    // Debounced so typing in a 5,000-row table stays smooth.
+    let searchTimer = null;
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(applyFilter, 160);
+    });
+
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+      th.addEventListener('click', () => {
+        const key = th.dataset.sort;
+        sortDir = (key === sortKey) ? -sortDir : 1;
+        sortKey = key;
+        applyFilter();
+      });
+    });
+  </script>
+</body>
+
+</html>

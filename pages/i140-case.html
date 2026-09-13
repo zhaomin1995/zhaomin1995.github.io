@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>My Case — Zhaomin Xiao</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/fontawesome/css/fontawesome.min.css">
+  <link rel="stylesheet" href="../assets/fontawesome/css/solid.min.css">
+  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* Light mode by default; body.dark-mode swaps the palette, matching the rest of the site. */
+    :root {
+      --bg: #fafafa; --text: #1d1d1f; --text-sec: #86868b;
+      --card-bg: #ffffff; --card-shadow: rgba(0,0,0,0.08); --line: rgba(0,0,0,0.08);
+      --accent: #e17055; --field-bg: #ffffff;
+    }
+    body.dark-mode {
+      --bg: #1d1d1f; --text: #f5f5f7; --text-sec: #a1a1a6;
+      --card-bg: #2a2a2c; --card-shadow: rgba(0,0,0,0.3); --line: rgba(255,255,255,0.1);
+      --field-bg: #1d1d1f;
+    }
+    body {
+      font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
+      -webkit-font-smoothing: antialiased; line-height: 1.6;
+    }
+    .lang-zh { display: none; }
+    body.zh .lang-en { display: none; }
+    body.zh .lang-zh { display: inline; }
+    ::selection { background: rgba(225,112,85,0.2); }
+
+    /* ── Nav ── */
+    .p-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0 2rem; height: 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(250,250,250,0.85); backdrop-filter: blur(20px);
+    }
+    body.dark-mode .p-nav { background: rgba(29,29,31,0.88); }
+    .p-nav a { color: var(--text-sec); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: color 0.3s; }
+    .p-nav a:hover { color: var(--text); }
+    .p-nav-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+
+    .page { max-width: 760px; margin: 0 auto; padding: 4.5rem 1.5rem 3rem; }
+
+    /* ── Receipt entry ── */
+    .lookup { display: flex; gap: 0.6rem; margin-bottom: 0.8rem; }
+    .lookup input {
+      flex: 1; padding: 0.85rem 1rem; font-size: 1rem; font-family: 'SF Mono', Menlo, monospace;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      background: var(--field-bg); color: var(--text);
+      border: 1px solid var(--line); border-radius: 12px; outline: none;
+      transition: border-color 0.2s;
+    }
+    .lookup input:focus { border-color: var(--accent); }
+    .lookup button {
+      padding: 0 1.4rem; font-size: 0.9rem; font-weight: 600; font-family: inherit;
+      background: var(--accent); color: #fff; border: none; border-radius: 12px; cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .lookup button:hover { opacity: 0.88; }
+    .lookup button:disabled { opacity: 0.5; cursor: default; }
+
+    /* Previously looked-up receipts, kept in localStorage for one-tap recall. */
+    .saved { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.6rem; min-height: 1.9rem; }
+    .saved-chip {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.3rem 0.7rem; border-radius: 999px;
+      background: var(--card-bg); border: 1px solid var(--line);
+      font-family: 'SF Mono', Menlo, monospace; font-size: 0.75rem; color: var(--text-sec);
+      cursor: pointer; transition: color 0.2s, border-color 0.2s;
+    }
+    .saved-chip:hover { color: var(--text); border-color: var(--accent); }
+    .saved-chip .remove { opacity: 0.45; font-size: 0.7rem; }
+    .saved-chip .remove:hover { opacity: 1; color: var(--accent); }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--card-bg); border-radius: 16px; padding: 1.4rem;
+      box-shadow: 0 2px 12px var(--card-shadow); margin-bottom: 1rem;
+    }
+    .card-label {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-sec); margin-bottom: 0.8rem;
+    }
+
+    /* Case identity */
+    .receipt-line { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.6rem; }
+    .receipt {
+      font-family: 'SF Mono', Menlo, monospace; font-size: 1.45rem; font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .copy-btn {
+      background: none; border: none; cursor: pointer; color: var(--text-sec);
+      font-size: 0.85rem; padding: 0.2rem; transition: color 0.2s;
+    }
+    .copy-btn:hover { color: var(--accent); }
+    .form-tag { font-size: 1rem; color: var(--text-sec); font-weight: 500; }
+    .form-title { font-size: 0.95rem; color: var(--text-sec); margin-top: 0.15rem; }
+
+    .meta-row {
+      display: flex; flex-wrap: wrap; gap: 1.6rem;
+      margin-top: 1.1rem; padding-top: 1.1rem; border-top: 1px solid var(--line);
+    }
+    .meta-item .meta-k { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-sec); }
+    .meta-item .meta-v { font-size: 1rem; font-weight: 600; margin-top: 0.1rem; }
+
+    /* Current status */
+    .status-date { font-size: 0.85rem; color: var(--text-sec); margin-bottom: 0.5rem; }
+    .status-head { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.8rem; }
+    .status-dot { width: 13px; height: 13px; border-radius: 3px; flex-shrink: 0; margin-top: 0.42rem; }
+    .status-title { font-size: 1.2rem; font-weight: 700; line-height: 1.35; }
+    .status-body { font-size: 0.92rem; color: var(--text-sec); line-height: 1.65; }
+    .status-body a { color: var(--accent); }
+    .view-online {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      margin-top: 1.1rem; padding-top: 1rem; border-top: 1px solid var(--line);
+      width: 100%; font-size: 0.88rem; color: var(--text); text-decoration: none; font-weight: 500;
+    }
+    .view-online:hover { color: var(--accent); }
+
+    /* History timeline */
+    .timeline { position: relative; padding-left: 1.4rem; }
+    .timeline::before {
+      content: ''; position: absolute; left: 5px; top: 6px; bottom: 6px;
+      width: 2px; background: var(--line);
+    }
+    .tl-item { position: relative; padding-bottom: 1.1rem; }
+    .tl-item:last-child { padding-bottom: 0; }
+    /* Each entry sets --dot inline to its status colour. */
+    .tl-item::before {
+      content: ''; position: absolute; left: -1.4rem; top: 0.42rem;
+      width: 12px; height: 12px; border-radius: 3px; background: var(--dot, var(--text-sec));
+    }
+    .tl-date { font-size: 0.8rem; color: var(--text-sec); }
+    .tl-status { font-size: 0.95rem; font-weight: 600; margin-top: 0.1rem; }
+
+    /* Estimates */
+    .est-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+    @media (max-width: 560px) { .est-grid { grid-template-columns: 1fr; } }
+    .est {
+      border: 1px solid var(--line); border-radius: 12px; padding: 1rem;
+    }
+    .est-k { font-size: 0.75rem; color: var(--text-sec); line-height: 1.45; }
+    .est-v { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em; margin: 0.35rem 0 0.1rem; }
+    .est-note { font-size: 0.72rem; color: var(--text-sec); line-height: 1.5; }
+    .est-unset { font-size: 0.95rem; font-weight: 600; color: var(--text-sec); margin: 0.5rem 0 0.2rem; }
+
+    /* Queue progress */
+    .bar { height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; margin: 0.7rem 0 0.5rem; }
+    .bar-fill { height: 100%; border-radius: 999px; background: var(--accent); transition: width 0.6s ease; }
+
+    /* States */
+    .msg { text-align: center; color: var(--text-sec); padding: 2.5rem 1rem; font-size: 0.95rem; line-height: 1.7; }
+    .msg strong { color: var(--text); }
+    .spinner {
+      width: 26px; height: 26px; margin: 0 auto 0.9rem;
+      border: 3px solid var(--line); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .hidden { display: none !important; }
+
+    .foot {
+      margin-top: 2rem; padding-top: 1.2rem; border-top: 1px solid var(--line);
+      font-size: 0.75rem; color: var(--text-sec); line-height: 1.7; text-align: center;
+    }
+    .foot a { color: var(--text-sec); }
+  </style>
+</head>
+
+<body>
+  <nav class="p-nav">
+    <a href="../index.html"><i class="fas fa-arrow-left"></i> <span class="lang-en">Back</span><span class="lang-zh">返回</span></a>
+    <span class="p-nav-title"><span class="lang-en">My Case</span><span class="lang-zh">我的案件</span></span>
+    <a href="i140.html"><span class="lang-en">Block stats</span><span class="lang-zh">批次统计</span> <i class="fas fa-arrow-right"></i></a>
+  </nav>
+
+  <div class="page">
+    <!-- Receipt entry -->
+    <form class="lookup" id="lookupForm">
+      <input id="receiptInput" type="text" autocomplete="off" spellcheck="false"
+             placeholder="IOE0929646056" aria-label="Receipt number" maxlength="16">
+      <button type="submit" id="trackBtn">
+        <span class="lang-en">Track</span><span class="lang-zh">查询</span>
+      </button>
+    </form>
+    <div class="saved" id="savedCases"></div>
+
+    <!-- Loading / empty / error states -->
+    <div class="msg" id="stateMsg">
+      <span class="lang-en">Enter an I-140 receipt number to see its current status, full update history, and how its block is moving.</span>
+      <span class="lang-zh">输入 I-140 收据号，查看当前状态、完整更新历史，以及所在批次的处理进度。</span>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="hidden">
+      <!-- Case identity -->
+      <div class="card">
+        <div class="receipt-line">
+          <span class="receipt" id="caseReceipt"></span>
+          <button class="copy-btn" id="copyBtn" title="Copy receipt number"><i class="fas fa-copy"></i></button>
+          <span class="form-tag" id="caseForm"></span>
+        </div>
+        <div class="form-title" id="caseFormTitle"></div>
+        <div class="meta-row" id="caseMeta"></div>
+      </div>
+
+      <!-- Current status -->
+      <div class="card">
+        <div class="status-date" id="statusDate"></div>
+        <div class="status-head">
+          <span class="status-dot" id="statusDot"></span>
+          <span class="status-title" id="statusTitle"></span>
+        </div>
+        <div class="status-body" id="statusBody"></div>
+        <a class="view-online" href="https://egov.uscis.gov/casestatus/mycasestatus.do" target="_blank" rel="noopener noreferrer">
+          <i class="fas fa-globe"></i>
+          <span class="lang-en">Check on USCIS</span><span class="lang-zh">在 USCIS 官网查看</span>
+        </a>
+      </div>
+
+      <!-- Update history -->
+      <div class="card">
+        <div class="card-label"><span class="lang-en">History</span><span class="lang-zh">更新历史</span></div>
+        <div class="timeline" id="historyList"></div>
+      </div>
+
+      <!-- Estimated decision time -->
+      <div class="card">
+        <div class="card-label">
+          <span class="lang-en">Estimated decision time</span><span class="lang-zh">预计审理时间</span>
+        </div>
+        <div class="est-grid">
+          <!-- Official USCIS figure, maintained by hand in assets/data/uscis-processing-times.json -->
+          <div class="est" id="estOfficial"></div>
+          <!-- Same idea, computed from the cases actually in this block -->
+          <div class="est" id="estBlock"></div>
+        </div>
+        <div style="margin-top:1.1rem">
+          <div class="est-k" id="queueLabel"></div>
+          <div class="bar"><div class="bar-fill" id="queueBar" style="width:0%"></div></div>
+          <div class="est-note" id="queueNote"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <span class="lang-en">Case data from the public "I-140 Application Tracker" Power BI report by anto58. Official processing times from</span>
+      <span class="lang-zh">案件数据来自 anto58 公开的 "I-140 Application Tracker" Power BI 报表。官方处理时间来自</span>
+      <a href="https://egov.uscis.gov/processing-times/" target="_blank" rel="noopener noreferrer">USCIS</a>.
+      <br>
+      <span class="lang-en">Unofficial, for personal tracking only — always confirm on the USCIS website.</span>
+      <span class="lang-zh">非官方页面，仅供个人追踪使用 — 请以 USCIS 官网为准。</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/i140.js"></script>
+  <script>
+    /* Inherit the theme and language chosen elsewhere on the site. */
+    if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+    if (localStorage.getItem('lang') === 'zh') { document.body.classList.add('zh'); document.documentElement.lang = 'zh'; }
+
+    const SAVED_KEY = 'i140SavedCases';   // receipts the user has looked up before
+    const form = document.getElementById('lookupForm');
+    const input = document.getElementById('receiptInput');
+    const trackBtn = document.getElementById('trackBtn');
+    const stateMsg = document.getElementById('stateMsg');
+    const results = document.getElementById('results');
+
+    const lang = () => I140.currentLang();
+
+    /* ── Saved receipts ───────────────────────────────────────────────────── */
+    function getSaved() {
+      try { return JSON.parse(localStorage.getItem(SAVED_KEY)) || []; } catch (e) { return []; }
+    }
+
+    function setSaved(list) {
+      try { localStorage.setItem(SAVED_KEY, JSON.stringify(list.slice(0, 8))); } catch (e) { /* private mode */ }
+      renderSaved();
+    }
+
+    function renderSaved() {
+      const box = document.getElementById('savedCases');
+      box.innerHTML = '';
+      getSaved().forEach(id => {
+        const chip = document.createElement('span');
+        chip.className = 'saved-chip';
+
+        const label = document.createElement('span');
+        label.textContent = id;
+        label.addEventListener('click', () => { input.value = id; track(id); });
+
+        const remove = document.createElement('span');
+        remove.className = 'remove';
+        remove.innerHTML = '<i class="fas fa-xmark"></i>';
+        remove.title = 'Remove';
+        remove.addEventListener('click', e => {
+          e.stopPropagation();
+          setSaved(getSaved().filter(x => x !== id));
+        });
+
+        chip.appendChild(label);
+        chip.appendChild(remove);
+        box.appendChild(chip);
+      });
+    }
+
+    /* ── State helpers ────────────────────────────────────────────────────── */
+    function showMessage(html) {
+      stateMsg.innerHTML = html;
+      stateMsg.classList.remove('hidden');
+      results.classList.add('hidden');
+    }
+
+    function showLoading() {
+      showMessage('<div class="spinner"></div>' +
+        '<span class="lang-en">Checking with the tracker…</span>' +
+        '<span class="lang-zh">正在查询…</span>');
+    }
+
+    /* ── Main lookup ──────────────────────────────────────────────────────── */
+    async function track(rawId) {
+      const caseId = I140.normalizeCaseId(rawId);
+      if (!caseId) {
+        showMessage('<span class="lang-en">That does not look like a receipt number. The format is three letters followed by ten digits, e.g. <strong>IOE0929646056</strong>.</span>' +
+          '<span class="lang-zh">这不像是收据号。格式为三个字母加十位数字，例如 <strong>IOE0929646056</strong>。</span>');
+        return;
+      }
+
+      input.value = caseId;
+      trackBtn.disabled = true;
+      showLoading();
+
+      try {
+        // The case record and its history are two separate queries; fire both at once.
+        const [record, history] = await Promise.all([
+          I140.fetchCase(caseId),
+          I140.fetchCaseHistory(caseId).catch(() => [])   // history is a bonus, not a blocker
+        ]);
+
+        if (!record) {
+          showMessage('<span class="lang-en"><strong>' + caseId + '</strong> is not in the tracker\'s dataset. It only covers I-140 receipts in the blocks it follows — check the number, or look at <a href="i140.html">block stats</a> to see which blocks are covered.</span>' +
+            '<span class="lang-zh">数据集中没有 <strong>' + caseId + '</strong>。该追踪器只覆盖它关注的 I-140 批次 — 请检查号码，或到<a href="i140.html">批次统计</a>查看已覆盖的批次。</span>');
+          return;
+        }
+
+        renderCase(record, history);
+
+        // Remember it, most recent first.
+        setSaved([caseId].concat(getSaved().filter(x => x !== caseId)));
+
+        // Block statistics power the queue position and the cohort estimate.
+        // They are a separate, larger fetch, so fill them in once they arrive.
+        renderBlockContext(record).catch(() => { /* leave the placeholders as-is */ });
+      } catch (err) {
+        showMessage('<span class="lang-en">Could not reach the tracker (' + String(err.message || err) + '). Try again in a moment.</span>' +
+          '<span class="lang-zh">无法连接数据源（' + String(err.message || err) + '），请稍后重试。</span>');
+      } finally {
+        trackBtn.disabled = false;
+      }
+    }
+
+    /* ── Rendering ────────────────────────────────────────────────────────── */
+    function renderCase(record, history) {
+      stateMsg.classList.add('hidden');
+      results.classList.remove('hidden');
+
+      // Identity
+      document.getElementById('caseReceipt').textContent = record.caseId;
+      document.getElementById('caseForm').textContent = record.form + ' USCIS Case';
+      document.getElementById('caseFormTitle').textContent = record.formTitle;
+
+      const daysSince = record.date ? I140.daysBetween(record.date, new Date()) : null;
+      const meta = [
+        {
+          k: { en: 'Block', zh: '批次' },
+          v: record.block || I140.blockOf(record.caseId)
+        },
+        {
+          k: { en: 'Days at this status', zh: '当前状态已持续' },
+          v: daysSince === null ? '—' : (lang() === 'zh' ? daysSince + ' 天' : daysSince + ' days')
+        },
+        {
+          k: { en: 'Last checked', zh: '最近核对' },
+          v: I140.formatDate(record.seen, lang())
+        }
+      ];
+      document.getElementById('caseMeta').innerHTML = meta.map(m =>
+        '<div class="meta-item"><div class="meta-k">' +
+        '<span class="lang-en">' + m.k.en + '</span><span class="lang-zh">' + m.k.zh + '</span>' +
+        '</div><div class="meta-v">' + m.v + '</div></div>'
+      ).join('');
+
+      // Current status
+      const bucket = I140.BUCKETS[I140.bucketOf(record.status)];
+      document.getElementById('statusDot').style.background = bucket.color;
+      document.getElementById('statusTitle').textContent = I140.statusLabel(record.status, lang());
+      document.getElementById('statusBody').innerHTML = I140.renderDetail(record.detail);
+      document.getElementById('statusDate').innerHTML =
+        '<span class="lang-en">Case updated: ' + I140.formatDate(record.date, 'en') + '</span>' +
+        '<span class="lang-zh">状态更新于：' + I140.formatDate(record.date, 'zh') + '</span>';
+
+      // History — the current state is always the newest entry, even when the
+      // upstream history table has not recorded it yet.
+      const entries = history.slice();
+      const hasCurrent = entries.some(e =>
+        e.status === record.status && record.date && e.date.getTime() === record.date.getTime());
+      if (!hasCurrent && record.date) {
+        entries.unshift({ status: record.status, date: record.date });
+      }
+
+      const list = document.getElementById('historyList');
+      if (!entries.length) {
+        list.innerHTML = '<div class="tl-date">' +
+          '<span class="lang-en">No update history recorded for this case yet.</span>' +
+          '<span class="lang-zh">该案件暂无历史更新记录。</span></div>';
+      } else {
+        list.innerHTML = entries.map(e => {
+          const color = I140.BUCKETS[I140.bucketOf(e.status)].color;
+          return '<div class="tl-item" style="--dot:' + color + '">' +
+            '<div class="tl-date">' +
+              '<span class="lang-en">' + I140.formatDate(e.date, 'en') + '</span>' +
+              '<span class="lang-zh">' + I140.formatDate(e.date, 'zh') + '</span>' +
+            '</div>' +
+            '<div class="tl-status">' +
+              '<span class="lang-en">' + e.status + '</span>' +
+              '<span class="lang-zh">' + I140.statusLabel(e.status, 'zh') + '</span>' +
+            '</div></div>';
+        }).join('');
+      }
+
+      renderOfficialEstimate();
+      // Reset the cohort panel while the block file loads.
+      document.getElementById('estBlock').innerHTML = placeholderEstimate();
+      document.getElementById('queueLabel').innerHTML = '';
+      document.getElementById('queueNote').innerHTML = '';
+      document.getElementById('queueBar').style.width = '0%';
+    }
+
+    function placeholderEstimate() {
+      return '<div class="est-k">' +
+        '<span class="lang-en">Cases in this block decided within</span>' +
+        '<span class="lang-zh">本批次已决案件的完成时长</span></div>' +
+        '<div class="est-unset">…</div>';
+    }
+
+    /** The hand-maintained official figure, or a clear "not set" state. */
+    async function renderOfficialEstimate() {
+      const box = document.getElementById('estOfficial');
+      try {
+        const res = await fetch('../assets/data/uscis-processing-times.json');
+        const data = await res.json();
+        const filled = (data.categories || []).filter(c => typeof c.months === 'number');
+
+        if (!filled.length) {
+          box.innerHTML = '<div class="est-k">' +
+            '<span class="lang-en">USCIS official — 80% of cases completed within</span>' +
+            '<span class="lang-zh">USCIS 官方 — 80% 案件完成时长</span></div>' +
+            '<div class="est-unset">' +
+            '<span class="lang-en">Not set yet</span><span class="lang-zh">尚未填写</span></div>' +
+            '<div class="est-note">' +
+            '<span class="lang-en">Add the published figure to assets/data/uscis-processing-times.json — ' +
+            '<a href="' + data.source_url + '" target="_blank" rel="noopener noreferrer">official page</a>.</span>' +
+            '<span class="lang-zh">把官网公布的数字填进 assets/data/uscis-processing-times.json — ' +
+            '<a href="' + data.source_url + '" target="_blank" rel="noopener noreferrer">官方页面</a>。</span></div>';
+          return;
+        }
+
+        // Show the category the user picked last, defaulting to the first filled one.
+        const chosenId = localStorage.getItem('i140Category');
+        const chosen = filled.find(c => c.id === chosenId) || filled[0];
+        const options = filled.map(c =>
+          '<option value="' + c.id + '"' + (c.id === chosen.id ? ' selected' : '') + '>' +
+          (lang() === 'zh' ? c.label_zh : c.label_en) + '</option>').join('');
+
+        box.innerHTML = '<div class="est-k">' +
+          '<span class="lang-en">USCIS official — 80% of cases completed within</span>' +
+          '<span class="lang-zh">USCIS 官方 — 80% 案件完成时长</span></div>' +
+          '<div class="est-v">' + chosen.months +
+          '<span style="font-size:0.9rem;font-weight:600"> ' +
+          (lang() === 'zh' ? '个月' : 'months') + '</span></div>' +
+          '<select id="categorySelect" style="width:100%;margin:0.4rem 0;padding:0.35rem;font-size:0.75rem;' +
+          'background:var(--field-bg);color:var(--text);border:1px solid var(--line);border-radius:8px">' +
+          options + '</select>' +
+          '<div class="est-note">' + (chosen.office || '') +
+          (chosen.as_of ? ' · as of ' + chosen.as_of : '') + '</div>';
+
+        const select = document.getElementById('categorySelect');
+        if (select) {
+          select.addEventListener('change', () => {
+            localStorage.setItem('i140Category', select.value);
+            renderOfficialEstimate();
+          });
+        }
+      } catch (e) {
+        box.innerHTML = '<div class="est-k">' +
+          '<span class="lang-en">USCIS official figure unavailable.</span>' +
+          '<span class="lang-zh">无法读取官方数据。</span></div>';
+      }
+    }
+
+    /**
+     * Cohort statistics: the 80th-percentile decision time among cases in the
+     * same block, and where this receipt sits in that queue.
+     */
+    async function renderBlockContext(record) {
+      const block = record.block || I140.blockOf(record.caseId);
+      const cases = await I140.loadBlock(block);
+
+      const pct = I140.decisionDaysPercentile(cases, 80);
+      const estBox = document.getElementById('estBlock');
+      if (pct) {
+        const months = (pct.days / 30.44).toFixed(1);
+        estBox.innerHTML = '<div class="est-k">' +
+          '<span class="lang-en">This block — 80% of decided cases finished within</span>' +
+          '<span class="lang-zh">本批次 — 80% 已决案件的完成时长</span></div>' +
+          '<div class="est-v">' + months +
+          '<span style="font-size:0.9rem;font-weight:600"> ' +
+          (lang() === 'zh' ? '个月' : 'months') + '</span></div>' +
+          '<div class="est-note">' +
+          '<span class="lang-en">' + pct.days + ' days from the block\'s earliest case, over ' +
+          pct.sample.toLocaleString() + ' decided cases.</span>' +
+          '<span class="lang-zh">自本批次最早案件起 ' + pct.days + ' 天，样本为 ' +
+          pct.sample.toLocaleString() + ' 个已决案件。</span></div>';
+      } else {
+        estBox.innerHTML = '<div class="est-k">' +
+          '<span class="lang-en">Not enough decided cases in this block yet.</span>' +
+          '<span class="lang-zh">本批次已决案件不足。</span></div>';
+      }
+
+      const queue = I140.queuePosition(cases, record.caseId);
+      const summary = I140.summarize(cases);
+      document.getElementById('queueLabel').innerHTML =
+        '<span class="lang-en">Block progress — ' + summary.decided.toLocaleString() + ' of ' +
+        summary.total.toLocaleString() + ' cases decided</span>' +
+        '<span class="lang-zh">批次进度 — ' + summary.total.toLocaleString() + ' 个案件中已决 ' +
+        summary.decided.toLocaleString() + ' 个</span>';
+      document.getElementById('queueBar').style.width = (summary.progress || 0).toFixed(1) + '%';
+      document.getElementById('queueNote').innerHTML =
+        '<span class="lang-en">' + queue.ahead.toLocaleString() + ' receipts ahead of yours in this block, ' +
+        queue.aheadPending.toLocaleString() + ' of them still pending. Approval rate so far: ' +
+        (summary.approvalRate === null ? '—' : summary.approvalRate.toFixed(1) + '%') + '.</span>' +
+        '<span class="lang-zh">本批次中排在你前面的有 ' + queue.ahead.toLocaleString() + ' 个收据号，其中 ' +
+        queue.aheadPending.toLocaleString() + ' 个仍在处理中。目前批准率：' +
+        (summary.approvalRate === null ? '—' : summary.approvalRate.toFixed(1) + '%') + '。</span>';
+    }
+
+    /* ── Wiring ───────────────────────────────────────────────────────────── */
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      track(input.value);
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      const text = document.getElementById('caseReceipt').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const icon = document.querySelector('#copyBtn i');
+        icon.className = 'fas fa-check';
+        setTimeout(() => { icon.className = 'fas fa-copy'; }, 1400);
+      }).catch(() => { /* clipboard blocked; nothing useful to do */ });
+    });
+
+    renderSaved();
+
+    // Deep link (?case=IOE...) wins, otherwise resume the most recent receipt.
+    const fromUrl = new URLSearchParams(location.search).get('case');
+    const resume = fromUrl || getSaved()[0];
+    if (resume) { input.value = resume; track(resume); }
+  </script>
+</body>
+
+</html>

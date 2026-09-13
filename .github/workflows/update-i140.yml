@@ -1,0 +1,51 @@
+# Refreshes assets/data/i140/ once a day so pages/i140.html serves current data
+# without the browser having to query the upstream Power BI report.
+#
+# The fetch is stdlib-only Python, so there is nothing to install.
+
+name: Update I-140 data
+
+on:
+  schedule:
+    # 09:20 UTC daily. The upstream tracker refreshes on a weekday morning
+    # US schedule, so this picks up the previous run's results.
+    - cron: '20 9 * * *'
+  workflow_dispatch:        # also runnable by hand from the Actions tab
+
+# The job commits back to the repository.
+permissions:
+  contents: write
+
+concurrency:
+  group: update-i140
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Fetch block data
+        run: python scripts/fetch_i140.py
+
+      - name: Commit if anything changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/data/i140
+          # index.json always changes (it carries a timestamp), so only commit
+          # when a block file actually moved.
+          if git diff --cached --quiet -- assets/data/i140 ':!assets/data/i140/index.json'; then
+            echo "No case changes today; skipping commit."
+            git reset
+          else
+            git commit -m "Update I-140 block data ($(date -u +%Y-%m-%d))"
+            git push
+          fi
