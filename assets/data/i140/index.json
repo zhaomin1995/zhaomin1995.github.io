@@ -1,0 +1,670 @@
+{
+ "generated_at": "2026-09-13T06:59:23Z",
+ "epoch": "2000-01-01",
+ "source": "Power BI report 'I-140 Application Tracker' by anto58",
+ "statuses": [
+  "Case Approved",
+  "Case Was Denied",
+  "Case Is Being Actively Reviewed By USCIS",
+  "Approval Case Decision Rendered",
+  "Response To USCIS' Request For Evidence Was Received",
+  "Withdrawal Acknowledgement Notice Was Sent",
+  "Request for Additional Evidence Was Sent",
+  "Case Was Rejected",
+  "Revocation Notice Was Sent",
+  "Case Approval Was Revoked",
+  "Cancellation Notice for Request for Additional Evidence",
+  "Response To USCIS' Notice of Intent Was Received",
+  "Case Was Received and A Receipt Notice Was Sent",
+  "Notice Explaining USCIS' Actions Was Mailed",
+  "Case Was Approved",
+  "Case Was Administratively Closed",
+  "Case Administratively Closed",
+  "Case Was Reopened",
+  "Issue with Payment",
+  "Card Was Delivered To Me By The Post Office",
+  "Case Was Sent To The Department of State",
+  "Case Was Received",
+  "Case Was Approved And My Decision Was Emailed",
+  "Case Was Rejected Because It Was Improperly Filed",
+  "Case Was Transferred And A New Office Has Jurisdiction",
+  "Request for Initial and Additional Evidence Was Mailed",
+  "Request for Initial Evidence Was Sent",
+  "Case Rejected Because I Sent An Incorrect Fee",
+  "Case Was Rejected Because I Did Not Sign My Form",
+  "Petition/Application Was Rejected For Insufficient Funds",
+  "Notice Was Returned To USCIS Because The Post Office Could Not Deliver It",
+  "Resubmitted Fee Was Not Accepted",
+  "Case Transferred To Another Office",
+  "Name Was Updated",
+  "Date of Birth Was Updated",
+  "Correspondence Was Received And USCIS Is Reviewing It",
+  "Case Rejected Because The Version Of The Form I Sent Is No Longer Accepted",
+  "Duplicate Notice Was Mailed",
+  "Department of State Sent Case to USCIS For Review",
+  "Case Rejected For Incorrect Fee And Form Not Signed",
+  "Form G-28 Was Rejected Because It Was Improperly Filed",
+  "Expedite Request Denied",
+  "Request For Premium Processing Services Was Received",
+  "Case Rejected For Incorrect Fee And Incorrect Form Version",
+  "Intent to Revoke Notice Was Sent",
+  "Premium Processing Fee Will Be Refunded",
+  "Document Was Mailed To Me",
+  "Petition Withdrawn/Over 180 Days/Not Automatically Revoked",
+  "Case Was Automatically Revoked",
+  "Case Was Relocated From Administrative Appeals Office To USCIS Originating Office",
+  "Appeal/Motion Was Dismissed",
+  "Withdrawal Request Received"
+ ],
+ "blocks": [
+  {
+   "block": "IOE09228",
+   "count": 1284,
+   "first": 8698,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09229",
+   "count": 2611,
+   "first": 8705,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09230",
+   "count": 2214,
+   "first": 8711,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09231",
+   "count": 3528,
+   "first": 8718,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09232",
+   "count": 3520,
+   "first": 8726,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09233",
+   "count": 4045,
+   "first": 8733,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09234",
+   "count": 3763,
+   "first": 8739,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09235",
+   "count": 3809,
+   "first": 8748,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09236",
+   "count": 4111,
+   "first": 8755,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09237",
+   "count": 3793,
+   "first": 8763,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09238",
+   "count": 3834,
+   "first": 8771,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09239",
+   "count": 3042,
+   "first": 8782,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09240",
+   "count": 3871,
+   "first": 8789,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09241",
+   "count": 3790,
+   "first": 8796,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09242",
+   "count": 3712,
+   "first": 8803,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09243",
+   "count": 3713,
+   "first": 8809,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09244",
+   "count": 4553,
+   "first": 8817,
+   "last": 9293,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09245",
+   "count": 3453,
+   "first": 8824,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09246",
+   "count": 3165,
+   "first": 8830,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09247",
+   "count": 3241,
+   "first": 8837,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09248",
+   "count": 2647,
+   "first": 8841,
+   "last": 9295,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09249",
+   "count": 3817,
+   "first": 8847,
+   "last": 9295,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09250",
+   "count": 5349,
+   "first": 8853,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09251",
+   "count": 3802,
+   "first": 8859,
+   "last": 9298,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09252",
+   "count": 1654,
+   "first": 8864,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09253",
+   "count": 2424,
+   "first": 8854,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09254",
+   "count": 3076,
+   "first": 8874,
+   "last": 9294,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09255",
+   "count": 4771,
+   "first": 8867,
+   "last": 9295,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09256",
+   "count": 4669,
+   "first": 8888,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09257",
+   "count": 4226,
+   "first": 8894,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09258",
+   "count": 4166,
+   "first": 8900,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09259",
+   "count": 4779,
+   "first": 8864,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09260",
+   "count": 4240,
+   "first": 8914,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09261",
+   "count": 4738,
+   "first": 8921,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09262",
+   "count": 4297,
+   "first": 8928,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09263",
+   "count": 4505,
+   "first": 8934,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09264",
+   "count": 4370,
+   "first": 8941,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09265",
+   "count": 5527,
+   "first": 8946,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09266",
+   "count": 4735,
+   "first": 8955,
+   "last": 9298,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09267",
+   "count": 4486,
+   "first": 8962,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09268",
+   "count": 4058,
+   "first": 8969,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09269",
+   "count": 3012,
+   "first": 8973,
+   "last": 9295,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09270",
+   "count": 4387,
+   "first": 8972,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09271",
+   "count": 3916,
+   "first": 8987,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09272",
+   "count": 3543,
+   "first": 8993,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09273",
+   "count": 3887,
+   "first": 8999,
+   "last": 9295,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09274",
+   "count": 3860,
+   "first": 9006,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09275",
+   "count": 4038,
+   "first": 9012,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09276",
+   "count": 4042,
+   "first": 9020,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09277",
+   "count": 3562,
+   "first": 9026,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09278",
+   "count": 4202,
+   "first": 9033,
+   "last": 9294,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09279",
+   "count": 3570,
+   "first": 9007,
+   "last": 9295,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09280",
+   "count": 3793,
+   "first": 9043,
+   "last": 9295,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09281",
+   "count": 3856,
+   "first": 9048,
+   "last": 9297,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09282",
+   "count": 4329,
+   "first": 9057,
+   "last": 9295,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09283",
+   "count": 3730,
+   "first": 9062,
+   "last": 9295,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09284",
+   "count": 4062,
+   "first": 9070,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09285",
+   "count": 3727,
+   "first": 9075,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09286",
+   "count": 4895,
+   "first": 9084,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09287",
+   "count": 3890,
+   "first": 9091,
+   "last": 9298,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09288",
+   "count": 4770,
+   "first": 9097,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09289",
+   "count": 4173,
+   "first": 9104,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09290",
+   "count": 4319,
+   "first": 9111,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09291",
+   "count": 4684,
+   "first": 9117,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09292",
+   "count": 4788,
+   "first": 9124,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09293",
+   "count": 3594,
+   "first": 9103,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09294",
+   "count": 4516,
+   "first": 9139,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09295",
+   "count": 4212,
+   "first": 9147,
+   "last": 9298,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09296",
+   "count": 3172,
+   "first": 9148,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09297",
+   "count": 3540,
+   "first": 9155,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09298",
+   "count": 3249,
+   "first": 9160,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09299",
+   "count": 2768,
+   "first": 9165,
+   "last": 9296,
+   "seen": 9297
+  },
+  {
+   "block": "IOE09300",
+   "count": 2983,
+   "first": 9167,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09301",
+   "count": 2933,
+   "first": 9168,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09302",
+   "count": 3513,
+   "first": 9182,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09303",
+   "count": 2904,
+   "first": 9186,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09304",
+   "count": 3319,
+   "first": 9188,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "IOE09320",
+   "count": 3798,
+   "first": 9270,
+   "last": 9296,
+   "seen": 9298
+  },
+  {
+   "block": "LIN239026",
+   "count": 2407,
+   "first": 8648,
+   "last": 9295,
+   "seen": 9297
+  },
+  {
+   "block": "LIN239027",
+   "count": 315,
+   "first": 8661,
+   "last": 9292,
+   "seen": 9297
+  },
+  {
+   "block": "LIN249000",
+   "count": 2247,
+   "first": 8668,
+   "last": 9294,
+   "seen": 9297
+  },
+  {
+   "block": "LIN249001",
+   "count": 1455,
+   "first": 8679,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "LIN249003",
+   "count": 471,
+   "first": 8710,
+   "last": 9294,
+   "seen": 9298
+  },
+  {
+   "block": "SRC239009",
+   "count": 3638,
+   "first": 8488,
+   "last": 9285,
+   "seen": 9297
+  },
+  {
+   "block": "SRC239010",
+   "count": 3622,
+   "first": 8507,
+   "last": 9285,
+   "seen": 9297
+  },
+  {
+   "block": "SRC239011",
+   "count": 2999,
+   "first": 8538,
+   "last": 9295,
+   "seen": 9298
+  },
+  {
+   "block": "SRC239012",
+   "count": 2786,
+   "first": 8560,
+   "last": 9287,
+   "seen": 9298
+  }
+ ]
+}
